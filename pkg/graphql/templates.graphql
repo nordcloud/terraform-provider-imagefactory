@@ -1,0 +1,21 @@
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+query GetCustomerTemplates($input: CustomerTemplatesInput!) {
+  templates(input: $input) {
+    results {
+      id
+      name
+      description
+      provider
+      state {
+        status
+      }
+      images(input: { page: 0, limit: 1 }) {
+        results {
+          id
+          name
+        }
+      }
+    }
+  }
+}

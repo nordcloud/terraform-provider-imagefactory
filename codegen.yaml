@@ -1,0 +1,9 @@
+schema: pkg/graphql/schema.graphql
+documents: pkg/graphql/!(schema).graphql
+generates:
+  pkg/graphql/graphql.go:
+    hooks:
+      afterOneFileWrite: go fmt
+    plugins:
+      - graphql-codegen-golang:
+          packageName: graphql # default

@@ -1,0 +1,9 @@
+{
+    "scripts": {
+        "generate": "graphql-codegen"
+    },
+    "devDependencies": {
+        "@graphql-codegen/cli": "^2.3.0",
+        "graphql-codegen-golang": "^0.1.2"
+    }
+}

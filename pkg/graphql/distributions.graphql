@@ -1,0 +1,12 @@
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+query GetDistributions($input: DistributionsInput!) {
+  distributions(input: $input) {
+    results {
+      id
+      name
+      description
+      provider
+    }
+  }
+}

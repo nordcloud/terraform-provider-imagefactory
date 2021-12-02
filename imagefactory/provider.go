@@ -24,6 +24,7 @@ func Provider() *schema.Provider {
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"imagefactory_distributions": dataSourceDistributions(),
+			"imagefactory_distribution":  dataSourceDistribution(),
 		},
 		ResourcesMap: map[string]*schema.Resource{},
 	}

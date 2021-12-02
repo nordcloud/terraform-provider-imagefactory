@@ -8,34 +8,22 @@ terraform {
   }
 }
 
-
 provider "imagefactory" {
   api_key = "KEY"
-  api_url = "https://api.hbi.dev.nordcloudapp.com/graphql"
+  api_url = "https://api.imagefactory.dev.nordcloudapp.com/graphql"
 }
 
-variable "distribution_name" {
-  type    = string
-  default = "Windows Server 2019"
+data "imagefactory_distribution" "windows2019" {
+  name = "Windows Server 2019"
+  cloud_provider = "AWS"
 }
 
-variable "distribution_provider" {
-  type    = string
-  default = "GCP"
+output "distro" {
+  value = data.imagefactory_distribution.windows2019
 }
 
 data "imagefactory_distributions" "all" {}
 
-// output "all_distributions" {
-//   value = data.imagefactory_distributions.all.distributions
-// }
-
-output "distribution" {
-  value = {
-    for distribution in data.imagefactory_distributions.all.distributions :
-    distribution.id => distribution
-    if (
-      distribution.name == var.distribution_name && distribution.provider == var.distribution_provider
-    )
-  }
+output "all_distributions" {
+  value = data.imagefactory_distributions.all.distributions
 }

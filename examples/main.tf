@@ -14,21 +14,28 @@ provider "imagefactory" {
   api_url = "https://api.hbi.dev.nordcloudapp.com/graphql"
 }
 
-variable "template_name" {
+variable "distribution_name" {
   type    = string
-  default = ""
+  default = "Windows Server 2019"
+}
+
+variable "distribution_provider" {
+  type    = string
+  default = "GCP"
 }
 
 data "imagefactory_distributions" "all" {}
 
-output "all_distributions" {
-  value = data.imagefactory_distributions.all.distributions
-}
-
-// output "template" {
-//   value = {
-//     for template in data.imagefactory_templates.all.templates :
-//     template.id => template
-//     if template.name == var.template_name
-//   }
+// output "all_distributions" {
+//   value = data.imagefactory_distributions.all.distributions
 // }
+
+output "distribution" {
+  value = {
+    for distribution in data.imagefactory_distributions.all.distributions :
+    distribution.id => distribution
+    if (
+      distribution.name == var.distribution_name && distribution.provider == var.distribution_provider
+    )
+  }
+}

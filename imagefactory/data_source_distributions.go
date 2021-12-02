@@ -48,7 +48,16 @@ func dataSourceDistributionsRead(ctx context.Context, d *schema.ResourceData, m 
 
 	var diags diag.Diagnostics
 
-	if err := d.Set("distributions", res.Distributions.Results); err != nil {
+	distributions := make([]map[string]interface{}, 0)
+	for _, d := range *res.Distributions.Results {
+		a := make(map[string]interface{})
+		a["id"] = d.ID
+		a["name"] = d.Name
+		a["provider"] = d.Provider
+		distributions = append(distributions, a)
+	}
+
+	if err := d.Set("distributions", distributions); err != nil {
 		return diag.FromErr(err)
 	}
 

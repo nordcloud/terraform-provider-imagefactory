@@ -28,6 +28,8 @@ func Provider() *schema.Provider {
 		DataSourcesMap: map[string]*schema.Resource{
 			"imagefactory_distributions": dataSourceDistributions(),
 			"imagefactory_distribution":  dataSourceDistribution(),
+			"imagefactory_system_components": dataSourceSystemComponents(),
+			"imagefactory_system_component":  dataSourceSystemComponent(),
 		},
 		ResourcesMap:         map[string]*schema.Resource{},
 		ConfigureContextFunc: providerConfigure,

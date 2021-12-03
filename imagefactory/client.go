@@ -63,3 +63,38 @@ func (c Client) GetDistributions() (*graphql.GetDistributionsResponse, error) {
 
 	return req.Execute(c.httpClient)
 }
+
+func (c Client) GetSystemComponent(name, cloudProviders string) (*graphql.GetSystemComponentsResponse, error) {
+	req, err := graphql.NewGetSystemComponentsRequest(c.endpoint, &graphql.GetSystemComponentsVariables{
+		Input: graphql.ComponentsInput{
+			Filters: &graphql.ComponentsFilters{
+				Filters: &[]graphql.ComponentsFilter{
+					{
+						Field:  graphql.ComponentAttributeNAME,
+						Values: &[]graphql.String{graphql.String(name)},
+					},
+					{
+						Field:  graphql.ComponentAttributePROVIDERS,
+						Values: &[]graphql.String{graphql.String(cloudProviders)},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("getting component %w", err)
+	}
+	req.Header = http.Header{APIKeyHeader: []string{c.apiKey}}
+
+	return req.Execute(c.httpClient)
+}
+
+func (c Client)  GetSystemComponents() (*graphql.GetSystemComponentsResponse, error) {
+	req, err := graphql.NewGetSystemComponentsRequest(c.endpoint, &graphql.GetSystemComponentsVariables{})
+	if err != nil {
+		return nil, fmt.Errorf("getting system components %w", err)
+	}
+	req.Header = http.Header{APIKeyHeader: []string{c.apiKey}}
+
+	return req.Execute(c.httpClient)
+}

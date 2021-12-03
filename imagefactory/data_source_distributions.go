@@ -22,10 +22,6 @@ var distributionSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 	},
-	"description": {
-		Type:     schema.TypeString,
-		Computed: true,
-	},
 }
 
 func dataSourceDistribution() *schema.Resource {
@@ -51,9 +47,9 @@ func dataSourceDistributions() *schema.Resource {
 }
 
 func dataSourceDistributionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	config := m.(*Config)
-
 	var diags diag.Diagnostics
+
+	config := m.(*Config)
 
 	res, err := config.client.GetDistribution(d.Get("name").(string), d.Get("cloud_provider").(string))
 	if err != nil {
@@ -73,6 +69,8 @@ func dataSourceDistributionRead(ctx context.Context, d *schema.ResourceData, m i
 }
 
 func dataSourceDistributionsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	var diags diag.Diagnostics
+
 	config := m.(*Config)
 
 	res, err := config.client.GetDistributions()
@@ -80,15 +78,13 @@ func dataSourceDistributionsRead(ctx context.Context, d *schema.ResourceData, m 
 		return diag.FromErr(err)
 	}
 
-	var diags diag.Diagnostics
-
 	distributions := make([]map[string]interface{}, 0)
 	for _, distro := range *res.Distributions.Results {
-		a := make(map[string]interface{})
-		a["id"] = distro.ID
-		a["name"] = distro.Name
-		a["cloud_provider"] = distro.Provider
-		distributions = append(distributions, a)
+		distributions = append(distributions, map[string]interface{}{
+			"id":             distro.ID,
+			"name":           distro.Name,
+			"cloud_provider": distro.Provider,
+		})
 	}
 
 	if err := d.Set("distributions", distributions); err != nil {

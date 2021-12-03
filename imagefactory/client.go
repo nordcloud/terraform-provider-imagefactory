@@ -63,3 +63,29 @@ func (c Client) GetDistributions() (*graphql.GetDistributionsResponse, error) {
 
 	return req.Execute(c.httpClient)
 }
+
+func (c Client) GetTemplate(templateID string) (*graphql.GetTemplateResponse, error) {
+	req, err := graphql.NewGetTemplateRequest(c.endpoint, &graphql.GetTemplateVariables{
+		Input: graphql.CustomerTemplateIdInput{
+			TemplateId: graphql.String(templateID),
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("getting template %w", err)
+	}
+	req.Header = http.Header{APIKeyHeader: []string{c.apiKey}}
+
+	return req.Execute(c.httpClient)
+}
+
+func (c Client) CreateTemplate(input graphql.NewTemplate) (*graphql.CreateTemplateResponse, error) {
+	req, err := graphql.NewCreateTemplateRequest(c.endpoint, &graphql.CreateTemplateVariables{
+		Input: input,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("creating template %w", err)
+	}
+	req.Header = http.Header{APIKeyHeader: []string{c.apiKey}}
+
+	return req.Execute(c.httpClient)
+}

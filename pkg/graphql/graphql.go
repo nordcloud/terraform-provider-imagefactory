@@ -157,14 +157,92 @@ func (client *Client) GetDistributions(vars *GetDistributionsVariables) (*GetDis
 }
 
 //
-// query GetCustomerTemplates($input: CustomerTemplatesInput!)
+// query GetTemplate($input: CustomerTemplateIdInput!)
 //
 
-type GetCustomerTemplatesVariables struct {
+type GetTemplateVariables struct {
+	Input CustomerTemplateIdInput `json:"input"`
+}
+
+type GetTemplateResponse struct {
+	Template struct {
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Provider    string `json:"provider"`
+		State       struct {
+			Status string `json:"status"`
+		} `json:"state"`
+	} `json:"template"`
+}
+
+type GetTemplateRequest struct {
+	*http.Request
+}
+
+func NewGetTemplateRequest(url string, vars *GetTemplateVariables) (*GetTemplateRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `query GetTemplate($input: CustomerTemplateIdInput!) {
+  template(input: $input) {
+    id
+    name
+    description
+    provider
+    state {
+      status
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &GetTemplateRequest{req}, nil
+}
+
+func (req *GetTemplateRequest) Execute(client *http.Client) (*GetTemplateResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result GetTemplateResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func GetTemplate(url string, client *http.Client, vars *GetTemplateVariables) (*GetTemplateResponse, error) {
+	req, err := NewGetTemplateRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) GetTemplate(vars *GetTemplateVariables) (*GetTemplateResponse, error) {
+	return GetTemplate(client.Url, client.Client, vars)
+}
+
+//
+// query GetTemplates($input: CustomerTemplatesInput!)
+//
+
+type GetTemplatesVariables struct {
 	Input CustomerTemplatesInput `json:"input"`
 }
 
-type GetCustomerTemplatesResponse struct {
+type GetTemplatesResponse struct {
 	Templates struct {
 		Results *[]struct {
 			ID          string `json:"id"`
@@ -184,18 +262,18 @@ type GetCustomerTemplatesResponse struct {
 	} `json:"templates"`
 }
 
-type GetCustomerTemplatesRequest struct {
+type GetTemplatesRequest struct {
 	*http.Request
 }
 
-func NewGetCustomerTemplatesRequest(url string, vars *GetCustomerTemplatesVariables) (*GetCustomerTemplatesRequest, error) {
+func NewGetTemplatesRequest(url string, vars *GetTemplatesVariables) (*GetTemplatesRequest, error) {
 	variables, err := json.Marshal(vars)
 	if err != nil {
 		return nil, err
 	}
 	b, err := json.Marshal(&GraphQLOperation{
 		Variables: variables,
-		Query: `query GetCustomerTemplates($input: CustomerTemplatesInput!) {
+		Query: `query GetTemplates($input: CustomerTemplatesInput!) {
   templates(input: $input) {
     results {
       id
@@ -223,31 +301,109 @@ func NewGetCustomerTemplatesRequest(url string, vars *GetCustomerTemplatesVariab
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	return &GetCustomerTemplatesRequest{req}, nil
+	return &GetTemplatesRequest{req}, nil
 }
 
-func (req *GetCustomerTemplatesRequest) Execute(client *http.Client) (*GetCustomerTemplatesResponse, error) {
+func (req *GetTemplatesRequest) Execute(client *http.Client) (*GetTemplatesResponse, error) {
 	resp, err := execute(client, req.Request)
 	if err != nil {
 		return nil, err
 	}
-	var result GetCustomerTemplatesResponse
+	var result GetTemplatesResponse
 	if err := json.Unmarshal(resp.Data, &result); err != nil {
 		return nil, err
 	}
 	return &result, nil
 }
 
-func GetCustomerTemplates(url string, client *http.Client, vars *GetCustomerTemplatesVariables) (*GetCustomerTemplatesResponse, error) {
-	req, err := NewGetCustomerTemplatesRequest(url, vars)
+func GetTemplates(url string, client *http.Client, vars *GetTemplatesVariables) (*GetTemplatesResponse, error) {
+	req, err := NewGetTemplatesRequest(url, vars)
 	if err != nil {
 		return nil, err
 	}
 	return req.Execute(client)
 }
 
-func (client *Client) GetCustomerTemplates(vars *GetCustomerTemplatesVariables) (*GetCustomerTemplatesResponse, error) {
-	return GetCustomerTemplates(client.Url, client.Client, vars)
+func (client *Client) GetTemplates(vars *GetTemplatesVariables) (*GetTemplatesResponse, error) {
+	return GetTemplates(client.Url, client.Client, vars)
+}
+
+//
+// mutation CreateTemplate($input: NewTemplate!)
+//
+
+type CreateTemplateVariables struct {
+	Input NewTemplate `json:"input"`
+}
+
+type CreateTemplateResponse struct {
+	CreateTemplate struct {
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Provider    string `json:"provider"`
+		State       struct {
+			Status string `json:"status"`
+		} `json:"state"`
+	} `json:"createTemplate"`
+}
+
+type CreateTemplateRequest struct {
+	*http.Request
+}
+
+func NewCreateTemplateRequest(url string, vars *CreateTemplateVariables) (*CreateTemplateRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation CreateTemplate($input: NewTemplate!) {
+  createTemplate(input: $input) {
+    id
+    name
+    description
+    provider
+    state {
+      status
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &CreateTemplateRequest{req}, nil
+}
+
+func (req *CreateTemplateRequest) Execute(client *http.Client) (*CreateTemplateResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result CreateTemplateResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func CreateTemplate(url string, client *http.Client, vars *CreateTemplateVariables) (*CreateTemplateResponse, error) {
+	req, err := NewCreateTemplateRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) CreateTemplate(vars *CreateTemplateVariables) (*CreateTemplateResponse, error) {
+	return CreateTemplate(client.Url, client.Client, vars)
 }
 
 //

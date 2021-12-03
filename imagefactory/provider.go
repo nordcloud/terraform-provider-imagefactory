@@ -29,7 +29,9 @@ func Provider() *schema.Provider {
 			"imagefactory_distributions": dataSourceDistributions(),
 			"imagefactory_distribution":  dataSourceDistribution(),
 		},
-		ResourcesMap:         map[string]*schema.Resource{},
+		ResourcesMap: map[string]*schema.Resource{
+			"imagefactory_template": resourceTemplate(),
+		},
 		ConfigureContextFunc: providerConfigure,
 	}
 

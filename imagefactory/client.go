@@ -1,10 +1,14 @@
 package imagefactory
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
+)
+
+const (
+	APIKeyHeader = "x-api-key"
 )
 
 type Client struct {
@@ -14,7 +18,7 @@ type Client struct {
 	userAgent  string
 }
 
-func NewClient(endpoint string, apiKey string, httpClient *http.Client) *Client {
+func NewClient(endpoint, apiKey string, httpClient *http.Client) *Client {
 	c := &Client{
 		httpClient: httpClient,
 		endpoint:   endpoint,
@@ -25,7 +29,7 @@ func NewClient(endpoint string, apiKey string, httpClient *http.Client) *Client 
 	return c
 }
 
-func (c Client) GetDistribution(name, cloudProvider string) *graphql.GetDistributionsResponse {
+func (c Client) GetDistribution(name, cloudProvider string) (*graphql.GetDistributionsResponse, error) {
 	req, err := graphql.NewGetDistributionsRequest(c.endpoint, &graphql.GetDistributionsVariables{
 		Input: graphql.DistributionsInput{
 			Filters: &graphql.DistributionsFilters{
@@ -43,33 +47,19 @@ func (c Client) GetDistribution(name, cloudProvider string) *graphql.GetDistribu
 		},
 	})
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("getting distribution %w", err)
 	}
-	req.Header = http.Header{
-		"x-api-key": []string{c.apiKey},
-	}
+	req.Header = http.Header{APIKeyHeader: []string{c.apiKey}}
 
-	res, err := req.Execute(c.httpClient)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return res
+	return req.Execute(c.httpClient)
 }
 
-func (c Client) GetDistributions() *graphql.GetDistributionsResponse {
+func (c Client) GetDistributions() (*graphql.GetDistributionsResponse, error) {
 	req, err := graphql.NewGetDistributionsRequest(c.endpoint, &graphql.GetDistributionsVariables{})
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("getting distributions %w", err)
 	}
-	req.Header = http.Header{
-		"x-api-key": []string{c.apiKey},
-	}
+	req.Header = http.Header{APIKeyHeader: []string{c.apiKey}}
 
-	res, err := req.Execute(c.httpClient)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return res
+	return req.Execute(c.httpClient)
 }

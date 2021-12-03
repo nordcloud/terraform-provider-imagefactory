@@ -55,11 +55,19 @@ func dataSourceDistributionRead(ctx context.Context, d *schema.ResourceData, m i
 
 	var diags diag.Diagnostics
 
-	res := config.client.GetDistribution(d.Get("name").(string), d.Get("cloud_provider").(string))
+	res, err := config.client.GetDistribution(d.Get("name").(string), d.Get("cloud_provider").(string))
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	distro := *res.Distributions.Results
-	d.Set("name", distro[0].Name)
-	d.Set("cloud_provider", distro[0].Provider)
 	d.SetId(distro[0].ID)
+	if err := d.Set("name", distro[0].Name); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("cloud_provider", distro[0].Provider); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return diags
 }
@@ -67,7 +75,10 @@ func dataSourceDistributionRead(ctx context.Context, d *schema.ResourceData, m i
 func dataSourceDistributionsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	config := m.(*Config)
 
-	res := config.client.GetDistributions()
+	res, err := config.client.GetDistributions()
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
 	var diags diag.Diagnostics
 
@@ -84,7 +95,6 @@ func dataSourceDistributionsRead(ctx context.Context, d *schema.ResourceData, m 
 		return diag.FromErr(err)
 	}
 
-	// always run
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10)) // nolint: gomnd
 
 	return diags

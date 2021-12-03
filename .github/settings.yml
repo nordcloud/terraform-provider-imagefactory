@@ -1,0 +1,9 @@
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+_extends: nordcloud/github-settings:.github/settings.yml
+repository:
+  name: "terraform-provider-imagefactory"
+  description: "ImageFactory terraform provider"
+teams:
+  - name: architects
+    permission: admin

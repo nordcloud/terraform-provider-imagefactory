@@ -39,7 +39,7 @@ type Account {
 
 type AccountResults {
   results: [Account!]
-  pages: Int!F
+  pages: Int!
   count: Int!
 }
 

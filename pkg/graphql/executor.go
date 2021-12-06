@@ -8,21 +8,21 @@ import (
 	"net/http"
 )
 
-type Access struct {
+type Executor struct {
 	client *http.Client
 	apiURL string
 	apiKey string
 }
 
-func NewAccess(httpClient *http.Client, apiURL, apiKey string) *Access {
-	return &Access{
+func NewExecutor(httpClient *http.Client, apiURL, apiKey string) *Executor {
+	return &Executor{
 		&http.Client{},
 		apiURL,
 		apiKey,
 	}
 }
 
-func (g *Access) Execute(req *http.Request, result interface{}) error {
+func (g *Executor) Execute(req *http.Request, result interface{}) error {
 	req.Header.Add("x-api-key", g.apiKey)
 
 	resp, err := execute(g.client, req)

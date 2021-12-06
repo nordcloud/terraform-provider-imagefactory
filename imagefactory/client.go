@@ -14,20 +14,20 @@ const (
 )
 
 type Client struct {
-	httpClient    *http.Client
-	graphqlAccess *graphql.Access
-	endpoint      string
-	apiKey        string
-	userAgent     string
+	httpClient      *http.Client
+	graphqlExecutor *graphql.Executor
+	endpoint        string
+	apiKey          string
+	userAgent       string
 }
 
 func NewClient(endpoint, apiKey string, httpClient *http.Client) *Client {
 	c := &Client{
-		httpClient:    httpClient,
-		graphqlAccess: graphql.NewAccess(httpClient, endpoint, apiKey),
-		endpoint:      endpoint,
-		apiKey:        apiKey,
-		userAgent:     "ImageFactorySDK",
+		httpClient:      httpClient,
+		graphqlExecutor: graphql.NewExecutor(httpClient, endpoint, apiKey),
+		endpoint:        endpoint,
+		apiKey:          apiKey,
+		userAgent:       "ImageFactorySDK",
 	}
 
 	return c
@@ -55,7 +55,7 @@ func (c Client) GetDistribution(name, cloudProvider string) (graphql.Distributio
 	}
 
 	r := &graphql.Query{}
-	if err := c.graphqlAccess.Execute(req.Request, r); err != nil {
+	if err := c.graphqlExecutor.Execute(req.Request, r); err != nil {
 		return graphql.Distribution{}, fmt.Errorf("getting distribution %w", err)
 	}
 
@@ -75,7 +75,7 @@ func (c Client) GetDistributions() ([]graphql.Distribution, error) {
 	}
 
 	r := &graphql.Query{}
-	if err := c.graphqlAccess.Execute(req.Request, r); err != nil {
+	if err := c.graphqlExecutor.Execute(req.Request, r); err != nil {
 		return nil, fmt.Errorf("getting distributions %w", err)
 	}
 
@@ -97,7 +97,7 @@ func (c Client) GetTemplate(templateID string) (graphql.Template, error) {
 	}
 
 	r := &graphql.Query{}
-	if err := c.graphqlAccess.Execute(req.Request, r); err != nil {
+	if err := c.graphqlExecutor.Execute(req.Request, r); err != nil {
 		return graphql.Template{}, fmt.Errorf("getting template %w", err)
 	}
 
@@ -113,7 +113,7 @@ func (c Client) CreateTemplate(input graphql.NewTemplate) (graphql.Template, err
 	}
 
 	r := &graphql.Mutation{}
-	if err := c.graphqlAccess.Execute(req.Request, r); err != nil {
+	if err := c.graphqlExecutor.Execute(req.Request, r); err != nil {
 		return graphql.Template{}, fmt.Errorf("creating template %w", err)
 	}
 
@@ -131,7 +131,7 @@ func (c Client) DeleteTemplate(templateID string) error {
 	}
 
 	r := &graphql.Mutation{}
-	if err := c.graphqlAccess.Execute(req.Request, r); err != nil {
+	if err := c.graphqlExecutor.Execute(req.Request, r); err != nil {
 		return fmt.Errorf("deleting template %w", err)
 	}
 

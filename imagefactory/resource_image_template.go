@@ -47,8 +47,9 @@ var configResource = &schema.Resource{
 	},
 }
 
-var stateResource = &schema.Resource{
-	Schema: map[string]*schema.Schema{
+var stateSchema = &schema.Schema{
+	Type: schema.TypeString,
+	Elem: map[string]*schema.Schema{
 		"status": {
 			Type:     schema.TypeString,
 			Computed: true,
@@ -92,9 +93,7 @@ var templateSchema = map[string]*schema.Schema{
 	"state": {
 		Type:     schema.TypeMap,
 		Computed: true,
-		Elem: &schema.Schema{
-			Type: schema.TypeString,
-		},
+		Elem:     stateSchema,
 	},
 }
 
@@ -108,22 +107,6 @@ func resourceTemplate() *schema.Resource {
 	}
 }
 
-func expandConfig(in []interface{}) *graphql.NewTemplateConfig {
-	m := in[0].(map[string]interface{})
-	if len(in) == 0 {
-		return nil
-	}
-
-	a := m["aws"].([]interface{})
-	t := a[0].(map[string]interface{})
-
-	return &graphql.NewTemplateConfig{
-		Aws: &graphql.NewTemplateAWSConfig{
-			Region: graphql.String(t["region"].(string)),
-		},
-	}
-}
-
 func resourceTemplateCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
@@ -133,7 +116,7 @@ func resourceTemplateCreate(ctx context.Context, d *schema.ResourceData, m inter
 		Name:           graphql.String(d.Get("name").(string)),
 		DistributionId: graphql.String(d.Get("distribution_id").(string)),
 		Provider:       graphql.Provider(d.Get("cloud_provider").(string)),
-		Config:         *expandConfig(d.Get("config").([]interface{})),
+		Config:         *expandTemplateConfig(d.Get("config").([]interface{})),
 	})
 	if err != nil {
 		return diag.FromErr(err)
@@ -167,6 +150,12 @@ func resourceTemplateRead(ctx context.Context, d *schema.ResourceData, m interfa
 	if err := d.Set("cloud_provider", res.Template.Provider); err != nil {
 		return diag.FromErr(err)
 	}
+	if err := d.Set("state", map[string]string{
+		"status": res.Template.State.Status,
+		"error":  res.Template.State.Error,
+	}); err != nil {
+		return diag.FromErr(err)
+	}
 
 	d.SetId(templateID)
 
@@ -179,6 +168,16 @@ func resourceTemplateUpdate(ctx context.Context, d *schema.ResourceData, m inter
 
 func resourceTemplateDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
+
+	config := m.(*Config)
+
+	templateID := d.Id()
+
+	if err := config.client.DeleteTemplate(templateID); err != nil {
+		return diag.FromErr(err)
+	}
+
+	d.SetId("")
 
 	return diags
 }

@@ -3,6 +3,7 @@ package imagefactory
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
@@ -88,4 +89,28 @@ func (c Client) CreateTemplate(input graphql.NewTemplate) (*graphql.CreateTempla
 	req.Header = http.Header{APIKeyHeader: []string{c.apiKey}}
 
 	return req.Execute(c.httpClient)
+}
+
+func (c Client) DeleteTemplate(templateID string) error {
+	req, err := graphql.NewDeleteTemplateRequest(c.endpoint, &graphql.DeleteTemplateVariables{
+		Input: graphql.CustomerTemplateIdInput{
+			TemplateId: graphql.String(templateID),
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("deleting template %w", err)
+	}
+	req.Header = http.Header{APIKeyHeader: []string{c.apiKey}}
+
+	_, err = req.Execute(c.httpClient)
+	if err != nil {
+		// bug in `graphql-codegen-golang` creating field with "string" type instead of "bool"
+		if strings.Contains(err.Error(), "deleteTemplate of type string") {
+			return nil
+		}
+
+		return err
+	}
+
+	return nil
 }

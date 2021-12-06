@@ -172,6 +172,7 @@ type GetTemplateResponse struct {
 		Provider    string `json:"provider"`
 		State       struct {
 			Status string `json:"status"`
+			Error  string `json:"error"`
 		} `json:"state"`
 	} `json:"template"`
 }
@@ -195,6 +196,7 @@ func NewGetTemplateRequest(url string, vars *GetTemplateVariables) (*GetTemplate
     provider
     state {
       status
+      error
     }
   }
 }`,
@@ -344,6 +346,7 @@ type CreateTemplateResponse struct {
 		Provider    string `json:"provider"`
 		State       struct {
 			Status string `json:"status"`
+			Error  string `json:"error"`
 		} `json:"state"`
 	} `json:"createTemplate"`
 }
@@ -367,6 +370,7 @@ func NewCreateTemplateRequest(url string, vars *CreateTemplateVariables) (*Creat
     provider
     state {
       status
+      error
     }
   }
 }`,
@@ -404,6 +408,68 @@ func CreateTemplate(url string, client *http.Client, vars *CreateTemplateVariabl
 
 func (client *Client) CreateTemplate(vars *CreateTemplateVariables) (*CreateTemplateResponse, error) {
 	return CreateTemplate(client.Url, client.Client, vars)
+}
+
+//
+// mutation DeleteTemplate($input: CustomerTemplateIdInput!)
+//
+
+type DeleteTemplateVariables struct {
+	Input CustomerTemplateIdInput `json:"input"`
+}
+
+type DeleteTemplateResponse struct {
+	DeleteTemplate bool `json:"deleteTemplate"`
+}
+
+type DeleteTemplateRequest struct {
+	*http.Request
+}
+
+func NewDeleteTemplateRequest(url string, vars *DeleteTemplateVariables) (*DeleteTemplateRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation DeleteTemplate($input: CustomerTemplateIdInput!) {
+  deleteTemplate(input: $input)
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &DeleteTemplateRequest{req}, nil
+}
+
+func (req *DeleteTemplateRequest) Execute(client *http.Client) (*DeleteTemplateResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result DeleteTemplateResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func DeleteTemplate(url string, client *http.Client, vars *DeleteTemplateVariables) (*DeleteTemplateResponse, error) {
+	req, err := NewDeleteTemplateRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) DeleteTemplate(vars *DeleteTemplateVariables) (*DeleteTemplateResponse, error) {
+	return DeleteTemplate(client.Url, client.Client, vars)
 }
 
 //

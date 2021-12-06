@@ -8,6 +8,7 @@ query GetTemplate($input: CustomerTemplateIdInput!) {
     provider
     state {
       status
+      error
     }
   }
 }
@@ -40,6 +41,11 @@ mutation CreateTemplate($input: NewTemplate!) {
     provider
     state {
       status
+      error
     }
   }
+}
+
+mutation DeleteTemplate($input: CustomerTemplateIdInput!) {
+  deleteTemplate(input: $input)
 }

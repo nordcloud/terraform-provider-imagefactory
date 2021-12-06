@@ -5,7 +5,6 @@ package imagefactory
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
@@ -15,24 +14,26 @@ const (
 )
 
 type Client struct {
-	httpClient *http.Client
-	endpoint   string
-	apiKey     string
-	userAgent  string
+	httpClient    *http.Client
+	graphqlAccess *graphql.Access
+	endpoint      string
+	apiKey        string
+	userAgent     string
 }
 
 func NewClient(endpoint, apiKey string, httpClient *http.Client) *Client {
 	c := &Client{
-		httpClient: httpClient,
-		endpoint:   endpoint,
-		apiKey:     apiKey,
-		userAgent:  "ImageFactorySDK",
+		httpClient:    httpClient,
+		graphqlAccess: graphql.NewAccess(httpClient, endpoint, apiKey),
+		endpoint:      endpoint,
+		apiKey:        apiKey,
+		userAgent:     "ImageFactorySDK",
 	}
 
 	return c
 }
 
-func (c Client) GetDistribution(name, cloudProvider string) (*graphql.GetDistributionsResponse, error) {
+func (c Client) GetDistribution(name, cloudProvider string) (graphql.Distribution, error) {
 	req, err := graphql.NewGetDistributionsRequest(c.endpoint, &graphql.GetDistributionsVariables{
 		Input: graphql.DistributionsInput{
 			Filters: &graphql.DistributionsFilters{
@@ -50,47 +51,73 @@ func (c Client) GetDistribution(name, cloudProvider string) (*graphql.GetDistrib
 		},
 	})
 	if err != nil {
-		return nil, fmt.Errorf("getting distribution %w", err)
+		return graphql.Distribution{}, fmt.Errorf("getting distribution request %w", err)
 	}
-	req.Header = http.Header{APIKeyHeader: []string{c.apiKey}}
 
-	return req.Execute(c.httpClient)
+	r := &graphql.Query{}
+	if err := c.graphqlAccess.Execute(req.Request, r); err != nil {
+		return graphql.Distribution{}, fmt.Errorf("getting distribution %w", err)
+	}
+
+	if r.Distributions.Results == nil {
+		return graphql.Distribution{}, fmt.Errorf("distribution %s not found", name)
+	}
+
+	result := *r.Distributions.Results
+
+	return result[0], nil
 }
 
-func (c Client) GetDistributions() (*graphql.GetDistributionsResponse, error) {
+func (c Client) GetDistributions() ([]graphql.Distribution, error) {
 	req, err := graphql.NewGetDistributionsRequest(c.endpoint, &graphql.GetDistributionsVariables{})
 	if err != nil {
+		return nil, fmt.Errorf("getting distributions request %w", err)
+	}
+
+	r := &graphql.Query{}
+	if err := c.graphqlAccess.Execute(req.Request, r); err != nil {
 		return nil, fmt.Errorf("getting distributions %w", err)
 	}
-	req.Header = http.Header{APIKeyHeader: []string{c.apiKey}}
 
-	return req.Execute(c.httpClient)
+	if r.Distributions.Results == nil {
+		return []graphql.Distribution{}, nil
+	}
+
+	return *r.Distributions.Results, nil
 }
 
-func (c Client) GetTemplate(templateID string) (*graphql.GetTemplateResponse, error) {
+func (c Client) GetTemplate(templateID string) (graphql.Template, error) {
 	req, err := graphql.NewGetTemplateRequest(c.endpoint, &graphql.GetTemplateVariables{
 		Input: graphql.CustomerTemplateIdInput{
 			TemplateId: graphql.String(templateID),
 		},
 	})
 	if err != nil {
-		return nil, fmt.Errorf("getting template %w", err)
+		return graphql.Template{}, fmt.Errorf("getting template request %w", err)
 	}
-	req.Header = http.Header{APIKeyHeader: []string{c.apiKey}}
 
-	return req.Execute(c.httpClient)
+	r := &graphql.Query{}
+	if err := c.graphqlAccess.Execute(req.Request, r); err != nil {
+		return graphql.Template{}, fmt.Errorf("getting template %w", err)
+	}
+
+	return r.Template, nil
 }
 
-func (c Client) CreateTemplate(input graphql.NewTemplate) (*graphql.CreateTemplateResponse, error) {
+func (c Client) CreateTemplate(input graphql.NewTemplate) (graphql.Template, error) {
 	req, err := graphql.NewCreateTemplateRequest(c.endpoint, &graphql.CreateTemplateVariables{
 		Input: input,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("creating template %w", err)
+		return graphql.Template{}, fmt.Errorf("getting create template request %w", err)
 	}
-	req.Header = http.Header{APIKeyHeader: []string{c.apiKey}}
 
-	return req.Execute(c.httpClient)
+	r := &graphql.Mutation{}
+	if err := c.graphqlAccess.Execute(req.Request, r); err != nil {
+		return graphql.Template{}, fmt.Errorf("creating template %w", err)
+	}
+
+	return r.CreateTemplate, nil
 }
 
 func (c Client) DeleteTemplate(templateID string) error {
@@ -100,18 +127,12 @@ func (c Client) DeleteTemplate(templateID string) error {
 		},
 	})
 	if err != nil {
-		return fmt.Errorf("deleting template %w", err)
+		return fmt.Errorf("getting delete template request %w", err)
 	}
-	req.Header = http.Header{APIKeyHeader: []string{c.apiKey}}
 
-	_, err = req.Execute(c.httpClient)
-	if err != nil {
-		// bug in `graphql-codegen-golang` creating field with "string" type instead of "bool"
-		if strings.Contains(err.Error(), "deleteTemplate of type string") {
-			return nil
-		}
-
-		return err
+	r := &graphql.Mutation{}
+	if err := c.graphqlAccess.Execute(req.Request, r); err != nil {
+		return fmt.Errorf("deleting template %w", err)
 	}
 
 	return nil

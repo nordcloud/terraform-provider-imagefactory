@@ -419,7 +419,7 @@ type DeleteTemplateVariables struct {
 }
 
 type DeleteTemplateResponse struct {
-	DeleteTemplate bool `json:"deleteTemplate"`
+	DeleteTemplate string `json:"deleteTemplate"`
 }
 
 type DeleteTemplateRequest struct {

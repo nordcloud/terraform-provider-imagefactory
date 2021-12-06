@@ -124,7 +124,7 @@ func resourceTemplateCreate(ctx context.Context, d *schema.ResourceData, m inter
 		return diag.FromErr(err)
 	}
 
-	d.SetId(template.CreateTemplate.ID)
+	d.SetId(string(template.ID))
 
 	resourceTemplateRead(ctx, d, m)
 
@@ -138,24 +138,21 @@ func resourceTemplateRead(ctx context.Context, d *schema.ResourceData, m interfa
 
 	templateID := d.Id()
 
-	res, err := config.client.GetTemplate(templateID)
+	template, err := config.client.GetTemplate(templateID)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	if err := d.Set("name", res.Template.Name); err != nil {
+	if err := d.Set("name", template.Name); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := d.Set("description", res.Template.Description); err != nil {
+	if err := d.Set("description", template.Description); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := d.Set("cloud_provider", res.Template.Provider); err != nil {
+	if err := d.Set("cloud_provider", template.Provider); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := d.Set("state", map[string]string{
-		"status": res.Template.State.Status,
-		"error":  res.Template.State.Error,
-	}); err != nil {
+	if err := d.Set("state", flattenTemplateState(template.State)); err != nil {
 		return diag.FromErr(err)
 	}
 

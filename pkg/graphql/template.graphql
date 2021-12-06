@@ -1,0 +1,51 @@
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+query GetTemplate($input: CustomerTemplateIdInput!) {
+  template(input: $input) {
+    id
+    name
+    description
+    provider
+    state {
+      status
+      error
+    }
+  }
+}
+
+query GetTemplates($input: CustomerTemplatesInput!) {
+  templates(input: $input) {
+    results {
+      id
+      name
+      description
+      provider
+      state {
+        status
+      }
+      images(input: { page: 0, limit: 1 }) {
+        results {
+          id
+          name
+        }
+      }
+    }
+  }
+}
+
+mutation CreateTemplate($input: NewTemplate!) {
+  createTemplate(input: $input) {
+    id
+    name
+    description
+    provider
+    state {
+      status
+      error
+    }
+  }
+}
+
+mutation DeleteTemplate($input: CustomerTemplateIdInput!) {
+  deleteTemplate(input: $input)
+}

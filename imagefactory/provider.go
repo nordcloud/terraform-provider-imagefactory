@@ -33,7 +33,9 @@ func Provider() *schema.Provider {
 			"imagefactory_system_components": dataSourceSystemComponents(),
 			"imagefactory_system_component":  dataSourceSystemComponent(),
 		},
-		ResourcesMap:         map[string]*schema.Resource{},
+		ResourcesMap: map[string]*schema.Resource{
+			"imagefactory_template": resourceTemplate(),
+		},
 		ConfigureContextFunc: providerConfigure,
 	}
 

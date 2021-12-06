@@ -120,6 +120,22 @@ func (c Client) CreateTemplate(input graphql.NewTemplate) (graphql.Template, err
 	return r.CreateTemplate, nil
 }
 
+func (c Client) UpdateTemplate(input graphql.TemplateChanges) (graphql.Template, error) {
+	req, err := graphql.NewUpdateTemplateRequest(c.endpoint, &graphql.UpdateTemplateVariables{
+		Input: input,
+	})
+	if err != nil {
+		return graphql.Template{}, fmt.Errorf("getting update template request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlExecutor.Execute(req.Request, r); err != nil {
+		return graphql.Template{}, fmt.Errorf("updating template %w", err)
+	}
+
+	return r.UpdateTemplate, nil
+}
+
 func (c Client) DeleteTemplate(templateID string) error {
 	req, err := graphql.NewDeleteTemplateRequest(c.endpoint, &graphql.DeleteTemplateVariables{
 		Input: graphql.CustomerTemplateIdInput{

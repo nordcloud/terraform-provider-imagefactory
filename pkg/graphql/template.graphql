@@ -46,6 +46,19 @@ mutation CreateTemplate($input: NewTemplate!) {
   }
 }
 
+mutation UpdateTemplate($input: TemplateChanges!) {
+  updateTemplate(input: $input) {
+    id
+    name
+    description
+    provider
+    state {
+      status
+      error
+    }
+  }
+}
+
 mutation DeleteTemplate($input: CustomerTemplateIdInput!) {
   deleteTemplate(input: $input)
 }

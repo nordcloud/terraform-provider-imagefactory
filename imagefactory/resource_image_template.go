@@ -114,12 +114,17 @@ func resourceTemplateCreate(ctx context.Context, d *schema.ResourceData, m inter
 
 	config := m.(*Config)
 
-	template, err := config.client.CreateTemplate(graphql.NewTemplate{
+	input := graphql.NewTemplate{
 		Name:           graphql.String(d.Get("name").(string)),
 		DistributionId: graphql.String(d.Get("distribution_id").(string)),
 		Provider:       graphql.Provider(d.Get("cloud_provider").(string)),
 		Config:         *expandTemplateConfig(d.Get("config").([]interface{})),
-	})
+	}
+	if len(d.Get("description").(string)) > 0 {
+		description := graphql.String(d.Get("description").(string))
+		input.Description = &description
+	}
+	template, err := config.client.CreateTemplate(input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -162,7 +167,29 @@ func resourceTemplateRead(ctx context.Context, d *schema.ResourceData, m interfa
 }
 
 func resourceTemplateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return resourceTemplateRead(ctx, d, m)
+	var diags diag.Diagnostics
+
+	config := m.(*Config)
+
+	templateID := d.Id()
+
+	name := graphql.String(d.Get("name").(string))
+	input := graphql.TemplateChanges{
+		ID:     graphql.String(templateID),
+		Name:   &name,
+		Config: expandTemplateConfig(d.Get("config").([]interface{})),
+	}
+	if len(d.Get("description").(string)) > 0 {
+		description := graphql.String(d.Get("description").(string))
+		input.Description = &description
+	}
+	if _, err := config.client.UpdateTemplate(input); err != nil {
+		return diag.FromErr(err)
+	}
+
+	resourceTemplateRead(ctx, d, m)
+
+	return diags
 }
 
 func resourceTemplateDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

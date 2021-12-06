@@ -411,6 +411,86 @@ func (client *Client) CreateTemplate(vars *CreateTemplateVariables) (*CreateTemp
 }
 
 //
+// mutation UpdateTemplate($input: TemplateChanges!)
+//
+
+type UpdateTemplateVariables struct {
+	Input TemplateChanges `json:"input"`
+}
+
+type UpdateTemplateResponse struct {
+	UpdateTemplate struct {
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Provider    string `json:"provider"`
+		State       struct {
+			Status string `json:"status"`
+			Error  string `json:"error"`
+		} `json:"state"`
+	} `json:"updateTemplate"`
+}
+
+type UpdateTemplateRequest struct {
+	*http.Request
+}
+
+func NewUpdateTemplateRequest(url string, vars *UpdateTemplateVariables) (*UpdateTemplateRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation UpdateTemplate($input: TemplateChanges!) {
+  updateTemplate(input: $input) {
+    id
+    name
+    description
+    provider
+    state {
+      status
+      error
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &UpdateTemplateRequest{req}, nil
+}
+
+func (req *UpdateTemplateRequest) Execute(client *http.Client) (*UpdateTemplateResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result UpdateTemplateResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func UpdateTemplate(url string, client *http.Client, vars *UpdateTemplateVariables) (*UpdateTemplateResponse, error) {
+	req, err := NewUpdateTemplateRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) UpdateTemplate(vars *UpdateTemplateVariables) (*UpdateTemplateResponse, error) {
+	return UpdateTemplate(client.Url, client.Client, vars)
+}
+
+//
 // mutation DeleteTemplate($input: CustomerTemplateIdInput!)
 //
 

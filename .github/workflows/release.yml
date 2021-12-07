@@ -22,6 +22,7 @@ jobs:
         draft: true
         prerelease: false
   upload:
+    needs: release
     name: Build and upload release assets
     runs-on: ubuntu-latest
     strategy:
@@ -55,7 +56,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-go@v2
     - run: |
-        make build_all VERSION=${{ github.ref }} GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }}
+        make build VERSION=${{ github.ref }} GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }}
         zip -r -j terraform-provider.zip bin/*
     - name: Upload asset
       uses: actions/upload-release-asset@v1

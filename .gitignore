@@ -30,6 +30,8 @@ node_modules
 ### Terraform ###
 # Local .terraform directories
 **/.terraform/*
+examples/*/.terraform/*
+examples/.terraform.lock.hcl
 
 # .tfstate files
 *.tfstate

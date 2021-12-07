@@ -95,9 +95,6 @@ type GetComponentsResponse struct {
 			Name      string `json:"name"`
 			Providers string `json:"providers"`
 			OsTypes   string `json:"osTypes"`
-			Content   *[]struct {
-				Version string `json:"version"`
-			} `json:"content"`
 		} `json:"results"`
 	} `json:"components"`
 }
@@ -120,9 +117,6 @@ func NewGetComponentsRequest(url string, vars *GetComponentsVariables) (*GetComp
       name
       providers
       osTypes
-      content {
-        version
-      }
     }
   }
 }`,

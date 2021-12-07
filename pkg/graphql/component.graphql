@@ -7,9 +7,6 @@ query GetComponents($input: ComponentsInput!) {
       name
       providers
       osTypes
-      content {
-        version
-      }
     }
   }
 }

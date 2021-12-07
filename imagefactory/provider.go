@@ -12,7 +12,7 @@ import (
 const DefaultAPIURL = "https://api.imagefactory.nordcloudapp.com/graphql"
 
 func Provider() *schema.Provider {
-	provider := &schema.Provider{
+	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"api_key": {
 				Type:        schema.TypeString,
@@ -36,8 +36,6 @@ func Provider() *schema.Provider {
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
-
-	return provider
 }
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {

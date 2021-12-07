@@ -8,10 +8,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
-var componentResource = &schema.Resource{
+var templateComponentResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"id": {
 			Type:     schema.TypeString,
@@ -20,7 +21,7 @@ var componentResource = &schema.Resource{
 	},
 }
 
-var awsConfigResource = &schema.Resource{
+var awsTemplateConfigResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"region": {
 			Type:     schema.TypeString,
@@ -29,27 +30,27 @@ var awsConfigResource = &schema.Resource{
 	},
 }
 
-var configResource = &schema.Resource{
+var templateConfigResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"test_components": {
 			Type:     schema.TypeList,
 			Optional: true,
-			Elem:     componentResource,
+			Elem:     templateComponentResource,
 		},
 		"build_components": {
 			Type:     schema.TypeList,
 			Optional: true,
-			Elem:     componentResource,
+			Elem:     templateComponentResource,
 		},
 		"aws": {
 			Type:     schema.TypeList,
 			Optional: true,
-			Elem:     awsConfigResource,
+			Elem:     awsTemplateConfigResource,
 		},
 	},
 }
 
-var stateSchema = &schema.Schema{
+var templateStateSchema = &schema.Schema{
 	Type: schema.TypeString,
 	Elem: map[string]*schema.Schema{
 		"status": {
@@ -90,12 +91,12 @@ var templateSchema = map[string]*schema.Schema{
 	"config": {
 		Type:     schema.TypeList,
 		Optional: true,
-		Elem:     configResource,
+		Elem:     templateConfigResource,
 	},
 	"state": {
 		Type:     schema.TypeMap,
 		Computed: true,
-		Elem:     stateSchema,
+		Elem:     templateStateSchema,
 	},
 }
 
@@ -166,7 +167,7 @@ func resourceTemplateRead(ctx context.Context, d *schema.ResourceData, m interfa
 	return diags
 }
 
-func resourceTemplateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceTemplateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
 	var diags diag.Diagnostics
 
 	config := m.(*Config)

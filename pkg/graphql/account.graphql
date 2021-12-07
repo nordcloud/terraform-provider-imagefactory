@@ -5,6 +5,7 @@ query GetAccount($input: CustomerAccountIdInput!) {
     id
     alias
     description
+    cloudProviderId
     provider
     state {
       status
@@ -19,6 +20,7 @@ query GetAccounts($input: CustomerAccountsInput!) {
       id
       alias
       description
+      cloudProviderId
       provider
       state {
         status
@@ -33,6 +35,7 @@ mutation CreateAccount($input: NewAccount!) {
     id
     alias
     description
+    cloudProviderId
     provider
     state {
       status
@@ -46,6 +49,7 @@ mutation UpdateAccount($input: AccountChanges!) {
     id
     alias
     description
+    cloudProviderId
     provider
     state {
       status

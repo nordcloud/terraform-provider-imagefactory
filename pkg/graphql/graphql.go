@@ -90,11 +90,12 @@ type GetAccountVariables struct {
 
 type GetAccountResponse struct {
 	Account struct {
-		ID          string `json:"id"`
-		Alias       string `json:"alias"`
-		Description string `json:"description"`
-		Provider    string `json:"provider"`
-		State       struct {
+		ID              string `json:"id"`
+		Alias           string `json:"alias"`
+		Description     string `json:"description"`
+		CloudProviderId string `json:"cloudProviderId"`
+		Provider        string `json:"provider"`
+		State           struct {
 			Status string `json:"status"`
 			Error  string `json:"error"`
 		} `json:"state"`
@@ -117,6 +118,7 @@ func NewGetAccountRequest(url string, vars *GetAccountVariables) (*GetAccountReq
     id
     alias
     description
+    cloudProviderId
     provider
     state {
       status
@@ -171,11 +173,12 @@ type GetAccountsVariables struct {
 type GetAccountsResponse struct {
 	Accounts struct {
 		Results *[]struct {
-			ID          string `json:"id"`
-			Alias       string `json:"alias"`
-			Description string `json:"description"`
-			Provider    string `json:"provider"`
-			State       struct {
+			ID              string `json:"id"`
+			Alias           string `json:"alias"`
+			Description     string `json:"description"`
+			CloudProviderId string `json:"cloudProviderId"`
+			Provider        string `json:"provider"`
+			State           struct {
 				Status string `json:"status"`
 				Error  string `json:"error"`
 			} `json:"state"`
@@ -200,6 +203,7 @@ func NewGetAccountsRequest(url string, vars *GetAccountsVariables) (*GetAccounts
       id
       alias
       description
+      cloudProviderId
       provider
       state {
         status
@@ -254,11 +258,12 @@ type CreateAccountVariables struct {
 
 type CreateAccountResponse struct {
 	CreateAccount struct {
-		ID          string `json:"id"`
-		Alias       string `json:"alias"`
-		Description string `json:"description"`
-		Provider    string `json:"provider"`
-		State       struct {
+		ID              string `json:"id"`
+		Alias           string `json:"alias"`
+		Description     string `json:"description"`
+		CloudProviderId string `json:"cloudProviderId"`
+		Provider        string `json:"provider"`
+		State           struct {
 			Status string `json:"status"`
 			Error  string `json:"error"`
 		} `json:"state"`
@@ -281,6 +286,7 @@ func NewCreateAccountRequest(url string, vars *CreateAccountVariables) (*CreateA
     id
     alias
     description
+    cloudProviderId
     provider
     state {
       status
@@ -334,11 +340,12 @@ type UpdateAccountVariables struct {
 
 type UpdateAccountResponse struct {
 	UpdateAccount struct {
-		ID          string `json:"id"`
-		Alias       string `json:"alias"`
-		Description string `json:"description"`
-		Provider    string `json:"provider"`
-		State       struct {
+		ID              string `json:"id"`
+		Alias           string `json:"alias"`
+		Description     string `json:"description"`
+		CloudProviderId string `json:"cloudProviderId"`
+		Provider        string `json:"provider"`
+		State           struct {
 			Status string `json:"status"`
 			Error  string `json:"error"`
 		} `json:"state"`
@@ -361,6 +368,7 @@ func NewUpdateAccountRequest(url string, vars *UpdateAccountVariables) (*UpdateA
     id
     alias
     description
+    cloudProviderId
     provider
     state {
       status

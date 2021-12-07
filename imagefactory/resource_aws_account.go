@@ -7,12 +7,11 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
-var awsAccountCredentialsResource = &schema.Resource{
+var awsAccountAccessResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"role_arn": {
 			Type:     schema.TypeString,
@@ -21,16 +20,6 @@ var awsAccountCredentialsResource = &schema.Resource{
 		"role_external_id": {
 			Type:     schema.TypeString,
 			Required: true,
-		},
-	},
-}
-
-var accountCredentialsResource = &schema.Resource{
-	Schema: map[string]*schema.Schema{
-		"aws": {
-			Type:     schema.TypeList,
-			Optional: true,
-			Elem:     awsAccountCredentialsResource,
 		},
 	},
 }
@@ -49,7 +38,7 @@ var accountStateSchema = &schema.Schema{
 	},
 }
 
-var accountSchema = map[string]*schema.Schema{
+var awsAccountSchema = map[string]*schema.Schema{
 	"alias": {
 		Type:     schema.TypeString,
 		Required: true,
@@ -58,25 +47,14 @@ var accountSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
 	},
-	"cloud_provider_id": {
+	"account_id": {
 		Type:     schema.TypeString,
 		Required: true,
 	},
-	"cloud_provider": {
-		Type:     schema.TypeString,
-		Required: true,
-		ValidateFunc: validation.StringInSlice([]string{
-			"AWS",
-			"AZURE",
-			"GCP",
-			"IBMCLOUD",
-			"VMWARE",
-		}, false),
-	},
-	"credentials": {
+	"access": {
 		Type:     schema.TypeList,
 		Optional: true,
-		Elem:     accountCredentialsResource,
+		Elem:     awsAccountAccessResource,
 	},
 	"state": {
 		Type:     schema.TypeMap,
@@ -85,17 +63,17 @@ var accountSchema = map[string]*schema.Schema{
 	},
 }
 
-func resourceAccount() *schema.Resource {
+func resourceAwsAccount() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAccountCreate,
-		ReadContext:   resourceAccountRead,
-		UpdateContext: resourceAccountUpdate,
-		DeleteContext: resourceAccountDelete,
-		Schema:        accountSchema,
+		CreateContext: resourceAwsAccountCreate,
+		ReadContext:   resourceAwsAccountRead,
+		UpdateContext: resourceAwsAccountUpdate,
+		DeleteContext: resourceAwsAccountDelete,
+		Schema:        awsAccountSchema,
 	}
 }
 
-func resourceAccountCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAwsAccountCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
 	config := m.(*Config)
@@ -103,9 +81,9 @@ func resourceAccountCreate(ctx context.Context, d *schema.ResourceData, m interf
 	alias := graphql.String(d.Get("alias").(string))
 	input := graphql.NewAccount{
 		Alias:           &alias,
-		CloudProviderId: graphql.String(d.Get("cloud_provider_id").(string)),
-		Provider:        graphql.Provider(d.Get("cloud_provider").(string)),
-		Credentials:     expandAccountCredentials(d.Get("credentials").([]interface{})),
+		CloudProviderId: graphql.String(d.Get("account_id").(string)),
+		Provider:        graphql.ProviderAWS,
+		Credentials:     expandAwsAccountAccess(d.Get("access").([]interface{})),
 	}
 	if len(d.Get("description").(string)) > 0 {
 		description := graphql.String(d.Get("description").(string))
@@ -118,12 +96,12 @@ func resourceAccountCreate(ctx context.Context, d *schema.ResourceData, m interf
 
 	d.SetId(string(account.ID))
 
-	resourceAccountRead(ctx, d, m)
+	resourceAwsAccountRead(ctx, d, m)
 
 	return diags
 }
 
-func resourceAccountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAwsAccountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
 	config := m.(*Config)
@@ -141,10 +119,7 @@ func resourceAccountRead(ctx context.Context, d *schema.ResourceData, m interfac
 	if err := d.Set("description", account.Description); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := d.Set("cloud_provider", account.Provider); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := d.Set("cloud_provider_id", account.CloudProviderId); err != nil {
+	if err := d.Set("account_id", account.CloudProviderId); err != nil {
 		return diag.FromErr(err)
 	}
 	if err := d.Set("state", flattenAccountState(account.State)); err != nil {
@@ -156,7 +131,7 @@ func resourceAccountRead(ctx context.Context, d *schema.ResourceData, m interfac
 	return diags
 }
 
-func resourceAccountUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
+func resourceAwsAccountUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
 	var diags diag.Diagnostics
 
 	config := m.(*Config)
@@ -172,12 +147,12 @@ func resourceAccountUpdate(ctx context.Context, d *schema.ResourceData, m interf
 		return diag.FromErr(err)
 	}
 
-	resourceAccountRead(ctx, d, m)
+	resourceAwsAccountRead(ctx, d, m)
 
 	return diags
 }
 
-func resourceAccountDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAwsAccountDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
 	config := m.(*Config)

@@ -32,8 +32,8 @@ func Provider() *schema.Provider {
 			"imagefactory_distribution":  dataSourceDistribution(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"imagefactory_account":  resourceAccount(),
-			"imagefactory_template": resourceTemplate(),
+			"imagefactory_aws_account": resourceAwsAccount(),
+			"imagefactory_template":    resourceTemplate(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

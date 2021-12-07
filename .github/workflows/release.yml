@@ -1,0 +1,66 @@
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  release:
+    name: Create ImageFactory release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/create-release@v1
+      id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: true
+        prerelease: false
+  upload:
+    name: Build and upload release assets
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: darwin
+            goarch: amd64
+          - goos: freebsd
+            goarch: "386"
+          - goos: freebsd
+            goarch: amd64
+          - goos: freebsd
+            goarch: arm
+          - goos: linux
+            goarch: "386"
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm
+          - goos: openbsd
+            goarch: "386"
+          - goos: openbsd
+            goarch: amd64
+          - goos: solaris
+            goarch: amd64
+          - goos: windows
+            goarch: "386"
+          - goos: windows
+            goarch: amd64
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+    - run: |
+        make build_all VERSION=${{ github.ref }} GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }}
+        zip -r -j terraform-provider.zip bin/*
+    - name: Upload asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ jobs.release.steps.create_release.outputs.upload_url }}
+        asset_path: ./terraform-provider.zip
+        asset_name: terraform-provider-imagefactory_${{ matrix.goos }}${{ matrix.goarch }}.zip
+        asset_content_type: application/binary

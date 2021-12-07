@@ -19,3 +19,9 @@ Then, run the following command to initialize the workspace and apply the sample
 ```shell
 terraform init && terraform apply
 ```
+
+## Install the released provider
+
+1. Download the Terraform provider zip package from the Github releases that is right for your OS.
+2. Unzip package
+3. Run `./install.sh`

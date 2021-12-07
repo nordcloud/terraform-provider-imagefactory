@@ -14,12 +14,10 @@ import (
 func getCloudProviderKeyName(provider graphql.Provider) string {
 	var cloudProviderKey string
 	switch provider {
-	case graphql.ProviderAZURE:
-		cloudProviderKey = "subscription_id"
 	case graphql.ProviderAWS:
 		cloudProviderKey = "account_id"
-	default:
-		cloudProviderKey = ""
+	case graphql.ProviderAZURE:
+		cloudProviderKey = "subscription_id"
 	}
 
 	return cloudProviderKey

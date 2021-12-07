@@ -34,6 +34,7 @@ func NewClient(endpoint, apiKey string, httpClient *http.Client) *Client {
 }
 
 func (c Client) GetDistribution(name, cloudProvider string) (graphql.Distribution, error) {
+	limit := graphql.Int(1)
 	req, err := graphql.NewGetDistributionsRequest(c.endpoint, &graphql.GetDistributionsVariables{
 		Input: graphql.DistributionsInput{
 			Filters: &graphql.DistributionsFilters{
@@ -48,6 +49,7 @@ func (c Client) GetDistribution(name, cloudProvider string) (graphql.Distributio
 					},
 				},
 			},
+			Limit: &limit,
 		},
 	})
 	if err != nil {
@@ -59,8 +61,8 @@ func (c Client) GetDistribution(name, cloudProvider string) (graphql.Distributio
 		return graphql.Distribution{}, fmt.Errorf("getting distribution %w", err)
 	}
 
-	if r.Distributions.Results == nil {
-		return graphql.Distribution{}, fmt.Errorf("distribution %s not found", name)
+	if r.Distributions.Results == nil || len(*r.Distributions.Results) == 0 {
+		return graphql.Distribution{}, fmt.Errorf("distribution '%s' in cloud provider '%s' not found", name, cloudProvider)
 	}
 
 	result := *r.Distributions.Results
@@ -79,7 +81,7 @@ func (c Client) GetDistributions() ([]graphql.Distribution, error) {
 		return nil, fmt.Errorf("getting distributions %w", err)
 	}
 
-	if r.Distributions.Results == nil {
+	if r.Distributions.Results == nil || len(*r.Distributions.Results) == 0 {
 		return []graphql.Distribution{}, nil
 	}
 

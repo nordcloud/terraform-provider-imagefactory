@@ -137,7 +137,7 @@ func resourceTemplateCreate(ctx context.Context, d *schema.ResourceData, m inter
 	return diags
 }
 
-func resourceTemplateRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceTemplateRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
 	var diags diag.Diagnostics
 
 	config := m.(*Config)

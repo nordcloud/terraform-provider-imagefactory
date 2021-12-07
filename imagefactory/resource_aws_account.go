@@ -101,7 +101,7 @@ func resourceAwsAccountCreate(ctx context.Context, d *schema.ResourceData, m int
 	return diags
 }
 
-func resourceAwsAccountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAwsAccountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
 	var diags diag.Diagnostics
 
 	config := m.(*Config)

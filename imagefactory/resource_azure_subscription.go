@@ -11,20 +11,40 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
-var awsAccountAccessResource = &schema.Resource{
+var azureSubscriptionAccessResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
-		"role_arn": {
+		"resource_group_name": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
-		"role_external_id": {
+		"tenant_id": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"app_id": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"password": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"storage_account": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"storage_account_key": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"shared_image_gallery": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
 	},
 }
 
-var awsAccountSchema = map[string]*schema.Schema{
+var azureSubscriptionSchema = map[string]*schema.Schema{
 	"alias": {
 		Type:     schema.TypeString,
 		Required: true,
@@ -33,14 +53,14 @@ var awsAccountSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
 	},
-	"account_id": {
+	"subscription_id": {
 		Type:     schema.TypeString,
 		Required: true,
 	},
 	"access": {
 		Type:     schema.TypeList,
 		Optional: true,
-		Elem:     awsAccountAccessResource,
+		Elem:     azureSubscriptionAccessResource,
 	},
 	"state": {
 		Type:     schema.TypeMap,
@@ -49,14 +69,14 @@ var awsAccountSchema = map[string]*schema.Schema{
 	},
 }
 
-func resourceAwsAccount() *schema.Resource { // nolint: dupl
+func resourceAzureSubscription() *schema.Resource { // nolint: dupl
 	return &schema.Resource{
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-			return accountCreate(ctx, d, m, graphql.ProviderAWS)
+			return accountCreate(ctx, d, m, graphql.ProviderAZURE)
 		},
 		ReadContext:   resourceAccountRead,
 		UpdateContext: resourceAccountUpdate,
 		DeleteContext: resourceAccountDelete,
-		Schema:        awsAccountSchema,
+		Schema:        azureSubscriptionSchema,
 	}
 }

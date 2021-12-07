@@ -30,15 +30,25 @@ var componentSchema = map[string]*schema.Schema{
 	"os_types": {
 		Type:     schema.TypeList,
 		Computed: true,
-			Elem: &schema.Schema{
-				Type: schema.TypeString,
-			},
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
 	},
-	// "version": {
-	// 	Type:     schema.TypeString,
-	// 	Required: true,
-	// },
+// 	"content": {
+// 		Type:     schema.TypeList,
+// 		Computed: true,
+// 		Elem:     contentSchema,
+// 	},
 }
+
+// var contentSchema = &schema.Schema{
+// 	Elem: map[string]*schema.Schema{
+// 	"version": {
+// 		Type:     schema.TypeString,
+// 		Computed: true,
+// 	},
+// 	},
+// }
 
 func dataSourceSystemComponent() *schema.Resource {
 	return &schema.Resource{
@@ -67,14 +77,13 @@ func dataSourceSystemComponentRead(ctx context.Context, d *schema.ResourceData, 
 
 	config := m.(*Config)
 
-	res, err := config.client.GetSystemComponent(d.Get("name").(string))
+	component, err := config.client.GetSystemComponent(d.Get("name").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	component := *res.Components.Results
-	d.SetId(component[0].ID)
-	if err := d.Set("name", component[0].Name); err != nil {
+	d.SetId(string(component.ID))
+	if err := d.Set("name", component.Name); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -98,7 +107,7 @@ func dataSourceSystemComponentsRead(ctx context.Context, d *schema.ResourceData,
 			"name":            res[v].Name,
 			"cloud_providers": *res[v].Providers,
 		  "os_types":        *res[v].OsTypes,
-			// "version":         component.Content,
+		  // "content":         *res[v].Content,
 		})
 	}
 

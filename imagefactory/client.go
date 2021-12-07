@@ -156,7 +156,7 @@ func (c Client) DeleteTemplate(templateID string) error {
 	return nil
 }
 
-func (c Client) GetSystemComponent(name string) (*graphql.GetComponentsResponse, error) {
+func (c Client) GetSystemComponent(name string) (graphql.Component, error) {
 	a := graphql.Boolean(true)
 	req, err := graphql.NewGetComponentsRequest(c.endpoint, &graphql.GetComponentsVariables{
 		Input: graphql.ComponentsInput{
@@ -172,11 +172,21 @@ func (c Client) GetSystemComponent(name string) (*graphql.GetComponentsResponse,
 		},
 	})
 	if err != nil {
-		return nil, fmt.Errorf("getting component %w", err)
+		return graphql.Component{}, fmt.Errorf("getting component %w", err)
 	}
-	req.Header = http.Header{APIKeyHeader: []string{c.apiKey}}
 
-	return req.Execute(c.httpClient)
+	r := &graphql.Query{}
+	if err := c.graphqlExecutor.Execute(req.Request, r); err != nil {
+		return graphql.Component{}, fmt.Errorf("getting component %w", err)
+	}
+
+	if r.Components.Results == nil || len(*r.Components.Results) == 0 {
+		return graphql.Component{}, fmt.Errorf("component '%s' not found", name)
+	}
+
+	result := *r.Components.Results
+
+	return result[0], nil
 }
 
 func (c Client)  GetSystemComponents() ([]graphql.Component, error) {

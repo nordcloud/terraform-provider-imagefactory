@@ -1,3 +1,5 @@
+// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 package imagefactory
 
 import (
@@ -51,17 +53,16 @@ func dataSourceDistributionRead(ctx context.Context, d *schema.ResourceData, m i
 
 	config := m.(*Config)
 
-	res, err := config.client.GetDistribution(d.Get("name").(string), d.Get("cloud_provider").(string))
+	distro, err := config.client.GetDistribution(d.Get("name").(string), d.Get("cloud_provider").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	distro := *res.Distributions.Results
-	d.SetId(distro[0].ID)
-	if err := d.Set("name", distro[0].Name); err != nil {
+	d.SetId(string(distro.ID))
+	if err := d.Set("name", distro.Name); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := d.Set("cloud_provider", distro[0].Provider); err != nil {
+	if err := d.Set("cloud_provider", distro.Provider); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -79,11 +80,11 @@ func dataSourceDistributionsRead(ctx context.Context, d *schema.ResourceData, m 
 	}
 
 	distributions := make([]map[string]interface{}, 0)
-	for _, distro := range *res.Distributions.Results {
+	for v := range res {
 		distributions = append(distributions, map[string]interface{}{
-			"id":             distro.ID,
-			"name":           distro.Name,
-			"cloud_provider": distro.Provider,
+			"id":             res[v].ID,
+			"name":           res[v].Name,
+			"cloud_provider": res[v].Provider,
 		})
 	}
 

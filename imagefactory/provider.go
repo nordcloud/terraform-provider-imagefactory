@@ -1,3 +1,5 @@
+// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 package imagefactory
 
 import (
@@ -10,7 +12,7 @@ import (
 const DefaultAPIURL = "https://api.imagefactory.nordcloudapp.com/graphql"
 
 func Provider() *schema.Provider {
-	provider := &schema.Provider{
+	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"api_key": {
 				Type:        schema.TypeString,
@@ -29,11 +31,11 @@ func Provider() *schema.Provider {
 			"imagefactory_distributions": dataSourceDistributions(),
 			"imagefactory_distribution":  dataSourceDistribution(),
 		},
-		ResourcesMap:         map[string]*schema.Resource{},
+		ResourcesMap: map[string]*schema.Resource{
+			"imagefactory_template": resourceTemplate(),
+		},
 		ConfigureContextFunc: providerConfigure,
 	}
-
-	return provider
 }
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {

@@ -81,6 +81,88 @@ func unmarshalGraphQLReponse(b []byte) (*GraphQLResponse, error) {
 }
 
 //
+// query GetComponents($input: ComponentsInput!)
+//
+
+type GetComponentsVariables struct {
+	Input ComponentsInput `json:"input"`
+}
+
+type GetComponentsResponse struct {
+	Components struct {
+		Results *[]struct {
+			ID        string `json:"id"`
+			Name      string `json:"name"`
+			Providers string `json:"providers"`
+			OsTypes   string `json:"osTypes"`
+			Content   *[]struct {
+				Version string `json:"version"`
+			} `json:"content"`
+		} `json:"results"`
+	} `json:"components"`
+}
+
+type GetComponentsRequest struct {
+	*http.Request
+}
+
+func NewGetComponentsRequest(url string, vars *GetComponentsVariables) (*GetComponentsRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `query GetComponents($input: ComponentsInput!) {
+  components(input: $input) {
+    results {
+      id
+      name
+      providers
+      osTypes
+      content {
+        version
+      }
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &GetComponentsRequest{req}, nil
+}
+
+func (req *GetComponentsRequest) Execute(client *http.Client) (*GetComponentsResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result GetComponentsResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func GetComponents(url string, client *http.Client, vars *GetComponentsVariables) (*GetComponentsResponse, error) {
+	req, err := NewGetComponentsRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) GetComponents(vars *GetComponentsVariables) (*GetComponentsResponse, error) {
+	return GetComponents(client.Url, client.Client, vars)
+}
+
+//
 // query GetDistributions($input: DistributionsInput!)
 //
 

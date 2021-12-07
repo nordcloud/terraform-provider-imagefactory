@@ -12,7 +12,7 @@ terraform {
 
 provider "imagefactory" {
   api_key = "KEY"
-  api_url = "https://api.imagefactory.dev.nordcloudapp.com/graphql"
+  api_url = "https://api.imagefactory.nordcloudapp.com/graphql"
 }
 
 data "imagefactory_distributions" "all" {}

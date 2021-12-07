@@ -31,3 +31,14 @@ func expandAccountCredentials(in []interface{}) *graphql.AccountCredentials {
 
 	return accountCredentials
 }
+
+func flattenAccountState(in *graphql.AccountState) map[string]string {
+	out := map[string]string{
+		"status": string(in.Status),
+	}
+	if in.Error != nil {
+		out["error"] = string(*in.Error)
+	}
+
+	return out
+}

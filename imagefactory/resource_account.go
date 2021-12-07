@@ -144,7 +144,10 @@ func resourceAccountRead(ctx context.Context, d *schema.ResourceData, m interfac
 	if err := d.Set("cloud_provider", account.Provider); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := d.Set("cloud_provider_id", account.Provider); err != nil {
+	if err := d.Set("cloud_provider_id", account.CloudProviderId); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("state", flattenAccountState(account.State)); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -162,13 +165,8 @@ func resourceAccountUpdate(ctx context.Context, d *schema.ResourceData, m interf
 
 	alias := graphql.String(d.Get("alias").(string))
 	input := graphql.AccountChanges{
-		ID:          graphql.String(accountID),
-		Alias:       &alias,
-		Credentials: expandAccountCredentials(d.Get("credentials").([]interface{})),
-	}
-	if len(d.Get("description").(string)) > 0 {
-		description := graphql.String(d.Get("description").(string))
-		input.Description = &description
+		ID:    graphql.String(accountID),
+		Alias: &alias,
 	}
 	if _, err := config.client.UpdateAccount(input); err != nil {
 		return diag.FromErr(err)

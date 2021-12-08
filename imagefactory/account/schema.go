@@ -1,6 +1,6 @@
 // Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
 
-package imagefactory
+package account
 
 import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 

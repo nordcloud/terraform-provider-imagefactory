@@ -224,7 +224,7 @@ func (c Client) DeleteTemplate(templateID string) error {
 	return nil
 }
 
-func (c Client) GetSystemComponent(name, cloudProvider string) (graphql.Component, error) {
+func (c Client) GetSystemComponent(name string) (graphql.Component, error) {
 	a := graphql.Boolean(true)
 	req, err := graphql.NewGetComponentsRequest(c.endpoint, &graphql.GetComponentsVariables{
 		Input: graphql.ComponentsInput{
@@ -234,10 +234,6 @@ func (c Client) GetSystemComponent(name, cloudProvider string) (graphql.Componen
 					{
 						Field:  graphql.ComponentAttributeNAME,
 						Values: &[]graphql.String{graphql.String(name)},
-					},
-					{
-						Field:  graphql.ComponentAttributePROVIDERS,
-						Values: &[]graphql.String{graphql.String(cloudProvider)},
 					},
 					{
 						Field:  graphql.ComponentAttributeTYPE,
@@ -257,7 +253,7 @@ func (c Client) GetSystemComponent(name, cloudProvider string) (graphql.Componen
 	}
 
 	if r.Components.Results == nil || len(*r.Components.Results) == 0 {
-		return graphql.Component{}, fmt.Errorf("component '%s' in cloud provider '%s' not found", name, cloudProvider)
+		return graphql.Component{}, fmt.Errorf("component '%s' not found", name)
 	}
 
 	result := *r.Components.Results

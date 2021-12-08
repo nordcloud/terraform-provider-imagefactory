@@ -10,7 +10,7 @@ func flattenComponentContent(in *[]graphql.VersionedContent) []interface{} {
 	if in == nil {
 		return nil
 	}
-	var out = make([]interface{}, len(*in), len(*in))
+	var out = make([]interface{}, len(*in))
   for i, step := range *in {
 		m := make(map[string]string)
 		m["version"]= string(step.Version)

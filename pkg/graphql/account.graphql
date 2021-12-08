@@ -1,0 +1,63 @@
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+query GetAccount($input: CustomerAccountIdInput!) {
+  account(input: $input) {
+    id
+    alias
+    description
+    cloudProviderId
+    provider
+    state {
+      status
+      error
+    }
+  }
+}
+
+query GetAccounts($input: CustomerAccountsInput!) {
+  accounts(input: $input) {
+    results {
+      id
+      alias
+      description
+      cloudProviderId
+      provider
+      state {
+        status
+        error
+      }
+    }
+  }
+}
+
+mutation CreateAccount($input: NewAccount!) {
+  createAccount(input: $input) {
+    id
+    alias
+    description
+    cloudProviderId
+    provider
+    state {
+      status
+      error
+    }
+  }
+}
+
+mutation UpdateAccount($input: AccountChanges!) {
+  updateAccount(input: $input) {
+    id
+    alias
+    description
+    cloudProviderId
+    provider
+    state {
+      status
+      error
+    }
+  }
+}
+
+mutation DeleteAccount($input: CustomerAccountIdInput!) {
+  deleteAccount(input: $input)
+}

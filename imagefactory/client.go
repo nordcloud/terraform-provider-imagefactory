@@ -33,6 +33,74 @@ func NewClient(endpoint, apiKey string, httpClient *http.Client) *Client {
 	return c
 }
 
+func (c Client) GetAccount(accountID string) (graphql.Account, error) { // nolint: dupl
+	req, err := graphql.NewGetAccountRequest(c.endpoint, &graphql.GetAccountVariables{
+		Input: graphql.CustomerAccountIdInput{
+			AccountId: graphql.String(accountID),
+		},
+	})
+	if err != nil {
+		return graphql.Account{}, fmt.Errorf("getting account request %w", err)
+	}
+
+	r := &graphql.Query{}
+	if err := c.graphqlExecutor.Execute(req.Request, r); err != nil {
+		return graphql.Account{}, fmt.Errorf("getting account %w", err)
+	}
+
+	return r.Account, nil
+}
+
+func (c Client) CreateAccount(input graphql.NewAccount) (graphql.Account, error) {
+	req, err := graphql.NewCreateAccountRequest(c.endpoint, &graphql.CreateAccountVariables{
+		Input: input,
+	})
+	if err != nil {
+		return graphql.Account{}, fmt.Errorf("getting create account request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlExecutor.Execute(req.Request, r); err != nil {
+		return graphql.Account{}, fmt.Errorf("creating account %w", err)
+	}
+
+	return r.CreateAccount, nil
+}
+
+func (c Client) UpdateAccount(input graphql.AccountChanges) (graphql.Account, error) {
+	req, err := graphql.NewUpdateAccountRequest(c.endpoint, &graphql.UpdateAccountVariables{
+		Input: input,
+	})
+	if err != nil {
+		return graphql.Account{}, fmt.Errorf("getting update account request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlExecutor.Execute(req.Request, r); err != nil {
+		return graphql.Account{}, fmt.Errorf("updating account %w", err)
+	}
+
+	return r.UpdateAccount, nil
+}
+
+func (c Client) DeleteAccount(accountID string) error {
+	req, err := graphql.NewDeleteAccountRequest(c.endpoint, &graphql.DeleteAccountVariables{
+		Input: graphql.CustomerAccountIdInput{
+			AccountId: graphql.String(accountID),
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("getting delete account request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlExecutor.Execute(req.Request, r); err != nil {
+		return fmt.Errorf("deleting account %w", err)
+	}
+
+	return nil
+}
+
 func (c Client) GetDistribution(name, cloudProvider string) (graphql.Distribution, error) {
 	limit := graphql.Int(1)
 	req, err := graphql.NewGetDistributionsRequest(c.endpoint, &graphql.GetDistributionsVariables{
@@ -88,7 +156,7 @@ func (c Client) GetDistributions() ([]graphql.Distribution, error) {
 	return *r.Distributions.Results, nil
 }
 
-func (c Client) GetTemplate(templateID string) (graphql.Template, error) {
+func (c Client) GetTemplate(templateID string) (graphql.Template, error) { // nolint: dupl
 	req, err := graphql.NewGetTemplateRequest(c.endpoint, &graphql.GetTemplateVariables{
 		Input: graphql.CustomerTemplateIdInput{
 			TemplateId: graphql.String(templateID),

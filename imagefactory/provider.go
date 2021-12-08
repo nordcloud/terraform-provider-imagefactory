@@ -34,7 +34,11 @@ func Provider() *schema.Provider {
 			"imagefactory_system_component":  dataSourceSystemComponent(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"imagefactory_template": resourceTemplate(),
+			"imagefactory_aws_account":        resourceAwsAccount(),
+			"imagefactory_azure_subscription": resourceAzureSubscription(),
+			"imagefactory_gcp_project":        resourceGcpProject(),
+			"imagefactory_imbcloud_account":   resourceIBMCloudAccount(),
+			"imagefactory_template":           resourceTemplate(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

@@ -81,6 +81,400 @@ func unmarshalGraphQLReponse(b []byte) (*GraphQLResponse, error) {
 }
 
 //
+// query GetAccount($input: CustomerAccountIdInput!)
+//
+
+type GetAccountVariables struct {
+	Input CustomerAccountIdInput `json:"input"`
+}
+
+type GetAccountResponse struct {
+	Account struct {
+		ID              string `json:"id"`
+		Alias           string `json:"alias"`
+		Description     string `json:"description"`
+		CloudProviderId string `json:"cloudProviderId"`
+		Provider        string `json:"provider"`
+		State           struct {
+			Status string `json:"status"`
+			Error  string `json:"error"`
+		} `json:"state"`
+	} `json:"account"`
+}
+
+type GetAccountRequest struct {
+	*http.Request
+}
+
+func NewGetAccountRequest(url string, vars *GetAccountVariables) (*GetAccountRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `query GetAccount($input: CustomerAccountIdInput!) {
+  account(input: $input) {
+    id
+    alias
+    description
+    cloudProviderId
+    provider
+    state {
+      status
+      error
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &GetAccountRequest{req}, nil
+}
+
+func (req *GetAccountRequest) Execute(client *http.Client) (*GetAccountResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result GetAccountResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func GetAccount(url string, client *http.Client, vars *GetAccountVariables) (*GetAccountResponse, error) {
+	req, err := NewGetAccountRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) GetAccount(vars *GetAccountVariables) (*GetAccountResponse, error) {
+	return GetAccount(client.Url, client.Client, vars)
+}
+
+//
+// query GetAccounts($input: CustomerAccountsInput!)
+//
+
+type GetAccountsVariables struct {
+	Input CustomerAccountsInput `json:"input"`
+}
+
+type GetAccountsResponse struct {
+	Accounts struct {
+		Results *[]struct {
+			ID              string `json:"id"`
+			Alias           string `json:"alias"`
+			Description     string `json:"description"`
+			CloudProviderId string `json:"cloudProviderId"`
+			Provider        string `json:"provider"`
+			State           struct {
+				Status string `json:"status"`
+				Error  string `json:"error"`
+			} `json:"state"`
+		} `json:"results"`
+	} `json:"accounts"`
+}
+
+type GetAccountsRequest struct {
+	*http.Request
+}
+
+func NewGetAccountsRequest(url string, vars *GetAccountsVariables) (*GetAccountsRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `query GetAccounts($input: CustomerAccountsInput!) {
+  accounts(input: $input) {
+    results {
+      id
+      alias
+      description
+      cloudProviderId
+      provider
+      state {
+        status
+        error
+      }
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &GetAccountsRequest{req}, nil
+}
+
+func (req *GetAccountsRequest) Execute(client *http.Client) (*GetAccountsResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result GetAccountsResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func GetAccounts(url string, client *http.Client, vars *GetAccountsVariables) (*GetAccountsResponse, error) {
+	req, err := NewGetAccountsRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) GetAccounts(vars *GetAccountsVariables) (*GetAccountsResponse, error) {
+	return GetAccounts(client.Url, client.Client, vars)
+}
+
+//
+// mutation CreateAccount($input: NewAccount!)
+//
+
+type CreateAccountVariables struct {
+	Input NewAccount `json:"input"`
+}
+
+type CreateAccountResponse struct {
+	CreateAccount struct {
+		ID              string `json:"id"`
+		Alias           string `json:"alias"`
+		Description     string `json:"description"`
+		CloudProviderId string `json:"cloudProviderId"`
+		Provider        string `json:"provider"`
+		State           struct {
+			Status string `json:"status"`
+			Error  string `json:"error"`
+		} `json:"state"`
+	} `json:"createAccount"`
+}
+
+type CreateAccountRequest struct {
+	*http.Request
+}
+
+func NewCreateAccountRequest(url string, vars *CreateAccountVariables) (*CreateAccountRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation CreateAccount($input: NewAccount!) {
+  createAccount(input: $input) {
+    id
+    alias
+    description
+    cloudProviderId
+    provider
+    state {
+      status
+      error
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &CreateAccountRequest{req}, nil
+}
+
+func (req *CreateAccountRequest) Execute(client *http.Client) (*CreateAccountResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result CreateAccountResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func CreateAccount(url string, client *http.Client, vars *CreateAccountVariables) (*CreateAccountResponse, error) {
+	req, err := NewCreateAccountRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) CreateAccount(vars *CreateAccountVariables) (*CreateAccountResponse, error) {
+	return CreateAccount(client.Url, client.Client, vars)
+}
+
+//
+// mutation UpdateAccount($input: AccountChanges!)
+//
+
+type UpdateAccountVariables struct {
+	Input AccountChanges `json:"input"`
+}
+
+type UpdateAccountResponse struct {
+	UpdateAccount struct {
+		ID              string `json:"id"`
+		Alias           string `json:"alias"`
+		Description     string `json:"description"`
+		CloudProviderId string `json:"cloudProviderId"`
+		Provider        string `json:"provider"`
+		State           struct {
+			Status string `json:"status"`
+			Error  string `json:"error"`
+		} `json:"state"`
+	} `json:"updateAccount"`
+}
+
+type UpdateAccountRequest struct {
+	*http.Request
+}
+
+func NewUpdateAccountRequest(url string, vars *UpdateAccountVariables) (*UpdateAccountRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation UpdateAccount($input: AccountChanges!) {
+  updateAccount(input: $input) {
+    id
+    alias
+    description
+    cloudProviderId
+    provider
+    state {
+      status
+      error
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &UpdateAccountRequest{req}, nil
+}
+
+func (req *UpdateAccountRequest) Execute(client *http.Client) (*UpdateAccountResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result UpdateAccountResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func UpdateAccount(url string, client *http.Client, vars *UpdateAccountVariables) (*UpdateAccountResponse, error) {
+	req, err := NewUpdateAccountRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) UpdateAccount(vars *UpdateAccountVariables) (*UpdateAccountResponse, error) {
+	return UpdateAccount(client.Url, client.Client, vars)
+}
+
+//
+// mutation DeleteAccount($input: CustomerAccountIdInput!)
+//
+
+type DeleteAccountVariables struct {
+	Input CustomerAccountIdInput `json:"input"`
+}
+
+type DeleteAccountResponse struct {
+	DeleteAccount string `json:"deleteAccount"`
+}
+
+type DeleteAccountRequest struct {
+	*http.Request
+}
+
+func NewDeleteAccountRequest(url string, vars *DeleteAccountVariables) (*DeleteAccountRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation DeleteAccount($input: CustomerAccountIdInput!) {
+  deleteAccount(input: $input)
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &DeleteAccountRequest{req}, nil
+}
+
+func (req *DeleteAccountRequest) Execute(client *http.Client) (*DeleteAccountResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result DeleteAccountResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func DeleteAccount(url string, client *http.Client, vars *DeleteAccountVariables) (*DeleteAccountResponse, error) {
+	req, err := NewDeleteAccountRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) DeleteAccount(vars *DeleteAccountVariables) (*DeleteAccountResponse, error) {
+	return DeleteAccount(client.Url, client.Client, vars)
+}
+
+//
 // query GetComponents($input: ComponentsInput!)
 //
 

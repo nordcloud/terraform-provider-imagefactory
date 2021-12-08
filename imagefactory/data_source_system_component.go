@@ -95,6 +95,22 @@ func dataSourceSystemComponentRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.FromErr(err)
 	}
 
+	if err := d.Set("type", component.Type); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("stage", component.Stage); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("cloud_providers", component.Providers); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("os_types", component.OsTypes); err != nil {
+		return diag.FromErr(err)
+	}
+
 	if err := d.Set("content", flattenComponentContent(component.Content)); err != nil {
 		return diag.FromErr(err)
 	}

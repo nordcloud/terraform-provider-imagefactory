@@ -11,7 +11,7 @@ terraform {
 }
 
 provider "imagefactory" {
-  api_key = "8f4fa464-bbfb-4c47-879b-a841a57228d7/72a8da286c68822170b6179eed36cc29615f56d02e59c072"
+  api_key = "KEY"
   api_url = "https://api.imagefactory.dev.nordcloudapp.com/graphql"
 }
 
@@ -19,4 +19,12 @@ data "imagefactory_system_components" "all" {}
 
 output "all_system_components" {
   value = data.imagefactory_system_components.all.components
+}
+
+data "imagefactory_system_component" "vmvare" {
+  name           = "VMware tools"
+}
+
+output "component" {
+  value = data.imagefactory_system_component.vmvare
 }

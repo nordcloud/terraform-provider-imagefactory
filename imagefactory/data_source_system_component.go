@@ -22,11 +22,11 @@ var componentSchema = map[string]*schema.Schema{
 	},
 	"type": {
 		Type:     schema.TypeString,
-		Required: true,
+		Computed: true,
 	},
 	"stage": {
 		Type:     schema.TypeString,
-		Required: true,
+		Computed: true,
 	},
 	"cloud_providers": {
 		Type:     schema.TypeList,

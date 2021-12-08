@@ -112,3 +112,20 @@ jobs:
         asset_path: ./terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS
         asset_name: terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS
         asset_content_type: application/binary
+    - name: Import GPG key
+      id: import_gpg
+      uses: hashicorp/ghaction-import-gpg@v2.1.0
+      env:
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+    - run: |
+        gpg --detach-sign terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS
+    - name: Upload SHA256 sig file
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.release.outputs.upload_url }}
+        asset_path: ./terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS.sig
+        asset_name: terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS.sig
+        asset_content_type: application/binary

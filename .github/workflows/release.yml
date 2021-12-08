@@ -15,7 +15,7 @@ jobs:
     steps:
     - id: get_version
       run: |
-        v=$(echo ${{ github.ref }} | sed 's/refs\/tags\/v//'   tr -d 'v')
+        v=$(echo ${{ github.ref }} | sed 's/refs\/tags\/v//')
         echo "::set-output name=version::$v"
     - uses: actions/create-release@v1
       id: create_release

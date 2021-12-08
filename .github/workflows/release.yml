@@ -24,7 +24,7 @@ jobs:
         prerelease: false
     - id: get_version
       run: |
-        $v=$(echo ${{ github.ref }} | tr -d 'v'))
+        $v=$(echo ${{ github.ref }} | tr -d 'v')
         echo "::set-output name=version::$v"
 
   upload:
@@ -79,6 +79,7 @@ jobs:
         path: terraform-provider.zip
 
   sign:
+    needs: upload
     name: Sign provider and upload metadata files
     runs-on: ubuntu-latest
     steps:

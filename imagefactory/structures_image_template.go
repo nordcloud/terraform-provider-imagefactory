@@ -7,39 +7,52 @@ import (
 )
 
 func expandTemplateComponents(in []interface{}) *[]graphql.NewTemplateComponent {
-	components := []graphql.NewTemplateComponent{}
+	out := []graphql.NewTemplateComponent{}
 	for i := range in {
-		bc := in[i].(map[string]interface{})
-
-		components = append(components, graphql.NewTemplateComponent{
-			ID: graphql.String(bc["id"].(string)),
+		m := in[i].(map[string]interface{})
+		out = append(out, graphql.NewTemplateComponent{
+			ID: graphql.String(m["id"].(string)),
 		})
 	}
 
-	return &components
+	return &out
+}
+
+func expandTags(in []interface{}) *[]graphql.NewTag {
+	out := []graphql.NewTag{}
+	for i := range in {
+		m := in[i].(map[string]interface{})
+		out = append(out, graphql.NewTag{
+			Key:   graphql.String(m["key"].(string)),
+			Value: graphql.String(m["value"].(string)),
+		})
+	}
+
+	return &out
 }
 
 func expandTemplateConfig(in []interface{}) *graphql.NewTemplateConfig {
-	templateConfig := &graphql.NewTemplateConfig{}
-
 	if len(in) == 0 {
-		return templateConfig
+		return &graphql.NewTemplateConfig{}
 	}
 
 	m := in[0].(map[string]interface{})
 
+	out := &graphql.NewTemplateConfig{
+		BuildComponents: expandTemplateComponents(m["build_components"].([]interface{})),
+		TestComponents:  expandTemplateComponents(m["test_components"].([]interface{})),
+		Tags:            expandTags(m["tags"].([]interface{})),
+	}
+
 	awsConfig := m["aws"].([]interface{})
 	if len(awsConfig) > 0 {
 		t := awsConfig[0].(map[string]interface{})
-		templateConfig.Aws = &graphql.NewTemplateAWSConfig{
+		out.Aws = &graphql.NewTemplateAWSConfig{
 			Region: graphql.String(t["region"].(string)),
 		}
 	}
 
-	templateConfig.BuildComponents = expandTemplateComponents(m["build_components"].([]interface{}))
-	templateConfig.TestComponents = expandTemplateComponents(m["test_components"].([]interface{}))
-
-	return templateConfig
+	return out
 }
 
 func flattenTemplateState(in graphql.TemplateState) map[string]string {

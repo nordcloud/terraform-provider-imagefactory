@@ -29,6 +29,14 @@ resource "imagefactory_template" "template" {
     aws {
       region = "eu-west-1"
     }
+    tags {
+      key   = "KEY_ONE"
+      value = "VALUE_A"
+    }
+    tags {
+      key   = "KEY_TWO"
+      value = "VALUE_B"
+    }
   }
 }
 

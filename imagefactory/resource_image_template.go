@@ -30,6 +30,19 @@ var awsTemplateConfigResource = &schema.Resource{
 	},
 }
 
+var templateTagsResource = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"key": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"value": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+	},
+}
+
 var templateConfigResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"test_components": {
@@ -46,6 +59,11 @@ var templateConfigResource = &schema.Resource{
 			Type:     schema.TypeList,
 			Optional: true,
 			Elem:     awsTemplateConfigResource,
+		},
+		"tags": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem:     templateTagsResource,
 		},
 	},
 }

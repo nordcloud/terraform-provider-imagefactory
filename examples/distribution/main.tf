@@ -4,8 +4,8 @@ terraform {
   required_version = ">= 0.14"
   required_providers {
     imagefactory = {
-      source  = "nordcloud.com/mc/imagefactory"
-      version = "~> 1.0"
+      source  = "nordcloud.com/klarity/imagefactory"
+      version = "~> 1.0.0"
     }
   }
 }

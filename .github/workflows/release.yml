@@ -1,0 +1,121 @@
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  release:
+    name: Create ImageFactory release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+    - id: get_version
+      run: |
+        v=$(echo ${{ github.ref }} | sed 's/refs\/tags\/v//')
+        echo "::set-output name=version::$v"
+    - uses: actions/create-release@v1
+      id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: true
+        prerelease: false
+
+  upload:
+    needs: release
+    name: Build and upload release assets
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: darwin
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+          - goos: linux
+            goarch: "386"
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm
+          - goos: windows
+            goarch: "386"
+          - goos: windows
+            goarch: amd64
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+    - run: |
+        make build VERSION=v${{ needs.release.outputs.version }} GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }}
+        zip -r -j terraform-provider-imagefactory_${{ needs.release.outputs.version }}_${{ matrix.goos }}_${{ matrix.goarch }}.zip bin/*
+    - name: Upload release asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.release.outputs.upload_url }}
+        asset_path: ./terraform-provider-imagefactory_${{ needs.release.outputs.version }}_${{ matrix.goos }}_${{ matrix.goarch }}.zip
+        asset_name: terraform-provider-imagefactory_${{ needs.release.outputs.version }}_${{ matrix.goos }}_${{ matrix.goarch }}.zip
+        asset_content_type: application/binary
+    - uses: actions/upload-artifact@v2
+      with:
+        name: terraform-provider-imagefactory_${{ matrix.goos }}_${{ matrix.goarch }}
+        path: terraform-provider-imagefactory_${{ needs.release.outputs.version }}_${{ matrix.goos }}_${{ matrix.goarch }}.zip
+
+  sign:
+    needs:
+      - release 
+      - upload
+    name: Sign provider and upload metadata files
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        path: artifacts
+    - run: |
+        mv terraform-registry-manifest.json terraform-provider-imagefactory_${{ needs.release.outputs.version }}_manifest.json
+        mv artifacts/*/*.zip ./
+        shasum -a 256 *.zip *_manifest.json > terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS
+        
+    - name: Upload metadata file
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.release.outputs.upload_url }}
+        asset_path: ./terraform-provider-imagefactory_${{ needs.release.outputs.version }}_manifest.json
+        asset_name: terraform-provider-imagefactory_${{ needs.release.outputs.version }}_manifest.json
+        asset_content_type: application/binary
+    - name: Upload SHA256 file
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.release.outputs.upload_url }}
+        asset_path: ./terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS
+        asset_name: terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS
+        asset_content_type: application/binary
+    - name: Import GPG key
+      id: import_gpg
+      uses: hashicorp/ghaction-import-gpg@v2.1.0
+      env:
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+    - run: |
+        gpg --detach-sign terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS
+    - name: Upload SHA256 sig file
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.release.outputs.upload_url }}
+        asset_path: ./terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS.sig
+        asset_name: terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS.sig
+        asset_content_type: application/binary

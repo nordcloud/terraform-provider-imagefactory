@@ -44,6 +44,39 @@ func expandTemplateTags(in []interface{}) *[]graphql.NewTag {
 	return &out
 }
 
+func expandTemplateAwsConfig(in []interface{}) *graphql.NewTemplateAWSConfig {
+	if len(in) == 0 {
+		return nil
+	}
+
+	m := in[0].(map[string]interface{})
+	return &graphql.NewTemplateAWSConfig{
+		Region: graphql.String(m["region"].(string)),
+	}
+}
+
+func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig {
+	if len(in) == 0 {
+		return nil
+	}
+
+	m := in[0].(map[string]interface{})
+
+	e := graphql.Boolean(m["exclude_from_latest"].(bool))
+
+	rr := []graphql.String{}
+	for _, v := range m["replica_regions"].([]interface{}) {
+		rr = append(rr, graphql.String(v.(string)))
+	}
+
+	out := &graphql.NewTemplateAZUREConfig{
+		ExcludeFromLatest: &e,
+		ReplicaRegions:    &rr,
+	}
+
+	return out
+}
+
 func expandTemplateConfig(in []interface{}) *graphql.NewTemplateConfig {
 	if len(in) == 0 {
 		return &graphql.NewTemplateConfig{}
@@ -51,22 +84,14 @@ func expandTemplateConfig(in []interface{}) *graphql.NewTemplateConfig {
 
 	m := in[0].(map[string]interface{})
 
-	out := &graphql.NewTemplateConfig{
+	return &graphql.NewTemplateConfig{
+		Aws:             expandTemplateAwsConfig(m["aws"].([]interface{})),
+		Azure:           expandTemplateAzureConfig(m["azure"].([]interface{})),
 		BuildComponents: expandTemplateComponents(m["build_components"].([]interface{})),
 		TestComponents:  expandTemplateComponents(m["test_components"].([]interface{})),
 		Notifications:   expandTemplateNotifications(m["notifications"].([]interface{})),
 		Tags:            expandTemplateTags(m["tags"].([]interface{})),
 	}
-
-	awsConfig := m["aws"].([]interface{})
-	if len(awsConfig) > 0 {
-		t := awsConfig[0].(map[string]interface{})
-		out.Aws = &graphql.NewTemplateAWSConfig{
-			Region: graphql.String(t["region"].(string)),
-		}
-	}
-
-	return out
 }
 
 func flattenTemplateState(in graphql.TemplateState) map[string]string {

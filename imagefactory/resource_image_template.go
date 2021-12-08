@@ -21,6 +21,23 @@ var awsTemplateConfigResource = &schema.Resource{
 	},
 }
 
+var azureTemplateConfigResource = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"exclude_from_latest": {
+			Type:     schema.TypeBool,
+			Optional: true,
+		},
+		"replica_regions": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Schema{
+				Type:         schema.TypeString,
+				ValidateFunc: validation.StringInSlice(azureRegions, false),
+			},
+		},
+	},
+}
+
 var templateComponentResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"id": {
@@ -33,13 +50,9 @@ var templateComponentResource = &schema.Resource{
 var templateNotificationsResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"type": {
-			Type:     schema.TypeString,
-			Required: true,
-			ValidateFunc: validation.StringInSlice([]string{
-				"PUB_SUB",
-				"SNS",
-				"WEB_HOOK",
-			}, false),
+			Type:         schema.TypeString,
+			Required:     true,
+			ValidateFunc: validation.StringInSlice(notificationTypes, false),
 		},
 		"uri": {
 			Type:     schema.TypeString,
@@ -67,6 +80,11 @@ var templateConfigResource = &schema.Resource{
 			Type:     schema.TypeList,
 			Optional: true,
 			Elem:     awsTemplateConfigResource,
+		},
+		"azure": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem:     azureTemplateConfigResource,
 		},
 		"build_components": {
 			Type:     schema.TypeList,
@@ -119,15 +137,9 @@ var templateSchema = map[string]*schema.Schema{
 		Required: true,
 	},
 	"cloud_provider": {
-		Type:     schema.TypeString,
-		Required: true,
-		ValidateFunc: validation.StringInSlice([]string{
-			"AWS",
-			"AZURE",
-			"GCP",
-			"IBMCLOUD",
-			"VMWARE",
-		}, false),
+		Type:         schema.TypeString,
+		Required:     true,
+		ValidateFunc: validation.StringInSlice(cloudProviders, false),
 	},
 	"config": {
 		Type:     schema.TypeList,

@@ -18,7 +18,20 @@ func expandTemplateComponents(in []interface{}) *[]graphql.NewTemplateComponent 
 	return &out
 }
 
-func expandTags(in []interface{}) *[]graphql.NewTag {
+func expandTemplateNotifications(in []interface{}) *[]graphql.NewNotification {
+	out := []graphql.NewNotification{}
+	for i := range in {
+		m := in[i].(map[string]interface{})
+		out = append(out, graphql.NewNotification{
+			Type: graphql.NotificationType(m["type"].(string)),
+			Uri:  graphql.String(m["uri"].(string)),
+		})
+	}
+
+	return &out
+}
+
+func expandTemplateTags(in []interface{}) *[]graphql.NewTag {
 	out := []graphql.NewTag{}
 	for i := range in {
 		m := in[i].(map[string]interface{})
@@ -41,7 +54,8 @@ func expandTemplateConfig(in []interface{}) *graphql.NewTemplateConfig {
 	out := &graphql.NewTemplateConfig{
 		BuildComponents: expandTemplateComponents(m["build_components"].([]interface{})),
 		TestComponents:  expandTemplateComponents(m["test_components"].([]interface{})),
-		Tags:            expandTags(m["tags"].([]interface{})),
+		Notifications:   expandTemplateNotifications(m["notifications"].([]interface{})),
+		Tags:            expandTemplateTags(m["tags"].([]interface{})),
 	}
 
 	awsConfig := m["aws"].([]interface{})

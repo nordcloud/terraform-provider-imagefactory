@@ -12,6 +12,15 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
+var awsTemplateConfigResource = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"region": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+	},
+}
+
 var templateComponentResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"id": {
@@ -21,9 +30,18 @@ var templateComponentResource = &schema.Resource{
 	},
 }
 
-var awsTemplateConfigResource = &schema.Resource{
+var templateNotificationsResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
-		"region": {
+		"type": {
+			Type:     schema.TypeString,
+			Required: true,
+			ValidateFunc: validation.StringInSlice([]string{
+				"PUB_SUB",
+				"SNS",
+				"WEB_HOOK",
+			}, false),
+		},
+		"uri": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
@@ -45,20 +63,25 @@ var templateTagsResource = &schema.Resource{
 
 var templateConfigResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
-		"test_components": {
+		"aws": {
 			Type:     schema.TypeList,
 			Optional: true,
-			Elem:     templateComponentResource,
+			Elem:     awsTemplateConfigResource,
 		},
 		"build_components": {
 			Type:     schema.TypeList,
 			Optional: true,
 			Elem:     templateComponentResource,
 		},
-		"aws": {
+		"test_components": {
 			Type:     schema.TypeList,
 			Optional: true,
-			Elem:     awsTemplateConfigResource,
+			Elem:     templateComponentResource,
+		},
+		"notifications": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem:     templateNotificationsResource,
 		},
 		"tags": {
 			Type:     schema.TypeList,

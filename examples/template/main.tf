@@ -29,6 +29,10 @@ resource "imagefactory_template" "template" {
     aws {
       region = "eu-west-1"
     }
+    notifications {
+      type = "SNS"
+      uri  = "arn:aws:sns:eu-west-1:472544702912:Topic"
+    }
     tags {
       key   = "KEY_ONE"
       value = "VALUE_A"

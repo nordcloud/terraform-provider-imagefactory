@@ -20,6 +20,14 @@ var componentSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 	},
+	"type": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"stage": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
 	"cloud_providers": {
 		Type:     schema.TypeList,
 		Computed: true,
@@ -34,21 +42,21 @@ var componentSchema = map[string]*schema.Schema{
 			Type: schema.TypeString,
 		},
 	},
-// 	"content": {
-// 		Type:     schema.TypeList,
-// 		Computed: true,
-// 		Elem:     contentSchema,
-// 	},
+	"content": {
+		Type:     schema.TypeList,
+		Computed: true,
+		Elem:     contentSchema,
+	},
 }
 
-// var contentSchema = &schema.Schema{
-// 	Elem: map[string]*schema.Schema{
-// 	"version": {
-// 		Type:     schema.TypeString,
-// 		Computed: true,
-// 	},
-// 	},
-// }
+var contentSchema = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"version": {
+			Type:     schema.TypeString,
+			Computed: true,
+		},
+	},
+}
 
 func dataSourceSystemComponent() *schema.Resource {
 	return &schema.Resource{
@@ -87,6 +95,10 @@ func dataSourceSystemComponentRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.FromErr(err)
 	}
 
+	if err := d.Set("content", flattenComponentContent(component.Content)); err != nil {
+		return diag.FromErr(err)
+	}
+
 	return diags
 }
 
@@ -105,9 +117,11 @@ func dataSourceSystemComponentsRead(ctx context.Context, d *schema.ResourceData,
 		components = append(components, map[string]interface{}{
 			"id":              res[v].ID,
 			"name":            res[v].Name,
+			"type":            res[v].Type,
+			"stage":           res[v].Stage,
 			"cloud_providers": *res[v].Providers,
 		  "os_types":        *res[v].OsTypes,
-		  // "content":         *res[v].Content,
+		  "content":         flattenComponentContent(res[v].Content),
 		})
 	}
 

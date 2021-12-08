@@ -6,6 +6,8 @@ query GetComponents($input: ComponentsInput!) {
       id
       name
       providers
+      type
+      stage
       osTypes
       content {
         version

@@ -30,7 +30,7 @@ var componentSchema = map[string]*schema.Schema{
 	},
 	"cloud_providers": {
 		Type:     schema.TypeList,
-		Computed: true,
+		Required: true,
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
@@ -85,7 +85,7 @@ func dataSourceSystemComponentRead(ctx context.Context, d *schema.ResourceData, 
 
 	config := m.(*Config)
 
-	component, err := config.client.GetSystemComponent(d.Get("name").(string))
+	component, err := config.client.GetSystemComponent(d.Get("name").(string), d.Get("cloud_providers").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}

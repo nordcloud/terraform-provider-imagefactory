@@ -15,8 +15,12 @@ provider "imagefactory" {
   api_url = "https://api.imagefactory.dev.nordcloudapp.com/graphql"
 }
 
-data "imagefactory_system_components" "all" {}
+data "imagefactory_system_component" "vmvare" {
+  name            = "AWS Inspector agent"
+  cloud_providers = "AWS"
 
-output "all_system_components" {
-  value = data.imagefactory_system_components.all.components
+}
+
+output "component" {
+  value = data.imagefactory_system_component.vmvare
 }

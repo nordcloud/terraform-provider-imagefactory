@@ -16,7 +16,7 @@ provider "imagefactory" {
 }
 
 resource "imagefactory_imbcloud_account" "imbcloud_account" {
-  alias       = "IF IBMCloud Account change"
+  alias       = "IF IBMCloud Account"
   description = "IF IBMCloud Account to distribute IBMCloud images"
   account_id  = "1234567"
   access {

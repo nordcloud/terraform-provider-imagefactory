@@ -19,6 +19,6 @@ data "imagefactory_system_component" "hardening-level-1" {
   name = "Hardening level 1"
 }
 
-output "component" {
+output "system-component" {
   value = data.imagefactory_system_component.hardening-level-1
 }

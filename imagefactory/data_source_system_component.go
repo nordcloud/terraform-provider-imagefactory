@@ -136,8 +136,8 @@ func dataSourceSystemComponentsRead(ctx context.Context, d *schema.ResourceData,
 			"type":            res[v].Type,
 			"stage":           res[v].Stage,
 			"cloud_providers": *res[v].Providers,
-		  "os_types":        *res[v].OsTypes,
-		  "content":         flattenComponentContent(res[v].Content),
+			"os_types":        *res[v].OsTypes,
+			"content":         flattenComponentContent(res[v].Content),
 		})
 	}
 

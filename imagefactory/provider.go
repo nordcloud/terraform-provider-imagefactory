@@ -34,6 +34,7 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"imagefactory_aws_account":        resourceAwsAccount(),
 			"imagefactory_azure_subscription": resourceAzureSubscription(),
+			"imagefactory_imbcloud_account":   resourceIBMCloudAccount(),
 			"imagefactory_template":           resourceTemplate(),
 		},
 		ConfigureContextFunc: providerConfigure,

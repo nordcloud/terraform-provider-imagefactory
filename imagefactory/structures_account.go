@@ -48,6 +48,25 @@ func expandAzureSubscriptionAccess(in []interface{}) *graphql.AccountCredentials
 	return accountCredentials
 }
 
+func expandIMBCloudAccountAccess(in []interface{}) *graphql.AccountCredentials {
+	accountCredentials := &graphql.AccountCredentials{}
+
+	if len(in) == 0 {
+		return accountCredentials
+	}
+
+	access := in[0].(map[string]interface{})
+	accountCredentials.Ibmcloud = &graphql.IBMCloudCredentials{
+		Apikey:            graphql.String(access["apikey"].(string)),
+		Region:            graphql.String(access["region"].(string)),
+		CosBucket:         graphql.String(access["cos_bucket"].(string)),
+		ResourceGroupName: graphql.String(access["resource_group_name"].(string)),
+		ResourceGroupId:   graphql.String(access["resource_group_id"].(string)),
+	}
+
+	return accountCredentials
+}
+
 func flattenAccountState(in *graphql.AccountState) map[string]string {
 	out := map[string]string{
 		"status": string(in.Status),

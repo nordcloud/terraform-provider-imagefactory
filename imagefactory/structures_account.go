@@ -13,12 +13,12 @@ func expandAwsAccountAccess(in []interface{}) *graphql.AccountCredentials {
 		return accountCredentials
 	}
 
-	awsAccess := in[0].(map[string]interface{})
-	roleExternalID := graphql.String(awsAccess["role_external_id"].(string))
+	access := in[0].(map[string]interface{})
+	roleExternalID := graphql.String(access["role_external_id"].(string))
 	accountCredentials.Aws = &graphql.AWSCredentials{
 		Roles: &[]graphql.AWSCredentialsRole{
 			{
-				Arn:        graphql.String(awsAccess["role_arn"].(string)),
+				Arn:        graphql.String(access["role_arn"].(string)),
 				ExternalId: &roleExternalID,
 			},
 		},
@@ -34,15 +34,39 @@ func expandAzureSubscriptionAccess(in []interface{}) *graphql.AccountCredentials
 		return accountCredentials
 	}
 
-	azureAccess := in[0].(map[string]interface{})
+	access := in[0].(map[string]interface{})
 	accountCredentials.Azure = &graphql.AzureCredentials{
-		ResourceGroupName:  graphql.String(azureAccess["resource_group_name"].(string)),
-		TenantId:           graphql.String(azureAccess["tenant_id"].(string)),
-		AppId:              graphql.String(azureAccess["app_id"].(string)),
-		Password:           graphql.String(azureAccess["password"].(string)),
-		StorageAccount:     graphql.String(azureAccess["storage_account"].(string)),
-		StorageAccountKey:  graphql.String(azureAccess["storage_account_key"].(string)),
-		SharedImageGallery: graphql.String(azureAccess["shared_image_gallery"].(string)),
+		ResourceGroupName:  graphql.String(access["resource_group_name"].(string)),
+		TenantId:           graphql.String(access["tenant_id"].(string)),
+		AppId:              graphql.String(access["app_id"].(string)),
+		Password:           graphql.String(access["password"].(string)),
+		StorageAccount:     graphql.String(access["storage_account"].(string)),
+		StorageAccountKey:  graphql.String(access["storage_account_key"].(string)),
+		SharedImageGallery: graphql.String(access["shared_image_gallery"].(string)),
+	}
+
+	return accountCredentials
+}
+
+func expandGcpOrganizationAccess(in []interface{}) *graphql.AccountCredentials {
+	accountCredentials := &graphql.AccountCredentials{}
+
+	if len(in) == 0 {
+		return accountCredentials
+	}
+
+	access := in[0].(map[string]interface{})
+	accountCredentials.Gcp = &graphql.GCPCredentials{
+		Type:                    graphql.String(access["type"].(string)),
+		PrivateKey:              graphql.String(access["private_key"].(string)),
+		AuthUri:                 graphql.String(access["auth_uri"].(string)),
+		ClientId:                graphql.String(access["client_id"].(string)),
+		ClientEmail:             graphql.String(access["client_email"].(string)),
+		TokenUri:                graphql.String(access["token_uri"].(string)),
+		AuthProviderX509CertUrl: graphql.String(access["auth_provider_x509_cert_url"].(string)),
+		ClientX509CertUrl:       graphql.String(access["client_x509_cert_url"].(string)),
+		ProjectId:               graphql.String(access["project_id"].(string)),
+		PrivateKeyId:            graphql.String(access["private_key_id"].(string)),
 	}
 
 	return accountCredentials

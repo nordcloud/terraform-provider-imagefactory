@@ -18,6 +18,8 @@ func getCloudProviderKeyName(provider graphql.Provider) string {
 		cloudProviderKey = "account_id"
 	case graphql.ProviderAZURE:
 		cloudProviderKey = "subscription_id"
+	case graphql.ProviderGCP:
+		cloudProviderKey = "project_id"
 	}
 
 	return cloudProviderKey
@@ -40,6 +42,8 @@ func accountCreate(ctx context.Context, d *schema.ResourceData, m interface{}, p
 		input.Credentials = expandAwsAccountAccess(d.Get("access").([]interface{}))
 	case graphql.ProviderAZURE:
 		input.Credentials = expandAzureSubscriptionAccess(d.Get("access").([]interface{}))
+	case graphql.ProviderGCP:
+		input.Credentials = expandGcpOrganizationAccess(d.Get("access").([]interface{}))
 	}
 
 	if len(d.Get("description").(string)) > 0 {

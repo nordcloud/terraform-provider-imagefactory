@@ -16,7 +16,7 @@ provider "imagefactory" {
 }
 
 resource "imagefactory_azure_subscription" "azure_subscription" {
-  alias           = "IF Azure Subscription change"
+  alias           = "IF Azure Subscription"
   description     = "Azure subscription to distribute Azure images"
   subscription_id = "12345678-9012-3456-7890-123456789012"
   access {

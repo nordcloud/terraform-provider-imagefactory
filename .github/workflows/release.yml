@@ -79,7 +79,9 @@ jobs:
         path: terraform-provider-imagefactory_${{ needs.release.outputs.version }}_${{ matrix.goos }}_${{ matrix.goarch }}.zip
 
   sign:
-    needs: upload
+    needs:
+      - release 
+      - upload
     name: Sign provider and upload metadata files
     runs-on: ubuntu-latest
     steps:

@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
     steps:
     - uses: actions/create-release@v1
       id: create_release
@@ -21,6 +22,11 @@ jobs:
         release_name: Release ${{ github.ref }}
         draft: true
         prerelease: false
+    - id: get_version
+      run: |
+        $v=$(echo ${{ github.ref }} | tr -d 'v'))
+        echo "::set-output name=version::$v"
+
   upload:
     needs: release
     name: Build and upload release assets
@@ -58,12 +64,48 @@ jobs:
     - run: |
         make build VERSION=${{ github.ref }} GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }}
         zip -r -j terraform-provider.zip bin/*
-    - name: Upload asset
+    - name: Upload release asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.release.outputs.upload_url }}
         asset_path: ./terraform-provider.zip
-        asset_name: terraform-provider-imagefactory_${{ matrix.goos }}_${{ matrix.goarch }}.zip
+        asset_name: terraform-provider-imagefactory_${{ needs.release.outputs.version }}_${{ matrix.goos }}_${{ matrix.goarch }}.zip
+        asset_content_type: application/binary
+    - uses: actions/upload-artifact@v2
+      with:
+        name: terraform-provider-imagefactory_${{ matrix.goos }}_${{ matrix.goarch }}
+        path: terraform-provider.zip
+
+  sign:
+    name: Sign provider and upload metadata files
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        path: artifacts
+    - run: |
+        mv terraform-registry-manifest.json terraform-provider-imagefactory_${{ needs.release.outputs.version }}_manifest.json
+        mv artifacts/*/*.zip ./
+        shasum -a 256 *.zip *_manifest.json > terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS
+        
+    - name: Upload metadata file
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.release.outputs.upload_url }}
+        asset_path: ./terraform-provider-imagefactory_${{ needs.release.outputs.version }}_manifest.json
+        asset_name: terraform-provider-imagefactory_${{ needs.release.outputs.version }}_manifest.json
+        asset_content_type: application/binary
+    - name: Upload SHA256 file
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.release.outputs.upload_url }}
+        asset_path: ./terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS
+        asset_name: terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS
         asset_content_type: application/binary

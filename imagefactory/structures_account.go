@@ -48,6 +48,30 @@ func expandAzureSubscriptionAccess(in []interface{}) *graphql.AccountCredentials
 	return accountCredentials
 }
 
+func expandGcpOrganizationAccess(in []interface{}) *graphql.AccountCredentials {
+	accountCredentials := &graphql.AccountCredentials{}
+
+	if len(in) == 0 {
+		return accountCredentials
+	}
+
+	azureAccess := in[0].(map[string]interface{})
+	accountCredentials.Gcp = &graphql.GCPCredentials{
+		Type:                    graphql.String(azureAccess["type"].(string)),
+		PrivateKey:              graphql.String(azureAccess["private_key"].(string)),
+		AuthUri:                 graphql.String(azureAccess["auth_uri"].(string)),
+		ClientId:                graphql.String(azureAccess["client_id"].(string)),
+		ClientEmail:             graphql.String(azureAccess["client_email"].(string)),
+		TokenUri:                graphql.String(azureAccess["token_uri"].(string)),
+		AuthProviderX509CertUrl: graphql.String(azureAccess["auth_provider_x509_cert_url"].(string)),
+		ClientX509CertUrl:       graphql.String(azureAccess["client_x509_cert_url"].(string)),
+		ProjectId:               graphql.String(azureAccess["project_id"].(string)),
+		PrivateKeyId:            graphql.String(azureAccess["private_key_id"].(string)),
+	}
+
+	return accountCredentials
+}
+
 func flattenAccountState(in *graphql.AccountState) map[string]string {
 	out := map[string]string{
 		"status": string(in.Status),

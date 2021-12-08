@@ -13,6 +13,10 @@ jobs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
       version: ${{ steps.get_version.outputs.version }}
     steps:
+    - id: get_version
+      run: |
+        v=$(echo ${{ github.ref }} | sed 's/refs\/tags\/v//'   tr -d 'v')
+        echo "::set-output name=version::$v"
     - uses: actions/create-release@v1
       id: create_release
       env:
@@ -22,10 +26,6 @@ jobs:
         release_name: Release ${{ github.ref }}
         draft: true
         prerelease: false
-    - id: get_version
-      run: |
-        $v=$(echo ${{ github.ref }} | tr -d 'v')
-        echo "::set-output name=version::$v"
 
   upload:
     needs: release

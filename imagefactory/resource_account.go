@@ -14,8 +14,7 @@ import (
 func getCloudProviderKeyName(provider graphql.Provider) string {
 	var cloudProviderKey string
 	switch provider {
-	case graphql.ProviderAWS:
-	case graphql.ProviderIBMCLOUD:
+	case graphql.ProviderAWS, graphql.ProviderIBMCLOUD:
 		cloudProviderKey = "account_id"
 	case graphql.ProviderAZURE:
 		cloudProviderKey = "subscription_id"
@@ -44,10 +43,10 @@ func accountCreate(ctx context.Context, d *schema.ResourceData, m interface{}, p
 		input.Credentials = expandAwsAccountAccess(d.Get("access").([]interface{}))
 	case graphql.ProviderAZURE:
 		input.Credentials = expandAzureSubscriptionAccess(d.Get("access").([]interface{}))
-	case graphql.ProviderIBMCLOUD:
-		input.Credentials = expandIMBCloudAccountAccess(d.Get("access").([]interface{}))
 	case graphql.ProviderGCP:
 		input.Credentials = expandGcpOrganizationAccess(d.Get("access").([]interface{}))
+	case graphql.ProviderIBMCLOUD:
+		input.Credentials = expandIMBCloudAccountAccess(d.Get("access").([]interface{}))
 	default:
 	}
 

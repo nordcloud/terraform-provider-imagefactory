@@ -7,6 +7,27 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
+var systemComponentSchema = map[string]*schema.Schema{
+	"id": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"name": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"stage": {
+		Type:         schema.TypeString,
+		Required:     true,
+		ValidateFunc: validation.StringInSlice(validStages, false),
+	},
+	"cloud_provider": {
+		Type:         schema.TypeString,
+		Required:     true,
+		ValidateFunc: validation.StringInSlice(validCloudProviders, false),
+	},
+}
+
 var contentComponentResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"script": {

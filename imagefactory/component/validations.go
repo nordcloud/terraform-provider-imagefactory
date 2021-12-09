@@ -2,17 +2,17 @@
 
 package component
 
+var validStages = []string{
+	"BUILD",
+	"TEST",
+}
+
 var validCloudProviders = []string{
 	"AWS",
 	"AZURE",
 	"GCP",
 	"IBMCLOUD",
 	"VMWARE",
-}
-
-var validStages = []string{
-	"BUILD",
-	"TEST",
 }
 
 var validOSTypes = []string{

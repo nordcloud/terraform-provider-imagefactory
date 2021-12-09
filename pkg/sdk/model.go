@@ -1,3 +1,5 @@
+// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 package sdk
 
 import "github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
@@ -23,3 +25,11 @@ type NewComponentContent graphql.NewComponentContent
 type NewTemplate graphql.NewTemplate
 
 type TemplateChanges graphql.TemplateChanges
+
+type RoleBinding graphql.RoleBinding
+
+type NewRoleBinding graphql.NewRoleBinding
+
+type RoleBindingChanges graphql.RoleBindingChanges
+
+type ApiKey graphql.ApiKey

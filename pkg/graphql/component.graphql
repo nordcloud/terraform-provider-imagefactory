@@ -1,5 +1,17 @@
 # Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
 
+query GetComponents($input: ComponentsInput!) {
+  components(input: $input) {
+    results {
+      id
+      name
+      providers
+      type
+      stage
+    }
+  }
+}
+
 query GetComponent($input: GetComponentInput!) {
   component(input: $input) {
     id

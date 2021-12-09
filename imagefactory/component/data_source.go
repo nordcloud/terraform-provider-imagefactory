@@ -10,10 +10,17 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
 )
 
-func DataSource() *schema.Resource {
+func DataSourceSystem() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: systemComponentRead,
-		Schema:      systemComponentSchema,
+		Schema:      dataComponentSchema,
+	}
+}
+
+func DataSourceCustom() *schema.Resource {
+	return &schema.Resource{
+		ReadContext: customComponentRead,
+		Schema:      dataComponentSchema,
 	}
 }
 
@@ -23,6 +30,24 @@ func systemComponentRead(ctx context.Context, d *schema.ResourceData, m interfac
 	config := m.(*config.Config)
 
 	component, err := config.APIClient.GetSystemComponent(d.Get("name").(string), d.Get("cloud_provider").(string), d.Get("stage").(string))
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	d.SetId(string(component.ID))
+	if err := d.Set("name", component.Name); err != nil {
+		return diag.FromErr(err)
+	}
+
+	return diags
+}
+
+func customComponentRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	var diags diag.Diagnostics
+
+	config := m.(*config.Config)
+
+	component, err := config.APIClient.GetCustomComponent(d.Get("name").(string), d.Get("cloud_provider").(string), d.Get("stage").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}

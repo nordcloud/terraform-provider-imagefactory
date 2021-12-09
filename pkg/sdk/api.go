@@ -29,4 +29,5 @@ type API interface {
 
 	// Component GET
 	GetSystemComponent(name, cloudProvider, stage string) (Component, error)
+	GetCustomComponent(name, cloudProvider, stage string) (Component, error)
 }

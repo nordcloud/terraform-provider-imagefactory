@@ -23,7 +23,8 @@ func Provider() *schema.Provider {
 		DataSourcesMap: map[string]*schema.Resource{
 			"imagefactory_distribution":     distribution.DataSource(),
 			"imagefactory_api_key":          apikey.DataSource(),
-			"imagefactory_system_component": component.DataSource(),
+			"imagefactory_system_component": component.DataSourceSystem(),
+			"imagefactory_custom_component": component.DataSourceCustom(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"imagefactory_aws_account":        account.ResourceAWS(),

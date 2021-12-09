@@ -331,3 +331,42 @@ func (c APIClient) GetSystemComponent(name, cloudProvider, stage string) (Compon
 
 	return Component(result[0]), nil
 }
+
+func (c APIClient) GetCustomComponent(name, cloudProvider, stage string) (Component, error) {
+	req, err := graphql.NewGetComponentsRequest(c.apiURL, &graphql.GetComponentsVariables{
+		Input: graphql.ComponentsInput{
+			Filters: &graphql.ComponentsFilters{
+				Filters: &[]graphql.ComponentsFilter{
+					{
+						Field:  graphql.ComponentAttributeNAME,
+						Values: &[]graphql.String{graphql.String(name)},
+					},
+					{
+						Field:  graphql.ComponentAttributePROVIDERS,
+						Values: &[]graphql.String{graphql.String(cloudProvider)},
+					},
+					{
+						Field:  graphql.ComponentAttributeSTAGE,
+						Values: &[]graphql.String{graphql.String(stage)},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		return Component{}, fmt.Errorf("getting component request %w", err)
+	}
+
+	r := &graphql.Query{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return Component{}, fmt.Errorf("getting component %w", err)
+	}
+
+	if r.Components.Results == nil || len(*r.Components.Results) == 0 {
+		return Component{}, fmt.Errorf("component '%s' in cloud provider '%s' and stage '%s' not found", name, cloudProvider, stage)
+	}
+
+	result := *r.Components.Results
+
+	return Component(result[0]), nil
+}

@@ -1,0 +1,11 @@
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+
+query GetApiKeys($input: CustomerApiKeysInput!) {
+  apiKeys(input: $input) {
+    results {
+      id
+      name
+    }
+  }
+}

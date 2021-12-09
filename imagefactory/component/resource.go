@@ -25,8 +25,6 @@ func Resource() *schema.Resource {
 }
 
 func resourceComponentCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	var diags diag.Diagnostics
-
 	c := m.(*config.Config)
 
 	input := sdk.NewComponent{
@@ -45,16 +43,10 @@ func resourceComponentCreate(ctx context.Context, d *schema.ResourceData, m inte
 		return diag.FromErr(err)
 	}
 
-	d.SetId(string(component.ID))
-
-	resourceComponentRead(ctx, d, m)
-
-	return diags
+	return setProps(d, component)
 }
 
 func resourceComponentRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
-	var diags diag.Diagnostics
-
 	c := m.(*config.Config)
 
 	componentID := d.Id()
@@ -64,25 +56,7 @@ func resourceComponentRead(ctx context.Context, d *schema.ResourceData, m interf
 		return diag.FromErr(err)
 	}
 
-	if err := d.Set("name", component.Name); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := d.Set("description", component.Description); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := d.Set("stage", component.Stage); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := d.Set("os_types", flattenOSTypes(component.OsTypes)); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := d.Set("cloud_providers", flattenProviders(component.Providers)); err != nil {
-		return diag.FromErr(err)
-	}
-
-	d.SetId(componentID)
-
-	return diags
+	return setProps(d, component)
 }
 
 func resourceComponentUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
@@ -90,6 +64,10 @@ func resourceComponentUpdate(ctx context.Context, d *schema.ResourceData, m inte
 
 	componentID := d.Id()
 
+	var (
+		err       error
+		component sdk.Component
+	)
 	if d.HasChanges("name", "os_types", "cloud_providers", "description") {
 		name := graphql.String(d.Get("name").(string))
 		input := sdk.ComponentChanges{
@@ -102,7 +80,9 @@ func resourceComponentUpdate(ctx context.Context, d *schema.ResourceData, m inte
 			description := graphql.String(d.Get("description").(string))
 			input.Description = &description
 		}
-		if _, err := c.APIClient.UpdateComponent(input); err != nil {
+
+		component, err = c.APIClient.UpdateComponent(input)
+		if err != nil {
 			return diag.FromErr(err)
 		}
 	}
@@ -119,12 +99,13 @@ func resourceComponentUpdate(ctx context.Context, d *schema.ResourceData, m inte
 			ScriptProvisioner: graphql.ShellScriptProvisioner(m["provisioner"].(string)),
 		}
 
-		if _, err := c.APIClient.CreateComponentVersion(input); err != nil {
+		component, err = c.APIClient.CreateComponentVersion(input)
+		if err != nil {
 			return diag.FromErr(err)
 		}
 	}
 
-	return resourceComponentRead(ctx, d, m)
+	return setProps(d, component)
 }
 
 func resourceComponentDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -155,7 +136,29 @@ func resourceComponentDelete(ctx context.Context, d *schema.ResourceData, m inte
 		return diag.FromErr(err)
 	}
 
-	d.SetId("")
+	return diags
+}
+
+func setProps(d *schema.ResourceData, c sdk.Component) diag.Diagnostics {
+	var diags diag.Diagnostics
+
+	d.SetId(string(c.ID))
+
+	if err := d.Set("name", c.Name); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("description", c.Description); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("stage", c.Stage); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("os_types", flattenOSTypes(c.OsTypes)); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("cloud_providers", flattenProviders(c.Providers)); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return diags
 }

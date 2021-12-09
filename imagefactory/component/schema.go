@@ -13,10 +13,10 @@ var contentComponentResource = &schema.Resource{
 			Type:     schema.TypeString,
 			Required: true,
 		},
-		"script_provisioner": {
+		"provisioner": {
 			Type:         schema.TypeString,
 			Required:     true,
-			ValidateFunc: validation.StringInSlice(valiScriptProvisioners, false),
+			ValidateFunc: validation.StringInSlice(validProvisioners, false),
 		},
 	},
 }

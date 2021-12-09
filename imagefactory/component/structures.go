@@ -32,6 +32,34 @@ func expandContent(in []interface{}) graphql.NewVersionedContent {
 	m := in[0].(map[string]interface{})
 	return graphql.NewVersionedContent{
 		Script:            graphql.String(m["script"].(string)),
-		ScriptProvisioner: graphql.ShellScriptProvisioner(m["script_provisioner"].(string)),
+		ScriptProvisioner: graphql.ShellScriptProvisioner(m["provisioner"].(string)),
 	}
+}
+
+func flattenOSTypes(in *[]graphql.OSType) []string {
+	out := []string{}
+
+	if in == nil {
+		return out
+	}
+
+	for _, v := range *in {
+		out = append(out, string(v))
+	}
+
+	return out
+}
+
+func flattenProviders(in *[]graphql.Provider) []string {
+	out := []string{}
+
+	if in == nil {
+		return out
+	}
+
+	for _, v := range *in {
+		out = append(out, string(v))
+	}
+
+	return out
 }

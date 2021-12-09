@@ -69,6 +69,15 @@ func resourceComponentRead(ctx context.Context, d *schema.ResourceData, m interf
 	if err := d.Set("description", component.Description); err != nil {
 		return diag.FromErr(err)
 	}
+	if err := d.Set("stage", component.Stage); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("os_types", flattenOSTypes(component.OsTypes)); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("cloud_providers", flattenProviders(component.Providers)); err != nil {
+		return diag.FromErr(err)
+	}
 
 	d.SetId(componentID)
 
@@ -76,28 +85,46 @@ func resourceComponentRead(ctx context.Context, d *schema.ResourceData, m interf
 }
 
 func resourceComponentUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
-	var diags diag.Diagnostics
-
 	c := m.(*config.Config)
 
 	componentID := d.Id()
 
-	name := graphql.String(d.Get("name").(string))
-	input := sdk.ComponentChanges{
-		ID:   graphql.String(componentID),
-		Name: &name,
-	}
-	if len(d.Get("description").(string)) > 0 {
-		description := graphql.String(d.Get("description").(string))
-		input.Description = &description
-	}
-	if _, err := c.APIClient.UpdateComponent(input); err != nil {
-		return diag.FromErr(err)
+	if d.HasChanges("name", "os_types", "cloud_providers", "description") {
+		name := graphql.String(d.Get("name").(string))
+		input := sdk.ComponentChanges{
+			ID:        graphql.String(componentID),
+			Name:      &name,
+			OsTypes:   expandOSTypes(d.Get("os_types").([]interface{})),
+			Providers: expandProviders(d.Get("cloud_providers").([]interface{})),
+		}
+		if len(d.Get("description").(string)) > 0 {
+			description := graphql.String(d.Get("description").(string))
+			input.Description = &description
+		}
+		if _, err := c.APIClient.UpdateComponent(input); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
-	resourceComponentRead(ctx, d, m)
+	// add new component version
+	if d.HasChange("content") {
+		in := d.Get("content").([]interface{})
+		m := in[0].(map[string]interface{})
 
-	return diags
+		active := graphql.Boolean(true)
+		input := sdk.NewComponentContent{
+			ID:                graphql.String(componentID),
+			Active:            &active,
+			Script:            graphql.String(m["script"].(string)),
+			ScriptProvisioner: graphql.ShellScriptProvisioner(m["provisioner"].(string)),
+		}
+
+		if _, err := c.APIClient.CreateComponentVersion(input); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	return resourceComponentRead(ctx, d, m)
 }
 
 func resourceComponentDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

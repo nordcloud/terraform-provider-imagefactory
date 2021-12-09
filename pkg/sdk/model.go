@@ -18,6 +18,8 @@ type NewComponent graphql.NewComponent
 
 type ComponentChanges graphql.ComponentChanges
 
+type NewComponentContent graphql.NewComponentContent
+
 type NewTemplate graphql.NewTemplate
 
 type TemplateChanges graphql.TemplateChanges

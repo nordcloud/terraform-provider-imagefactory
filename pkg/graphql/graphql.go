@@ -795,6 +795,92 @@ func (client *Client) DeleteComponent(vars *DeleteComponentVariables) (*DeleteCo
 }
 
 //
+// mutation CreateComponentVersion($input: NewComponentContent!)
+//
+
+type CreateComponentVersionVariables struct {
+	Input NewComponentContent `json:"input"`
+}
+
+type CreateComponentVersionResponse struct {
+	CreateComponentVersion struct {
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Type        string `json:"type"`
+		Stage       string `json:"stage"`
+		Providers   string `json:"providers"`
+		OsTypes     string `json:"osTypes"`
+		Content     *[]struct {
+			Version string `json:"version"`
+			Active  string `json:"active"`
+		} `json:"content"`
+	} `json:"createComponentVersion"`
+}
+
+type CreateComponentVersionRequest struct {
+	*http.Request
+}
+
+func NewCreateComponentVersionRequest(url string, vars *CreateComponentVersionVariables) (*CreateComponentVersionRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation CreateComponentVersion($input: NewComponentContent!) {
+  createComponentVersion(input: $input) {
+    id
+    name
+    description
+    type
+    stage
+    providers
+    osTypes
+    content {
+      version
+      active
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &CreateComponentVersionRequest{req}, nil
+}
+
+func (req *CreateComponentVersionRequest) Execute(client *http.Client) (*CreateComponentVersionResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result CreateComponentVersionResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func CreateComponentVersion(url string, client *http.Client, vars *CreateComponentVersionVariables) (*CreateComponentVersionResponse, error) {
+	req, err := NewCreateComponentVersionRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) CreateComponentVersion(vars *CreateComponentVersionVariables) (*CreateComponentVersionResponse, error) {
+	return CreateComponentVersion(client.Url, client.Client, vars)
+}
+
+//
 // query GetDistributions($input: DistributionsInput!)
 //
 

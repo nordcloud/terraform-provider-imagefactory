@@ -156,6 +156,22 @@ func (c APIClient) DeleteComponent(componentID string) error {
 	return nil
 }
 
+func (c APIClient) CreateComponentVersion(input NewComponentContent) (Component, error) {
+	req, err := graphql.NewCreateComponentVersionRequest(c.apiURL, &graphql.CreateComponentVersionVariables{
+		Input: graphql.NewComponentContent(input),
+	})
+	if err != nil {
+		return Component{}, fmt.Errorf("getting create component version request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return Component{}, fmt.Errorf("creating component version %w", err)
+	}
+
+	return Component(r.CreateComponentVersion), nil
+}
+
 func (c APIClient) GetDistribution(name, cloudProvider string) (Distribution, error) {
 	limit := graphql.Int(1)
 	req, err := graphql.NewGetDistributionsRequest(c.apiURL, &graphql.GetDistributionsVariables{

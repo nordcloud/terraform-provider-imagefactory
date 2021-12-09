@@ -20,7 +20,7 @@ var validOSTypes = []string{
 	"WINDOWS",
 }
 
-var valiScriptProvisioners = []string{
+var validProvisioners = []string{
 	"POWERSHELL",
 	"SHELL",
 }

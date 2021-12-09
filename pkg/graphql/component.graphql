@@ -10,8 +10,8 @@ query GetComponent($input: GetComponentInput!) {
     providers
     osTypes
     content {
-	version
-	active
+      version
+      active
     }
   }
 }
@@ -26,8 +26,8 @@ mutation CreateComponent($input: NewComponent!) {
     providers
     osTypes
     content {
-	version
-	active
+      version
+      active
     }
   }
 }
@@ -42,12 +42,29 @@ mutation UpdateComponent($input: ComponentChanges!) {
     providers
     osTypes
     content {
-	version
-	active
+      version
+      active
     }
   }
 }
 
 mutation DeleteComponent($input: ComponentIdInput!) {
   deleteComponent(input: $input)
+}
+
+
+mutation CreateComponentVersion($input: NewComponentContent!) {
+  createComponentVersion(input: $input) {
+    id
+    name
+    description
+    type
+    stage
+    providers
+    osTypes
+    content {
+      version
+      active
+    }
+  }
 }

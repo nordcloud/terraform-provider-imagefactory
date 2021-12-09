@@ -10,7 +10,6 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
 )
 
-
 func DataSource() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: systemComponentRead,

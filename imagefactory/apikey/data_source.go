@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	
+
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/sdk"
 )

@@ -1,106 +1,19 @@
 // Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
 
-package imagefactory
+package imagetemplate
 
 import (
 	"context"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
+	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
+	"github.com/nordcloud/terraform-provider-imagefactory/pkg/sdk"
 )
 
-var templateComponentResource = &schema.Resource{
-	Schema: map[string]*schema.Schema{
-		"id": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-	},
-}
-
-var awsTemplateConfigResource = &schema.Resource{
-	Schema: map[string]*schema.Schema{
-		"region": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-	},
-}
-
-var templateConfigResource = &schema.Resource{
-	Schema: map[string]*schema.Schema{
-		"test_components": {
-			Type:     schema.TypeList,
-			Optional: true,
-			Elem:     templateComponentResource,
-		},
-		"build_components": {
-			Type:     schema.TypeList,
-			Optional: true,
-			Elem:     templateComponentResource,
-		},
-		"aws": {
-			Type:     schema.TypeList,
-			Optional: true,
-			Elem:     awsTemplateConfigResource,
-		},
-	},
-}
-
-var templateStateSchema = &schema.Schema{
-	Type: schema.TypeString,
-	Elem: map[string]*schema.Schema{
-		"status": {
-			Type:     schema.TypeString,
-			Computed: true,
-		},
-		"error": {
-			Type:     schema.TypeString,
-			Computed: true,
-		},
-	},
-}
-
-var templateSchema = map[string]*schema.Schema{
-	"name": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-	"description": {
-		Type:     schema.TypeString,
-		Optional: true,
-	},
-	"distribution_id": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-	"cloud_provider": {
-		Type:     schema.TypeString,
-		Required: true,
-		ValidateFunc: validation.StringInSlice([]string{
-			"AWS",
-			"AZURE",
-			"GCP",
-			"IBMCLOUD",
-			"VMWARE",
-		}, false),
-	},
-	"config": {
-		Type:     schema.TypeList,
-		Optional: true,
-		Elem:     templateConfigResource,
-	},
-	"state": {
-		Type:     schema.TypeMap,
-		Computed: true,
-		Elem:     templateStateSchema,
-	},
-}
-
-func resourceTemplate() *schema.Resource {
+func Resource() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceTemplateCreate,
 		ReadContext:   resourceTemplateRead,
@@ -113,9 +26,9 @@ func resourceTemplate() *schema.Resource {
 func resourceTemplateCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	config := m.(*Config)
+	config := m.(*config.Config)
 
-	input := graphql.NewTemplate{
+	input := sdk.NewTemplate{
 		Name:           graphql.String(d.Get("name").(string)),
 		DistributionId: graphql.String(d.Get("distribution_id").(string)),
 		Provider:       graphql.Provider(d.Get("cloud_provider").(string)),
@@ -125,7 +38,7 @@ func resourceTemplateCreate(ctx context.Context, d *schema.ResourceData, m inter
 		description := graphql.String(d.Get("description").(string))
 		input.Description = &description
 	}
-	template, err := config.client.CreateTemplate(input)
+	template, err := config.APIClient.CreateTemplate(input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -140,11 +53,11 @@ func resourceTemplateCreate(ctx context.Context, d *schema.ResourceData, m inter
 func resourceTemplateRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
 	var diags diag.Diagnostics
 
-	config := m.(*Config)
+	config := m.(*config.Config)
 
 	templateID := d.Id()
 
-	template, err := config.client.GetTemplate(templateID)
+	template, err := config.APIClient.GetTemplate(templateID)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -170,12 +83,12 @@ func resourceTemplateRead(ctx context.Context, d *schema.ResourceData, m interfa
 func resourceTemplateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
 	var diags diag.Diagnostics
 
-	config := m.(*Config)
+	config := m.(*config.Config)
 
 	templateID := d.Id()
 
 	name := graphql.String(d.Get("name").(string))
-	input := graphql.TemplateChanges{
+	input := sdk.TemplateChanges{
 		ID:     graphql.String(templateID),
 		Name:   &name,
 		Config: expandTemplateConfig(d.Get("config").([]interface{})),
@@ -184,7 +97,7 @@ func resourceTemplateUpdate(ctx context.Context, d *schema.ResourceData, m inter
 		description := graphql.String(d.Get("description").(string))
 		input.Description = &description
 	}
-	if _, err := config.client.UpdateTemplate(input); err != nil {
+	if _, err := config.APIClient.UpdateTemplate(input); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -196,11 +109,11 @@ func resourceTemplateUpdate(ctx context.Context, d *schema.ResourceData, m inter
 func resourceTemplateDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	config := m.(*Config)
+	config := m.(*config.Config)
 
 	templateID := d.Id()
 
-	if err := config.client.DeleteTemplate(templateID); err != nil {
+	if err := config.APIClient.DeleteTemplate(templateID); err != nil {
 		return diag.FromErr(err)
 	}
 

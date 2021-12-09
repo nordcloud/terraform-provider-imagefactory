@@ -1,3 +1,5 @@
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 
 query GetRoleBinding($input: CustomerRoleBindingIdInput!) {
   roleBinding(input: $input) {

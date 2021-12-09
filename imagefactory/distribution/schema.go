@@ -26,17 +26,3 @@ var distributionsSchema = map[string]*schema.Schema{
 		},
 	},
 }
-
-func Resource() *schema.Resource {
-	return &schema.Resource{
-		ReadContext: distributionRead,
-		Schema:      distributionSchema,
-	}
-}
-
-func Resources() *schema.Resource {
-	return &schema.Resource{
-		ReadContext: distributionsRead,
-		Schema:      distributionsSchema,
-	}
-}

@@ -9,9 +9,23 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	
+
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
 )
+
+func DataSource() *schema.Resource {
+	return &schema.Resource{
+		ReadContext: distributionRead,
+		Schema:      distributionSchema,
+	}
+}
+
+func DataSources() *schema.Resource {
+	return &schema.Resource{
+		ReadContext: distributionsRead,
+		Schema:      distributionsSchema,
+	}
+}
 
 func distributionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics

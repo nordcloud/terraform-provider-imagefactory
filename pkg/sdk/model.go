@@ -25,3 +25,5 @@ type NewRoleBinding graphql.NewRoleBinding
 type RoleBindingChanges graphql.RoleBindingChanges
 
 type ApiKey graphql.ApiKey
+
+type Component graphql.Component

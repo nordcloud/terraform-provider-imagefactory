@@ -13,8 +13,9 @@ type API interface {
 	UpdateComponent(input ComponentChanges) (Component, error)
 	DeleteComponent(componentID string) error
 
-	// ComponentVersion CREATE
+	// ComponentVersion C--D
 	CreateComponentVersion(input NewComponentContent) (Component, error)
+	DeleteComponentVersion(componentID, version string) error
 
 	// Distribution GET
 	GetDistribution(name, cloudProvider string) (Distribution, error)

@@ -172,6 +172,25 @@ func (c APIClient) CreateComponentVersion(input NewComponentContent) (Component,
 	return Component(r.CreateComponentVersion), nil
 }
 
+func (c APIClient) DeleteComponentVersion(componentID, version string) error {
+	req, err := graphql.NewDeleteComponentVersionRequest(c.apiURL, &graphql.DeleteComponentVersionVariables{
+		Input: graphql.ComponentVersionIdInput{
+			ComponentId: graphql.String(componentID),
+			Version:     graphql.String(version),
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("getting delete component version request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return fmt.Errorf("deleting component version %w", err)
+	}
+
+	return nil
+}
+
 func (c APIClient) GetDistribution(name, cloudProvider string) (Distribution, error) {
 	limit := graphql.Int(1)
 	req, err := graphql.NewGetDistributionsRequest(c.apiURL, &graphql.GetDistributionsVariables{

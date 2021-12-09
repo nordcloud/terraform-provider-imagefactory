@@ -881,6 +881,68 @@ func (client *Client) CreateComponentVersion(vars *CreateComponentVersionVariabl
 }
 
 //
+// mutation DeleteComponentVersion($input: ComponentVersionIdInput!)
+//
+
+type DeleteComponentVersionVariables struct {
+	Input ComponentVersionIdInput `json:"input"`
+}
+
+type DeleteComponentVersionResponse struct {
+	DeleteComponentVersion string `json:"deleteComponentVersion"`
+}
+
+type DeleteComponentVersionRequest struct {
+	*http.Request
+}
+
+func NewDeleteComponentVersionRequest(url string, vars *DeleteComponentVersionVariables) (*DeleteComponentVersionRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation DeleteComponentVersion($input: ComponentVersionIdInput!) {
+  deleteComponentVersion(input: $input)
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &DeleteComponentVersionRequest{req}, nil
+}
+
+func (req *DeleteComponentVersionRequest) Execute(client *http.Client) (*DeleteComponentVersionResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result DeleteComponentVersionResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func DeleteComponentVersion(url string, client *http.Client, vars *DeleteComponentVersionVariables) (*DeleteComponentVersionResponse, error) {
+	req, err := NewDeleteComponentVersionRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) DeleteComponentVersion(vars *DeleteComponentVersionVariables) (*DeleteComponentVersionResponse, error) {
+	return DeleteComponentVersion(client.Url, client.Client, vars)
+}
+
+//
 // query GetDistributions($input: DistributionsInput!)
 //
 

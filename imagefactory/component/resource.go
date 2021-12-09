@@ -4,6 +4,7 @@ package component
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -106,7 +107,6 @@ func resourceComponentUpdate(ctx context.Context, d *schema.ResourceData, m inte
 		}
 	}
 
-	// add new component version
 	if d.HasChange("content") {
 		in := d.Get("content").([]interface{})
 		m := in[0].(map[string]interface{})
@@ -133,6 +133,23 @@ func resourceComponentDelete(ctx context.Context, d *schema.ResourceData, m inte
 	c := m.(*config.Config)
 
 	componentID := d.Id()
+
+	component, err := c.APIClient.GetComponent(componentID)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	if component.Content != nil && len(*component.Content) > 1 {
+		for _, v := range *component.Content {
+			if v.Active {
+				continue
+			}
+
+			if err := c.APIClient.DeleteComponentVersion(componentID, string(v.Version)); err != nil {
+				return diag.FromErr(fmt.Errorf("deleting component version %s %w", v.Version, err))
+			}
+		}
+	}
 
 	if err := c.APIClient.DeleteComponent(componentID); err != nil {
 		return diag.FromErr(err)

@@ -52,7 +52,6 @@ mutation DeleteComponent($input: ComponentIdInput!) {
   deleteComponent(input: $input)
 }
 
-
 mutation CreateComponentVersion($input: NewComponentContent!) {
   createComponentVersion(input: $input) {
     id
@@ -67,4 +66,8 @@ mutation CreateComponentVersion($input: NewComponentContent!) {
       active
     }
   }
+}
+
+mutation DeleteComponentVersion($input: ComponentVersionIdInput!) {
+  deleteComponentVersion(input: $input)
 }

@@ -475,6 +475,78 @@ func (client *Client) DeleteAccount(vars *DeleteAccountVariables) (*DeleteAccoun
 }
 
 //
+// query GetApiKeys($input: CustomerApiKeysInput!)
+//
+
+type GetApiKeysVariables struct {
+	Input CustomerApiKeysInput `json:"input"`
+}
+
+type GetApiKeysResponse struct {
+	ApiKeys struct {
+		Results *[]struct {
+			ID   string `json:"id"`
+			Name string `json:"name"`
+		} `json:"results"`
+	} `json:"apiKeys"`
+}
+
+type GetApiKeysRequest struct {
+	*http.Request
+}
+
+func NewGetApiKeysRequest(url string, vars *GetApiKeysVariables) (*GetApiKeysRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `query GetApiKeys($input: CustomerApiKeysInput!) {
+  apiKeys(input: $input) {
+    results {
+      id
+      name
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &GetApiKeysRequest{req}, nil
+}
+
+func (req *GetApiKeysRequest) Execute(client *http.Client) (*GetApiKeysResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result GetApiKeysResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func GetApiKeys(url string, client *http.Client, vars *GetApiKeysVariables) (*GetApiKeysResponse, error) {
+	req, err := NewGetApiKeysRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) GetApiKeys(vars *GetApiKeysVariables) (*GetApiKeysResponse, error) {
+	return GetApiKeys(client.Url, client.Client, vars)
+}
+
+//
 // query GetComponents($input: ComponentsInput!)
 //
 
@@ -626,6 +698,360 @@ func GetDistributions(url string, client *http.Client, vars *GetDistributionsVar
 
 func (client *Client) GetDistributions(vars *GetDistributionsVariables) (*GetDistributionsResponse, error) {
 	return GetDistributions(client.Url, client.Client, vars)
+}
+
+//
+// query GetRoleBinding($input: CustomerRoleBindingIdInput!)
+//
+
+type GetRoleBindingVariables struct {
+	Input CustomerRoleBindingIdInput `json:"input"`
+}
+
+type GetRoleBindingResponse struct {
+	RoleBinding struct {
+		ID      string `json:"id"`
+		Kind    string `json:"kind"`
+		Role    string `json:"role"`
+		Subject string `json:"subject"`
+	} `json:"roleBinding"`
+}
+
+type GetRoleBindingRequest struct {
+	*http.Request
+}
+
+func NewGetRoleBindingRequest(url string, vars *GetRoleBindingVariables) (*GetRoleBindingRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `query GetRoleBinding($input: CustomerRoleBindingIdInput!) {
+  roleBinding(input: $input) {
+    id
+    kind
+    role
+    subject
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &GetRoleBindingRequest{req}, nil
+}
+
+func (req *GetRoleBindingRequest) Execute(client *http.Client) (*GetRoleBindingResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result GetRoleBindingResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func GetRoleBinding(url string, client *http.Client, vars *GetRoleBindingVariables) (*GetRoleBindingResponse, error) {
+	req, err := NewGetRoleBindingRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) GetRoleBinding(vars *GetRoleBindingVariables) (*GetRoleBindingResponse, error) {
+	return GetRoleBinding(client.Url, client.Client, vars)
+}
+
+//
+// query GetRoleBindings($input: CustomerRoleBindingsInput!)
+//
+
+type GetRoleBindingsVariables struct {
+	Input CustomerRoleBindingsInput `json:"input"`
+}
+
+type GetRoleBindingsResponse struct {
+	RoleBindings struct {
+		Results *[]struct {
+			ID      string `json:"id"`
+			Kind    string `json:"kind"`
+			Role    string `json:"role"`
+			Subject string `json:"subject"`
+		} `json:"results"`
+	} `json:"roleBindings"`
+}
+
+type GetRoleBindingsRequest struct {
+	*http.Request
+}
+
+func NewGetRoleBindingsRequest(url string, vars *GetRoleBindingsVariables) (*GetRoleBindingsRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `query GetRoleBindings($input: CustomerRoleBindingsInput!) {
+  roleBindings(input: $input) {
+    results {
+      id
+      kind
+      role
+      subject
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &GetRoleBindingsRequest{req}, nil
+}
+
+func (req *GetRoleBindingsRequest) Execute(client *http.Client) (*GetRoleBindingsResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result GetRoleBindingsResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func GetRoleBindings(url string, client *http.Client, vars *GetRoleBindingsVariables) (*GetRoleBindingsResponse, error) {
+	req, err := NewGetRoleBindingsRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) GetRoleBindings(vars *GetRoleBindingsVariables) (*GetRoleBindingsResponse, error) {
+	return GetRoleBindings(client.Url, client.Client, vars)
+}
+
+//
+// mutation CreateRoleBinding($input: NewRoleBinding!)
+//
+
+type CreateRoleBindingVariables struct {
+	Input NewRoleBinding `json:"input"`
+}
+
+type CreateRoleBindingResponse struct {
+	CreateRoleBinding struct {
+		ID      string `json:"id"`
+		Kind    string `json:"kind"`
+		Role    string `json:"role"`
+		Subject string `json:"subject"`
+	} `json:"createRoleBinding"`
+}
+
+type CreateRoleBindingRequest struct {
+	*http.Request
+}
+
+func NewCreateRoleBindingRequest(url string, vars *CreateRoleBindingVariables) (*CreateRoleBindingRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation CreateRoleBinding($input: NewRoleBinding!) {
+  createRoleBinding(input: $input) {
+    id
+    kind
+    role
+    subject
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &CreateRoleBindingRequest{req}, nil
+}
+
+func (req *CreateRoleBindingRequest) Execute(client *http.Client) (*CreateRoleBindingResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result CreateRoleBindingResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func CreateRoleBinding(url string, client *http.Client, vars *CreateRoleBindingVariables) (*CreateRoleBindingResponse, error) {
+	req, err := NewCreateRoleBindingRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) CreateRoleBinding(vars *CreateRoleBindingVariables) (*CreateRoleBindingResponse, error) {
+	return CreateRoleBinding(client.Url, client.Client, vars)
+}
+
+//
+// mutation UpdateRoleBinding($input: RoleBindingChanges!)
+//
+
+type UpdateRoleBindingVariables struct {
+	Input RoleBindingChanges `json:"input"`
+}
+
+type UpdateRoleBindingResponse struct {
+	UpdateRoleBinding struct {
+		ID      string `json:"id"`
+		Kind    string `json:"kind"`
+		Role    string `json:"role"`
+		Subject string `json:"subject"`
+	} `json:"updateRoleBinding"`
+}
+
+type UpdateRoleBindingRequest struct {
+	*http.Request
+}
+
+func NewUpdateRoleBindingRequest(url string, vars *UpdateRoleBindingVariables) (*UpdateRoleBindingRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation UpdateRoleBinding($input: RoleBindingChanges!) {
+  updateRoleBinding(input: $input) {
+    id
+    kind
+    role
+    subject
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &UpdateRoleBindingRequest{req}, nil
+}
+
+func (req *UpdateRoleBindingRequest) Execute(client *http.Client) (*UpdateRoleBindingResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result UpdateRoleBindingResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func UpdateRoleBinding(url string, client *http.Client, vars *UpdateRoleBindingVariables) (*UpdateRoleBindingResponse, error) {
+	req, err := NewUpdateRoleBindingRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) UpdateRoleBinding(vars *UpdateRoleBindingVariables) (*UpdateRoleBindingResponse, error) {
+	return UpdateRoleBinding(client.Url, client.Client, vars)
+}
+
+//
+// mutation DeleteRoleBinding($input: CustomerRoleBindingIdInput!)
+//
+
+type DeleteRoleBindingVariables struct {
+	Input CustomerRoleBindingIdInput `json:"input"`
+}
+
+type DeleteRoleBindingResponse struct {
+	DeleteRoleBinding string `json:"deleteRoleBinding"`
+}
+
+type DeleteRoleBindingRequest struct {
+	*http.Request
+}
+
+func NewDeleteRoleBindingRequest(url string, vars *DeleteRoleBindingVariables) (*DeleteRoleBindingRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation DeleteRoleBinding($input: CustomerRoleBindingIdInput!) {
+  deleteRoleBinding(input: $input)
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &DeleteRoleBindingRequest{req}, nil
+}
+
+func (req *DeleteRoleBindingRequest) Execute(client *http.Client) (*DeleteRoleBindingResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result DeleteRoleBindingResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func DeleteRoleBinding(url string, client *http.Client, vars *DeleteRoleBindingVariables) (*DeleteRoleBindingResponse, error) {
+	req, err := NewDeleteRoleBindingRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) DeleteRoleBinding(vars *DeleteRoleBindingVariables) (*DeleteRoleBindingResponse, error) {
+	return DeleteRoleBinding(client.Url, client.Client, vars)
 }
 
 //

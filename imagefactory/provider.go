@@ -10,8 +10,10 @@ import (
 
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/account"
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/component"
+	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/apikey"
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/distribution"
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/imagetemplate"
+	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/rolebinding"
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
 )
 
@@ -19,8 +21,8 @@ func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: config.TerraformConfigSchema(),
 		DataSourcesMap: map[string]*schema.Resource{
-			"imagefactory_distributions":    distribution.DataSources(),
-			"imagefactory_distribution":     distribution.DataSource(),
+			"imagefactory_distribution": distribution.DataSource(),
+			"imagefactory_api_key":      apikey.DataSource(),
 			"imagefactory_system_component": component.DataSource(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
@@ -29,6 +31,7 @@ func Provider() *schema.Provider {
 			"imagefactory_gcp_project":        account.ResourceGCP(),
 			"imagefactory_imbcloud_account":   account.ResourceIBMCloud(),
 			"imagefactory_template":           imagetemplate.Resource(),
+			"imagefactory_role_binding":       rolebinding.Resource(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

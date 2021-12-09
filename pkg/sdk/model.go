@@ -1,3 +1,5 @@
+// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 package sdk
 
 import "github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"

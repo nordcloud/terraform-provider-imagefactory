@@ -7,36 +7,26 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-)
 
-const DefaultAPIURL = "https://api.imagefactory.nordcloudapp.com/graphql"
+	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/account"
+	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/distribution"
+	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/imagetemplate"
+	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
+)
 
 func Provider() *schema.Provider {
 	return &schema.Provider{
-		Schema: map[string]*schema.Schema{
-			"api_key": {
-				Type:        schema.TypeString,
-				Description: "ImageFactory API key",
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("IMAGEFACTORY_API_KEY", nil),
-			},
-			"api_url": {
-				Type:        schema.TypeString,
-				Description: "ImageFactory API URL",
-				Optional:    true,
-				Default:     DefaultAPIURL,
-			},
-		},
+		Schema: config.TerraformConfigSchema(),
 		DataSourcesMap: map[string]*schema.Resource{
-			"imagefactory_distributions": dataSourceDistributions(),
-			"imagefactory_distribution":  dataSourceDistribution(),
+			"imagefactory_distributions": distribution.DataSources(),
+			"imagefactory_distribution":  distribution.DataSource(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"imagefactory_aws_account":        resourceAwsAccount(),
-			"imagefactory_azure_subscription": resourceAzureSubscription(),
-			"imagefactory_gcp_project":        resourceGcpProject(),
-			"imagefactory_imbcloud_account":   resourceIBMCloudAccount(),
-			"imagefactory_template":           resourceTemplate(),
+			"imagefactory_aws_account":        account.ResourceAWS(),
+			"imagefactory_azure_subscription": account.ResourceAzure(),
+			"imagefactory_gcp_project":        account.ResourceGCP(),
+			"imagefactory_imbcloud_account":   account.ResourceIBMCloud(),
+			"imagefactory_template":           imagetemplate.Resource(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
@@ -45,14 +35,8 @@ func Provider() *schema.Provider {
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	config := Config{
-		APIURL: d.Get("api_url").(string),
-		APIKey: d.Get("api_key").(string),
-	}
-
-	if err := config.LoadAndValidate(); err != nil {
-		return nil, diag.FromErr(err)
-	}
-
-	return &config, diags
+	return config.NewTerraformConfig(
+		d.Get("api_url").(string),
+		d.Get("api_key").(string),
+	), diags
 }

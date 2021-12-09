@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-var componentSchema = map[string]*schema.Schema{
+var systemComponentSchema = map[string]*schema.Schema{
 	"id": {
 		Type:     schema.TypeString,
 		Computed: true,

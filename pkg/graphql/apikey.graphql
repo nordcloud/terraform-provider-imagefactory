@@ -1,0 +1,9 @@
+
+query GetApiKeys($input: CustomerApiKeysInput!) {
+  apiKeys(input: $input) {
+    results {
+      id
+      name
+    }
+  }
+}

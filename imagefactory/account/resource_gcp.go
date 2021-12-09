@@ -1,6 +1,6 @@
 // Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
 
-package imagefactory
+package account
 
 import (
 	"context"
@@ -11,20 +11,52 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
-var awsAccountAccessResource = &schema.Resource{
+var gcpProjectAccessResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
-		"role_arn": {
+		"type": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
-		"role_external_id": {
+		"private_key": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"auth_uri": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"client_id": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"client_email": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"token_uri": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"auth_provider_x509_cert_url": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"client_x509_cert_url": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"project_id": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"private_key_id": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
 	},
 }
 
-var awsAccountSchema = map[string]*schema.Schema{
+var gcpProjectSchema = map[string]*schema.Schema{
 	"alias": {
 		Type:     schema.TypeString,
 		Required: true,
@@ -33,14 +65,14 @@ var awsAccountSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
 	},
-	"account_id": {
+	"project_id": {
 		Type:     schema.TypeString,
 		Required: true,
 	},
 	"access": {
 		Type:     schema.TypeList,
 		Optional: true,
-		Elem:     awsAccountAccessResource,
+		Elem:     gcpProjectAccessResource,
 	},
 	"state": {
 		Type:     schema.TypeMap,
@@ -49,14 +81,14 @@ var awsAccountSchema = map[string]*schema.Schema{
 	},
 }
 
-func resourceAwsAccount() *schema.Resource { // nolint: dupl
+func ResourceGCP() *schema.Resource { // nolint: dupl
 	return &schema.Resource{
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-			return accountCreate(ctx, d, m, graphql.ProviderAWS)
+			return accountCreate(ctx, d, m, graphql.ProviderGCP)
 		},
 		ReadContext:   resourceAccountRead,
 		UpdateContext: resourceAccountUpdate,
 		DeleteContext: resourceAccountDelete,
-		Schema:        awsAccountSchema,
+		Schema:        gcpProjectSchema,
 	}
 }

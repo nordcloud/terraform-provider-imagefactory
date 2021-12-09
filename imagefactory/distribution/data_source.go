@@ -1,6 +1,6 @@
 // Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
 
-package imagefactory
+package distribution
 
 import (
 	"context"
@@ -9,51 +9,30 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
 )
 
-var distributionSchema = map[string]*schema.Schema{
-	"id": {
-		Type:     schema.TypeString,
-		Computed: true,
-	},
-	"name": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-	"cloud_provider": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-}
-
-func dataSourceDistribution() *schema.Resource {
+func DataSource() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceDistributionRead,
+		ReadContext: distributionRead,
 		Schema:      distributionSchema,
 	}
 }
 
-func dataSourceDistributions() *schema.Resource {
+func DataSources() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceDistributionsRead,
-		Schema: map[string]*schema.Schema{
-			"distributions": {
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Resource{
-					Schema: distributionSchema,
-				},
-			},
-		},
+		ReadContext: distributionsRead,
+		Schema:      distributionsSchema,
 	}
 }
 
-func dataSourceDistributionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func distributionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	config := m.(*Config)
+	config := m.(*config.Config)
 
-	distro, err := config.client.GetDistribution(d.Get("name").(string), d.Get("cloud_provider").(string))
+	distro, err := config.APIClient.GetDistribution(d.Get("name").(string), d.Get("cloud_provider").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -69,12 +48,12 @@ func dataSourceDistributionRead(ctx context.Context, d *schema.ResourceData, m i
 	return diags
 }
 
-func dataSourceDistributionsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func distributionsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	config := m.(*Config)
+	config := m.(*config.Config)
 
-	res, err := config.client.GetDistributions()
+	res, err := config.APIClient.GetDistributions()
 	if err != nil {
 		return diag.FromErr(err)
 	}

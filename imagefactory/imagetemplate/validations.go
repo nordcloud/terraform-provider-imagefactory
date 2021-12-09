@@ -1,8 +1,8 @@
 // Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
 
-package imagefactory
+package imagetemplate
 
-var azureRegions = []string{
+var validAzureRegions = []string{
 	"australiacentral",
 	"australiacentral2",
 	"australiaeast",
@@ -37,13 +37,13 @@ var azureRegions = []string{
 	"westus2",
 }
 
-var notificationTypes = []string{
+var validNotificationTypes = []string{
 	"PUB_SUB",
 	"SNS",
 	"WEB_HOOK",
 }
 
-var cloudProviders = []string{
+var validCloudProviders = []string{
 	"AWS",
 	"AZURE",
 	"GCP",

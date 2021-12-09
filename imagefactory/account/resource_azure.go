@@ -1,6 +1,6 @@
 // Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
 
-package imagefactory
+package account
 
 import (
 	"context"
@@ -11,32 +11,40 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
-var ibmCloudAccountAccessResource = &schema.Resource{
+var azureSubscriptionAccessResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
-		"apikey": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"region": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"cos_bucket": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
 		"resource_group_name": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
-		"resource_group_id": {
+		"tenant_id": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"app_id": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"password": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"storage_account": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"storage_account_key": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"shared_image_gallery": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
 	},
 }
 
-var ibmCloudAccountSchema = map[string]*schema.Schema{
+var azureSubscriptionSchema = map[string]*schema.Schema{
 	"alias": {
 		Type:     schema.TypeString,
 		Required: true,
@@ -45,14 +53,14 @@ var ibmCloudAccountSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
 	},
-	"account_id": {
+	"subscription_id": {
 		Type:     schema.TypeString,
 		Required: true,
 	},
 	"access": {
 		Type:     schema.TypeList,
 		Optional: true,
-		Elem:     ibmCloudAccountAccessResource,
+		Elem:     azureSubscriptionAccessResource,
 	},
 	"state": {
 		Type:     schema.TypeMap,
@@ -61,14 +69,14 @@ var ibmCloudAccountSchema = map[string]*schema.Schema{
 	},
 }
 
-func resourceIBMCloudAccount() *schema.Resource { // nolint: dupl
+func ResourceAzure() *schema.Resource { // nolint: dupl
 	return &schema.Resource{
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-			return accountCreate(ctx, d, m, graphql.ProviderIBMCLOUD)
+			return accountCreate(ctx, d, m, graphql.ProviderAZURE)
 		},
 		ReadContext:   resourceAccountRead,
 		UpdateContext: resourceAccountUpdate,
 		DeleteContext: resourceAccountDelete,
-		Schema:        ibmCloudAccountSchema,
+		Schema:        azureSubscriptionSchema,
 	}
 }

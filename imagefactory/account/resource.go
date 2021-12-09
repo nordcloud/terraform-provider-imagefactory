@@ -1,6 +1,6 @@
 // Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
 
-package imagefactory
+package account
 
 import (
 	"context"
@@ -8,7 +8,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
+	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
+	"github.com/nordcloud/terraform-provider-imagefactory/pkg/sdk"
 )
 
 func getCloudProviderKeyName(provider graphql.Provider) string {
@@ -29,10 +31,10 @@ func getCloudProviderKeyName(provider graphql.Provider) string {
 func accountCreate(ctx context.Context, d *schema.ResourceData, m interface{}, provider graphql.Provider) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	config := m.(*Config)
+	config := m.(*config.Config)
 
 	alias := graphql.String(d.Get("alias").(string))
-	input := graphql.NewAccount{
+	input := sdk.NewAccount{
 		Alias:           &alias,
 		CloudProviderId: graphql.String(d.Get(getCloudProviderKeyName(provider)).(string)),
 		Provider:        provider,
@@ -54,7 +56,7 @@ func accountCreate(ctx context.Context, d *schema.ResourceData, m interface{}, p
 		description := graphql.String(d.Get("description").(string))
 		input.Description = &description
 	}
-	account, err := config.client.CreateAccount(input)
+	account, err := config.APIClient.CreateAccount(input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -69,11 +71,11 @@ func accountCreate(ctx context.Context, d *schema.ResourceData, m interface{}, p
 func resourceAccountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
 	var diags diag.Diagnostics
 
-	config := m.(*Config)
+	config := m.(*config.Config)
 
 	accountID := d.Id()
 
-	account, err := config.client.GetAccount(accountID)
+	account, err := config.APIClient.GetAccount(accountID)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -100,16 +102,16 @@ func resourceAccountRead(ctx context.Context, d *schema.ResourceData, m interfac
 func resourceAccountUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
 	var diags diag.Diagnostics
 
-	config := m.(*Config)
+	config := m.(*config.Config)
 
 	accountID := d.Id()
 
 	alias := graphql.String(d.Get("alias").(string))
-	input := graphql.AccountChanges{
+	input := sdk.AccountChanges{
 		ID:    graphql.String(accountID),
 		Alias: &alias,
 	}
-	if _, err := config.client.UpdateAccount(input); err != nil {
+	if _, err := config.APIClient.UpdateAccount(input); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -121,11 +123,11 @@ func resourceAccountUpdate(ctx context.Context, d *schema.ResourceData, m interf
 func resourceAccountDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	config := m.(*Config)
+	config := m.(*config.Config)
 
 	accountID := d.Id()
 
-	if err := config.client.DeleteAccount(accountID); err != nil {
+	if err := config.APIClient.DeleteAccount(accountID); err != nil {
 		return diag.FromErr(err)
 	}
 

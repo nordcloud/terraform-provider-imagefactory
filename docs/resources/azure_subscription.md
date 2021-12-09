@@ -71,5 +71,5 @@ Required:
 Import is supported using the following syntax:
 
 ```shell
-// TODO import
+terraform import imagefactory_azure_subscription.tf_name RESOURCE_ID
 ```

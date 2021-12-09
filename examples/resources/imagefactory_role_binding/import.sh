@@ -1,0 +1,1 @@
+terraform import imagefactory_role_binding.tf_name RESOURCE_ID

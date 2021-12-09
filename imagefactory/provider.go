@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/account"
+	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/component"
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/distribution"
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/imagetemplate"
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
@@ -26,6 +27,7 @@ func Provider() *schema.Provider {
 			"imagefactory_azure_subscription": account.ResourceAzure(),
 			"imagefactory_gcp_project":        account.ResourceGCP(),
 			"imagefactory_imbcloud_account":   account.ResourceIBMCloud(),
+			"imagefactory_component":          component.Resource(),
 			"imagefactory_template":           imagetemplate.Resource(),
 		},
 		ConfigureContextFunc: providerConfigure,

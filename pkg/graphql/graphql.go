@@ -475,6 +475,326 @@ func (client *Client) DeleteAccount(vars *DeleteAccountVariables) (*DeleteAccoun
 }
 
 //
+// query GetComponent($input: GetComponentInput!)
+//
+
+type GetComponentVariables struct {
+	Input GetComponentInput `json:"input"`
+}
+
+type GetComponentResponse struct {
+	Component struct {
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Type        string `json:"type"`
+		Stage       string `json:"stage"`
+		Providers   string `json:"providers"`
+		OsTypes     string `json:"osTypes"`
+		Content     *[]struct {
+			Version string `json:"version"`
+			Active  string `json:"active"`
+		} `json:"content"`
+	} `json:"component"`
+}
+
+type GetComponentRequest struct {
+	*http.Request
+}
+
+func NewGetComponentRequest(url string, vars *GetComponentVariables) (*GetComponentRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `query GetComponent($input: GetComponentInput!) {
+  component(input: $input) {
+    id
+    name
+    description
+    type
+    stage
+    providers
+    osTypes
+    content {
+      version
+      active
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &GetComponentRequest{req}, nil
+}
+
+func (req *GetComponentRequest) Execute(client *http.Client) (*GetComponentResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result GetComponentResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func GetComponent(url string, client *http.Client, vars *GetComponentVariables) (*GetComponentResponse, error) {
+	req, err := NewGetComponentRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) GetComponent(vars *GetComponentVariables) (*GetComponentResponse, error) {
+	return GetComponent(client.Url, client.Client, vars)
+}
+
+//
+// mutation CreateComponent($input: NewComponent!)
+//
+
+type CreateComponentVariables struct {
+	Input NewComponent `json:"input"`
+}
+
+type CreateComponentResponse struct {
+	CreateComponent struct {
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Type        string `json:"type"`
+		Stage       string `json:"stage"`
+		Providers   string `json:"providers"`
+		OsTypes     string `json:"osTypes"`
+		Content     *[]struct {
+			Version string `json:"version"`
+			Active  string `json:"active"`
+		} `json:"content"`
+	} `json:"createComponent"`
+}
+
+type CreateComponentRequest struct {
+	*http.Request
+}
+
+func NewCreateComponentRequest(url string, vars *CreateComponentVariables) (*CreateComponentRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation CreateComponent($input: NewComponent!) {
+  createComponent(input: $input) {
+    id
+    name
+    description
+    type
+    stage
+    providers
+    osTypes
+    content {
+      version
+      active
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &CreateComponentRequest{req}, nil
+}
+
+func (req *CreateComponentRequest) Execute(client *http.Client) (*CreateComponentResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result CreateComponentResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func CreateComponent(url string, client *http.Client, vars *CreateComponentVariables) (*CreateComponentResponse, error) {
+	req, err := NewCreateComponentRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) CreateComponent(vars *CreateComponentVariables) (*CreateComponentResponse, error) {
+	return CreateComponent(client.Url, client.Client, vars)
+}
+
+//
+// mutation UpdateComponent($input: ComponentChanges!)
+//
+
+type UpdateComponentVariables struct {
+	Input ComponentChanges `json:"input"`
+}
+
+type UpdateComponentResponse struct {
+	UpdateComponent struct {
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Type        string `json:"type"`
+		Stage       string `json:"stage"`
+		Providers   string `json:"providers"`
+		OsTypes     string `json:"osTypes"`
+		Content     *[]struct {
+			Version string `json:"version"`
+			Active  string `json:"active"`
+		} `json:"content"`
+	} `json:"updateComponent"`
+}
+
+type UpdateComponentRequest struct {
+	*http.Request
+}
+
+func NewUpdateComponentRequest(url string, vars *UpdateComponentVariables) (*UpdateComponentRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation UpdateComponent($input: ComponentChanges!) {
+  updateComponent(input: $input) {
+    id
+    name
+    description
+    type
+    stage
+    providers
+    osTypes
+    content {
+      version
+      active
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &UpdateComponentRequest{req}, nil
+}
+
+func (req *UpdateComponentRequest) Execute(client *http.Client) (*UpdateComponentResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result UpdateComponentResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func UpdateComponent(url string, client *http.Client, vars *UpdateComponentVariables) (*UpdateComponentResponse, error) {
+	req, err := NewUpdateComponentRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) UpdateComponent(vars *UpdateComponentVariables) (*UpdateComponentResponse, error) {
+	return UpdateComponent(client.Url, client.Client, vars)
+}
+
+//
+// mutation DeleteComponent($input: ComponentIdInput!)
+//
+
+type DeleteComponentVariables struct {
+	Input ComponentIdInput `json:"input"`
+}
+
+type DeleteComponentResponse struct {
+	DeleteComponent string `json:"deleteComponent"`
+}
+
+type DeleteComponentRequest struct {
+	*http.Request
+}
+
+func NewDeleteComponentRequest(url string, vars *DeleteComponentVariables) (*DeleteComponentRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation DeleteComponent($input: ComponentIdInput!) {
+  deleteComponent(input: $input)
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &DeleteComponentRequest{req}, nil
+}
+
+func (req *DeleteComponentRequest) Execute(client *http.Client) (*DeleteComponentResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result DeleteComponentResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func DeleteComponent(url string, client *http.Client, vars *DeleteComponentVariables) (*DeleteComponentResponse, error) {
+	req, err := NewDeleteComponentRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) DeleteComponent(vars *DeleteComponentVariables) (*DeleteComponentResponse, error) {
+	return DeleteComponent(client.Url, client.Client, vars)
+}
+
+//
 // query GetDistributions($input: DistributionsInput!)
 //
 

@@ -1,0 +1,53 @@
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+query GetComponent($input: GetComponentInput!) {
+  component(input: $input) {
+    id
+    name
+    description
+    type
+    stage
+    providers
+    osTypes
+    content {
+	version
+	active
+    }
+  }
+}
+
+mutation CreateComponent($input: NewComponent!) {
+  createComponent(input: $input) {
+    id
+    name
+    description
+    type
+    stage
+    providers
+    osTypes
+    content {
+	version
+	active
+    }
+  }
+}
+
+mutation UpdateComponent($input: ComponentChanges!) {
+  updateComponent(input: $input) {
+    id
+    name
+    description
+    type
+    stage
+    providers
+    osTypes
+    content {
+	version
+	active
+    }
+  }
+}
+
+mutation DeleteComponent($input: ComponentIdInput!) {
+  deleteComponent(input: $input)
+}

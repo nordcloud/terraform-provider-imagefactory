@@ -6,11 +6,17 @@ type Account graphql.Account
 
 type Distribution graphql.Distribution
 
+type Component graphql.Component
+
 type Template graphql.Template
 
 type NewAccount graphql.NewAccount
 
 type AccountChanges graphql.AccountChanges
+
+type NewComponent graphql.NewComponent
+
+type ComponentChanges graphql.ComponentChanges
 
 type NewTemplate graphql.NewTemplate
 

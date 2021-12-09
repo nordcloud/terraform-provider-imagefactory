@@ -7,6 +7,12 @@ type API interface {
 	UpdateAccount(input AccountChanges) (Account, error)
 	DeleteAccount(accountID string) error
 
+	// Component CRUD
+	GetComponent(componentID string) (Component, error)
+	CreateComponent(input NewComponent) (Component, error)
+	UpdateComponent(input ComponentChanges) (Component, error)
+	DeleteComponent(componentID string) error
+
 	// Distribution GET
 	GetDistribution(name, cloudProvider string) (Distribution, error)
 	GetDistributions() ([]Distribution, error)

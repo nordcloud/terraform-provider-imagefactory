@@ -88,6 +88,74 @@ func (c APIClient) DeleteAccount(accountID string) error {
 	return nil
 }
 
+func (c APIClient) GetComponent(componentID string) (Component, error) { // nolint: dupl
+	req, err := graphql.NewGetComponentRequest(c.apiURL, &graphql.GetComponentVariables{
+		Input: graphql.GetComponentInput{
+			ComponentId: graphql.String(componentID),
+		},
+	})
+	if err != nil {
+		return Component{}, fmt.Errorf("getting component request %w", err)
+	}
+
+	r := &graphql.Query{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return Component{}, fmt.Errorf("getting component %w", err)
+	}
+
+	return Component(r.Component), nil
+}
+
+func (c APIClient) CreateComponent(input NewComponent) (Component, error) {
+	req, err := graphql.NewCreateComponentRequest(c.apiURL, &graphql.CreateComponentVariables{
+		Input: graphql.NewComponent(input),
+	})
+	if err != nil {
+		return Component{}, fmt.Errorf("getting create component request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return Component{}, fmt.Errorf("creating component %w", err)
+	}
+
+	return Component(r.CreateComponent), nil
+}
+
+func (c APIClient) UpdateComponent(input ComponentChanges) (Component, error) {
+	req, err := graphql.NewUpdateComponentRequest(c.apiURL, &graphql.UpdateComponentVariables{
+		Input: graphql.ComponentChanges(input),
+	})
+	if err != nil {
+		return Component{}, fmt.Errorf("getting update component request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return Component{}, fmt.Errorf("updating component %w", err)
+	}
+
+	return Component(r.UpdateComponent), nil
+}
+
+func (c APIClient) DeleteComponent(componentID string) error {
+	req, err := graphql.NewDeleteComponentRequest(c.apiURL, &graphql.DeleteComponentVariables{
+		Input: graphql.ComponentIdInput{
+			ComponentId: graphql.String(componentID),
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("getting delete component request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return fmt.Errorf("deleting component %w", err)
+	}
+
+	return nil
+}
+
 func (c APIClient) GetDistribution(name, cloudProvider string) (Distribution, error) {
 	limit := graphql.Int(1)
 	req, err := graphql.NewGetDistributionsRequest(c.apiURL, &graphql.GetDistributionsVariables{

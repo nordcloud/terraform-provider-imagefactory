@@ -8,10 +8,6 @@ query GetComponents($input: ComponentsInput!) {
       providers
       type
       stage
-      osTypes
-      content {
-        version
-      }
     }
   }
 }

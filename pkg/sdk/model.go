@@ -15,3 +15,5 @@ type AccountChanges graphql.AccountChanges
 type NewTemplate graphql.NewTemplate
 
 type TemplateChanges graphql.TemplateChanges
+
+type Component graphql.Component

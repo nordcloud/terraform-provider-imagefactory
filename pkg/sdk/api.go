@@ -16,4 +16,7 @@ type API interface {
 	CreateTemplate(input NewTemplate) (Template, error)
 	UpdateTemplate(input TemplateChanges) (Template, error)
 	DeleteTemplate(templateID string) error
+
+	// Component GET
+	GetSystemComponent(name, cloudProvider, stage string) (Component, error)
 }

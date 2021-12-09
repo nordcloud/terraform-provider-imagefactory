@@ -218,9 +218,9 @@ func (c APIClient) DeleteTemplate(templateID string) error {
 	return nil
 }
 
-func (c Client) GetSystemComponent(name, cloudProvider, stage string) (graphql.Component, error) {
+func (c APIClient) GetSystemComponent(name, cloudProvider, stage string) (Component, error) {
 	a := graphql.Boolean(true)
-	req, err := graphql.NewGetComponentsRequest(c.endpoint, &graphql.GetComponentsVariables{
+	req, err := graphql.NewGetComponentsRequest(c.apiURL, &graphql.GetComponentsVariables{
 		Input: graphql.ComponentsInput{
 			IncludeSystem: &a,
 			Filters: &graphql.ComponentsFilters{
@@ -246,19 +246,19 @@ func (c Client) GetSystemComponent(name, cloudProvider, stage string) (graphql.C
 		},
 	})
 	if err != nil {
-		return graphql.Component{}, fmt.Errorf("getting component %w", err)
+		return Component{}, fmt.Errorf("getting component request %w", err)
 	}
 
 	r := &graphql.Query{}
-	if err := c.graphqlExecutor.Execute(req.Request, r); err != nil {
-		return graphql.Component{}, fmt.Errorf("getting component %w", err)
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return Component{}, fmt.Errorf("getting component %w", err)
 	}
 
 	if r.Components.Results == nil || len(*r.Components.Results) == 0 {
-		return graphql.Component{}, fmt.Errorf("component '%s' in cloud provider '%s' and stage '%s' not found", name, cloudProvider, stage)
+		return Component{}, fmt.Errorf("component '%s' in cloud provider '%s' and stage '%s' not found", name, cloudProvider, stage)
 	}
 
 	result := *r.Components.Results
 
-	return result[0], nil
+	return Component(result[0]), nil
 }

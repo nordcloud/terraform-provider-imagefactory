@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/account"
+	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/component"
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/distribution"
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/imagetemplate"
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
@@ -18,9 +19,9 @@ func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: config.TerraformConfigSchema(),
 		DataSourcesMap: map[string]*schema.Resource{
-			"imagefactory_distributions": distribution.DataSources(),
-			"imagefactory_distribution":  distribution.DataSource(),
-			"imagefactory_system_component":  dataSourceSystemComponent(),
+			"imagefactory_distributions":    distribution.DataSources(),
+			"imagefactory_distribution":     distribution.DataSource(),
+			"imagefactory_system_component": component.DataSource(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"imagefactory_aws_account":        account.ResourceAWS(),

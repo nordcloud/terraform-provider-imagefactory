@@ -31,12 +31,6 @@ func systemComponentRead(ctx context.Context, d *schema.ResourceData, m interfac
 	if err := d.Set("name", component.Name); err != nil {
 		return diag.FromErr(err)
 	}
-	// if err := d.Set("cloud_provider", component.Providers); err != nil {
-	// 	return diag.FromErr(err)
-	// }
-	if err := d.Set("stage", component.Stage); err != nil {
-		return diag.FromErr(err)
-	}
 
 	return diags
 }

@@ -17,6 +17,8 @@ provider "imagefactory" {
 
 data "imagefactory_system_component" "hardening-level-1" {
   name = "Hardening level 1"
+  cloud_provider = "AWS"
+  stage = "BUILD"
 }
 
 output "system-component" {

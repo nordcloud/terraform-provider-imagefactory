@@ -24,9 +24,7 @@ func Resource() *schema.Resource {
 }
 
 func resourceTemplateCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	var diags diag.Diagnostics
-
-	config := m.(*config.Config)
+	c := m.(*config.Config)
 
 	input := sdk.NewTemplate{
 		Name:           graphql.String(d.Get("name").(string)),
@@ -38,52 +36,29 @@ func resourceTemplateCreate(ctx context.Context, d *schema.ResourceData, m inter
 		description := graphql.String(d.Get("description").(string))
 		input.Description = &description
 	}
-	template, err := config.APIClient.CreateTemplate(input)
+	template, err := c.APIClient.CreateTemplate(input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId(string(template.ID))
-
-	resourceTemplateRead(ctx, d, m)
-
-	return diags
+	return setProps(d, template)
 }
 
 func resourceTemplateRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
-	var diags diag.Diagnostics
-
-	config := m.(*config.Config)
+	c := m.(*config.Config)
 
 	templateID := d.Id()
 
-	template, err := config.APIClient.GetTemplate(templateID)
+	template, err := c.APIClient.GetTemplate(templateID)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	if err := d.Set("name", template.Name); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := d.Set("description", template.Description); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := d.Set("cloud_provider", template.Provider); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := d.Set("state", flattenTemplateState(template.State)); err != nil {
-		return diag.FromErr(err)
-	}
-
-	d.SetId(templateID)
-
-	return diags
+	return setProps(d, template)
 }
 
 func resourceTemplateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
-	var diags diag.Diagnostics
-
-	config := m.(*config.Config)
+	c := m.(*config.Config)
 
 	templateID := d.Id()
 
@@ -97,27 +72,45 @@ func resourceTemplateUpdate(ctx context.Context, d *schema.ResourceData, m inter
 		description := graphql.String(d.Get("description").(string))
 		input.Description = &description
 	}
-	if _, err := config.APIClient.UpdateTemplate(input); err != nil {
+	template, err := c.APIClient.UpdateTemplate(input)
+	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	resourceTemplateRead(ctx, d, m)
-
-	return diags
+	return setProps(d, template)
 }
 
 func resourceTemplateDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	config := m.(*config.Config)
+	c := m.(*config.Config)
 
 	templateID := d.Id()
 
-	if err := config.APIClient.DeleteTemplate(templateID); err != nil {
+	if err := c.APIClient.DeleteTemplate(templateID); err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId("")
+	return diags
+}
+
+func setProps(d *schema.ResourceData, t sdk.Template) diag.Diagnostics {
+	var diags diag.Diagnostics
+
+	d.SetId(string(t.ID))
+
+	if err := d.Set("name", t.Name); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("description", t.Description); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("cloud_provider", t.Provider); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("state", flattenTemplateState(t.State)); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return diags
 }

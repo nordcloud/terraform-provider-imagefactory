@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/go-cleanhttp"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	
+
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/sdk"
 )
 

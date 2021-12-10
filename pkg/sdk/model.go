@@ -8,11 +8,19 @@ type Account graphql.Account
 
 type Distribution graphql.Distribution
 
+type Component graphql.Component
+
 type Template graphql.Template
 
 type NewAccount graphql.NewAccount
 
 type AccountChanges graphql.AccountChanges
+
+type NewComponent graphql.NewComponent
+
+type ComponentChanges graphql.ComponentChanges
+
+type NewComponentContent graphql.NewComponentContent
 
 type NewTemplate graphql.NewTemplate
 
@@ -25,5 +33,3 @@ type NewRoleBinding graphql.NewRoleBinding
 type RoleBindingChanges graphql.RoleBindingChanges
 
 type ApiKey graphql.ApiKey
-
-type Component graphql.Component

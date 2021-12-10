@@ -14,14 +14,14 @@ import (
 func DataSourceSystem() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: systemComponentRead,
-		Schema:      dataComponentSchema,
+		Schema:      systemComponentSchema,
 	}
 }
 
 func DataSourceCustom() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: customComponentRead,
-		Schema:      dataComponentSchema,
+		Schema:      customComponentSchema,
 	}
 }
 
@@ -30,7 +30,7 @@ func systemComponentRead(ctx context.Context, d *schema.ResourceData, m interfac
 
 	c := m.(*config.Config)
 
-	component, err := c.APIClient.GetSystemComponent(d.Get("name").(string), d.Get("cloud_provider").(string), d.Get("stage").(string))
+	component, err := c.APIClient.GetSystemComponent(d.Get("name").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}

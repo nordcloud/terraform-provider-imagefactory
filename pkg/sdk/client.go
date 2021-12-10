@@ -390,7 +390,7 @@ func (c APIClient) GetApiKey(name string) (ApiKey, error) {
 	return ApiKey{}, fmt.Errorf("api_key '%s' not found", name)
 }
 
-func (c APIClient) GetSystemComponent(name, cloudProvider, stage string) (Component, error) {
+func (c APIClient) GetSystemComponent(name string) (Component, error) {
 	a := graphql.Boolean(true)
 	req, err := graphql.NewGetComponentsRequest(c.apiURL, &graphql.GetComponentsVariables{
 		Input: graphql.ComponentsInput{
@@ -400,14 +400,6 @@ func (c APIClient) GetSystemComponent(name, cloudProvider, stage string) (Compon
 					{
 						Field:  graphql.ComponentAttributeNAME,
 						Values: &[]graphql.String{graphql.String(name)},
-					},
-					{
-						Field:  graphql.ComponentAttributePROVIDERS,
-						Values: &[]graphql.String{graphql.String(cloudProvider)},
-					},
-					{
-						Field:  graphql.ComponentAttributeSTAGE,
-						Values: &[]graphql.String{graphql.String(stage)},
 					},
 					{
 						Field:  graphql.ComponentAttributeTYPE,
@@ -427,7 +419,7 @@ func (c APIClient) GetSystemComponent(name, cloudProvider, stage string) (Compon
 	}
 
 	if r.Components.Results == nil || len(*r.Components.Results) == 0 {
-		return Component{}, fmt.Errorf("component '%s' in cloud provider '%s' and stage '%s' not found", name, cloudProvider, stage)
+		return Component{}, fmt.Errorf("component '%s' not found", name)
 	}
 
 	result := *r.Components.Results

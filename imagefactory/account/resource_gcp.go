@@ -84,7 +84,7 @@ var gcpProjectSchema = map[string]*schema.Schema{
 func ResourceGCP() *schema.Resource { // nolint: dupl
 	return &schema.Resource{
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-			return accountCreate(ctx, d, m, graphql.ProviderGCP)
+			return accountCreate(d, m, graphql.ProviderGCP)
 		},
 		ReadContext:   resourceAccountRead,
 		UpdateContext: resourceAccountUpdate,

@@ -28,10 +28,8 @@ func getCloudProviderKeyName(provider graphql.Provider) string {
 	return cloudProviderKey
 }
 
-func accountCreate(ctx context.Context, d *schema.ResourceData, m interface{}, provider graphql.Provider) diag.Diagnostics {
-	var diags diag.Diagnostics
-
-	config := m.(*config.Config)
+func accountCreate(d *schema.ResourceData, m interface{}, provider graphql.Provider) diag.Diagnostics {
+	c := m.(*config.Config)
 
 	alias := graphql.String(d.Get("alias").(string))
 	input := sdk.NewAccount{
@@ -56,53 +54,29 @@ func accountCreate(ctx context.Context, d *schema.ResourceData, m interface{}, p
 		description := graphql.String(d.Get("description").(string))
 		input.Description = &description
 	}
-	account, err := config.APIClient.CreateAccount(input)
+	account, err := c.APIClient.CreateAccount(input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId(string(account.ID))
-
-	resourceAccountRead(ctx, d, m)
-
-	return diags
+	return setProps(d, account)
 }
 
 func resourceAccountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
-	var diags diag.Diagnostics
-
-	config := m.(*config.Config)
+	c := m.(*config.Config)
 
 	accountID := d.Id()
 
-	account, err := config.APIClient.GetAccount(accountID)
+	account, err := c.APIClient.GetAccount(accountID)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	if err := d.Set("alias", account.Alias); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := d.Set("description", account.Description); err != nil {
-		return diag.FromErr(err)
-	}
-
-	if err := d.Set(getCloudProviderKeyName(account.Provider), account.CloudProviderId); err != nil {
-		return diag.FromErr(err)
-	}
-	if err := d.Set("state", flattenAccountState(account.State)); err != nil {
-		return diag.FromErr(err)
-	}
-
-	d.SetId(accountID)
-
-	return diags
+	return setProps(d, account)
 }
 
 func resourceAccountUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
-	var diags diag.Diagnostics
-
-	config := m.(*config.Config)
+	c := m.(*config.Config)
 
 	accountID := d.Id()
 
@@ -111,27 +85,46 @@ func resourceAccountUpdate(ctx context.Context, d *schema.ResourceData, m interf
 		ID:    graphql.String(accountID),
 		Alias: &alias,
 	}
-	if _, err := config.APIClient.UpdateAccount(input); err != nil {
+	account, err := c.APIClient.UpdateAccount(input)
+	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	resourceAccountRead(ctx, d, m)
-
-	return diags
+	return setProps(d, account)
 }
 
 func resourceAccountDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	config := m.(*config.Config)
+	c := m.(*config.Config)
 
 	accountID := d.Id()
 
-	if err := config.APIClient.DeleteAccount(accountID); err != nil {
+	if err := c.APIClient.DeleteAccount(accountID); err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId("")
+	return diags
+}
+
+func setProps(d *schema.ResourceData, a sdk.Account) diag.Diagnostics {
+	var diags diag.Diagnostics
+
+	d.SetId(string(a.ID))
+
+	if err := d.Set("alias", a.Alias); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("description", a.Description); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set(getCloudProviderKeyName(a.Provider), a.CloudProviderId); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("state", flattenAccountState(a.State)); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return diags
 }

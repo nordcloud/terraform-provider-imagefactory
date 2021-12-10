@@ -52,7 +52,7 @@ var awsAccountSchema = map[string]*schema.Schema{
 func ResourceAWS() *schema.Resource { // nolint: dupl
 	return &schema.Resource{
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-			return accountCreate(ctx, d, m, graphql.ProviderAWS)
+			return accountCreate(d, m, graphql.ProviderAWS)
 		},
 		ReadContext:   resourceAccountRead,
 		UpdateContext: resourceAccountUpdate,

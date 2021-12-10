@@ -14,3 +14,13 @@ var validCloudProviders = []string{
 	"IBMCLOUD",
 	"VMWARE",
 }
+
+var validOSTypes = []string{
+	"LINUX",
+	"WINDOWS",
+}
+
+var validProvisioners = []string{
+	"POWERSHELL",
+	"SHELL",
+}

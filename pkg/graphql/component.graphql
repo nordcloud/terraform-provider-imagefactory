@@ -11,3 +11,75 @@ query GetComponents($input: ComponentsInput!) {
     }
   }
 }
+
+query GetComponent($input: GetComponentInput!) {
+  component(input: $input) {
+    id
+    name
+    description
+    type
+    stage
+    providers
+    osTypes
+    content {
+      version
+      active
+    }
+  }
+}
+
+mutation CreateComponent($input: NewComponent!) {
+  createComponent(input: $input) {
+    id
+    name
+    description
+    type
+    stage
+    providers
+    osTypes
+    content {
+      version
+      active
+    }
+  }
+}
+
+mutation UpdateComponent($input: ComponentChanges!) {
+  updateComponent(input: $input) {
+    id
+    name
+    description
+    type
+    stage
+    providers
+    osTypes
+    content {
+      version
+      active
+    }
+  }
+}
+
+mutation DeleteComponent($input: ComponentIdInput!) {
+  deleteComponent(input: $input)
+}
+
+mutation CreateComponentVersion($input: NewComponentContent!) {
+  createComponentVersion(input: $input) {
+    id
+    name
+    description
+    type
+    stage
+    providers
+    osTypes
+    content {
+      version
+      active
+    }
+  }
+}
+
+mutation DeleteComponentVersion($input: ComponentVersionIdInput!) {
+  deleteComponentVersion(input: $input)
+}

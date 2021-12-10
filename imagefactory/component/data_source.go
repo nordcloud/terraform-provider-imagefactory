@@ -4,6 +4,7 @@ package component
 
 import (
 	"context"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
@@ -27,9 +28,9 @@ func DataSourceCustom() *schema.Resource {
 func systemComponentRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	config := m.(*config.Config)
+	c := m.(*config.Config)
 
-	component, err := config.APIClient.GetSystemComponent(d.Get("name").(string), d.Get("cloud_provider").(string), d.Get("stage").(string))
+	component, err := c.APIClient.GetSystemComponent(d.Get("name").(string), d.Get("cloud_provider").(string), d.Get("stage").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}

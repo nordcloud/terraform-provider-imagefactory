@@ -1,4 +1,6 @@
-resource "imagefactory_component" "component" {
+// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+resource "imagefactory_custom_component" "component" {
   name            = "Install nginx"
   description     = "Install nginx on Ubuntu"
   stage           = "BUILD"
@@ -13,5 +15,5 @@ resource "imagefactory_component" "component" {
 }
 
 output "component" {
-  value = imagefactory_component.component
+  value = imagefactory_custom_component.component
 }

@@ -38,5 +38,6 @@ type API interface {
 	GetApiKey(name string) (ApiKey, error)
 
 	// Component GET
-	GetSystemComponent(name, cloudProvider, stage string) (Component, error)
+	GetSystemComponent(name string) (Component, error)
+	GetCustomComponent(name, cloudProvider, stage string) (Component, error)
 }

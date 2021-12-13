@@ -16,6 +16,17 @@ var systemComponentSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 	},
+}
+
+var customComponentSchema = map[string]*schema.Schema{
+	"id": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"name": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
 	"stage": {
 		Type:         schema.TypeString,
 		Required:     true,

@@ -22,6 +22,9 @@ build:
 install: build
 	cd bin
 	./install.sh
+
+generateDoc:
+	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
 	
 test:
 	go test -i $(TEST) || exit 1

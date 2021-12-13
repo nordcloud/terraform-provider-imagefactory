@@ -1,0 +1,1 @@
+terraform import imagefactory_imbcloud_account.tf_name RESOURCE_ID

@@ -1,0 +1,1 @@
+terraform import imagefactory_gcp_project.tf_name RESOURCE_ID

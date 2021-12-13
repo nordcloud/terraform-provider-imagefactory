@@ -15,7 +15,7 @@ provider "imagefactory" {
   api_url = "https://api.imagefactory.nordcloudapp.com/graphql"
 }
 
-resource "imagefactory_component" "component" {
+resource "imagefactory_custom_component" "component" {
   name            = "Install nginx"
   description     = "Install nginx on Ubuntu"
   stage           = "BUILD"
@@ -30,5 +30,15 @@ resource "imagefactory_component" "component" {
 }
 
 output "component" {
-  value = imagefactory_component.component
+  value = imagefactory_custom_component.component
+}
+
+data "imagefactory_custom_component" "custom_component" {
+  name = "Install nginx"
+  cloud_provider = "AWS"
+  stage = "BUILD"
+}
+
+output "custom_component" {
+  value = data.imagefactory_custom_component.custom_component
 }

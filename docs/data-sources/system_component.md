@@ -15,14 +15,12 @@ description: |-
 ```terraform
 // Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
 
-data "imagefactory_system_component" "hardening-level-1" {
+data "imagefactory_system_component" "hardening_level_1" {
   name = "Hardening level 1"
-  cloud_provider = "AWS"
-  stage = "BUILD"
 }
 
-output "system-component" {
-  value = data.imagefactory_system_component.hardening-level-1
+output "system_component" {
+  value = data.imagefactory_system_component.hardening_level_1
 }
 ```
 
@@ -31,9 +29,7 @@ output "system-component" {
 
 ### Required
 
-- **cloud_provider** (String)
 - **name** (String)
-- **stage** (String)
 
 ### Read-Only
 

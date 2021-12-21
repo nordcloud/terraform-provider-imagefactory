@@ -78,5 +78,8 @@ func ResourceAzure() *schema.Resource { // nolint: dupl
 		UpdateContext: resourceAccountUpdate,
 		DeleteContext: resourceAccountDelete,
 		Schema:        azureSubscriptionSchema,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 	}
 }

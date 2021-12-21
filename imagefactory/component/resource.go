@@ -21,6 +21,9 @@ func Resource() *schema.Resource {
 		UpdateContext: resourceComponentUpdate,
 		DeleteContext: resourceComponentDelete,
 		Schema:        componentSchema,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 	}
 }
 

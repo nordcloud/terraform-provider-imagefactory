@@ -20,6 +20,9 @@ func Resource() *schema.Resource {
 		UpdateContext: update,
 		DeleteContext: delete,
 		Schema:        roleBindingSchema,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 	}
 }
 

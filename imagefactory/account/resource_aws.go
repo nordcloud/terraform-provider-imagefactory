@@ -58,5 +58,8 @@ func ResourceAWS() *schema.Resource { // nolint: dupl
 		UpdateContext: resourceAccountUpdate,
 		DeleteContext: resourceAccountDelete,
 		Schema:        awsAccountSchema,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 	}
 }

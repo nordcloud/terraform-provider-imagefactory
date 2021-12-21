@@ -2,14 +2,25 @@
 layout: ""
 page_title: "Provider: Imagefactory"
 description: |-
-  The Imagefactory provider provides resources to interact with the Nordcloud Klarity Imagefactory API.
+  The Imagefactory provider provides resources to interact with the Nordcloud Klarity ImageFactory API.
 ---
 
-# Imagefactory Provider
+# ImageFactory Provider
 
-The Imagefactory provider provides resources to interact with the Nordcloud Klarity Imagefactory API.
+The Imagefactory provider provides resources to interact with the Nordcloud Klarity ImageFactory API.
 
-Check https://docs.imagefactory.nordcloudapp.com for detailed product documentation.
+## Nordcloud ImageFactory
+
+Based on Nordcloud's extensive experience of managing cloud services, ImageFactory is the bomb-proof SaaS solution for fully managing image-hardening for multicloud.
+
+ImageFactory offers:
+
+- a hardening solution which is based on the most relevant and highly regarded security standards
+- support for AWS, Azure, GCP, IBMCLOUD and VMWare, along with most common Windows and Linux versions
+- automatic delivery updated images to all your cloud accounts and subscriptions
+- various options to customize images with additional tools and extensions
+
+Please check https://klarity.nordcloud.com to learn more about the ImageFactory and other Nordcloud products.
 
 ## Example Usage
 

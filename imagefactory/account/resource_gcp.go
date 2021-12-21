@@ -90,5 +90,8 @@ func ResourceGCP() *schema.Resource { // nolint: dupl
 		UpdateContext: resourceAccountUpdate,
 		DeleteContext: resourceAccountDelete,
 		Schema:        gcpProjectSchema,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 	}
 }

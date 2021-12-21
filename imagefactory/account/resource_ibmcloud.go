@@ -70,5 +70,8 @@ func ResourceIBMCloud() *schema.Resource { // nolint: dupl
 		UpdateContext: resourceAccountUpdate,
 		DeleteContext: resourceAccountDelete,
 		Schema:        ibmCloudAccountSchema,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 	}
 }

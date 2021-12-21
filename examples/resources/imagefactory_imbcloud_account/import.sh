@@ -1,1 +1,1 @@
-terraform import imagefactory_imbcloud_account.tf_name RESOURCE_ID
+terraform import imagefactory_ibmcloud_account.tf_name RESOURCE_ID

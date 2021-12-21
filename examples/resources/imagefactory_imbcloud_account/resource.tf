@@ -1,8 +1,8 @@
 // Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
 
-resource "imagefactory_imbcloud_account" "imbcloud_account" {
-  alias       = "IF IBMCloud Account"
-  description = "IF IBMCloud Account to distribute IBMCloud images"
+resource "imagefactory_ibmcloud_account" "ibmcloud_account" {
+  alias       = "IF IBMCLOUD Account"
+  description = "IF IBMCLOUD Account to distribute IBMCLOUD images"
   account_id  = "1234567"
   access {
     apikey              = "APIKEY"
@@ -13,6 +13,6 @@ resource "imagefactory_imbcloud_account" "imbcloud_account" {
   }
 }
 
-output "imbcloud_account" {
-  value = imagefactory_imbcloud_account.imbcloud_account
+output "ibmcloud_account" {
+  value = imagefactory_ibmcloud_account.ibmcloud_account
 }

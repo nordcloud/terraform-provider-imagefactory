@@ -1,6 +1,6 @@
 // Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
 
-resource "imagefactory_component" "build_template" {
+resource "imagefactory_custom_component" "build_template" {
   name            = "Install nginx"
   description     = "Install nginx on Ubuntu"
   stage           = "BUILD"
@@ -14,7 +14,7 @@ resource "imagefactory_component" "build_template" {
   }
 }
 
-resource "imagefactory_component" "test_component" {
+resource "imagefactory_custom_component" "test_component" {
   name            = "Test nginx"
   description     = "Test nginx is installed"
   stage           = "TEST"
@@ -53,10 +53,10 @@ resource "imagefactory_template" "template" {
       id = data.imagefactory_system_component.hardening-level-1.id
     }
     build_components {
-      id = imagefactory_component.build_template.id
+      id = imagefactory_custom_component.build_template.id
     }
     test_components {
-      id = imagefactory_component.test_component.id
+      id = imagefactory_custom_component.test_component.id
     }
     notifications {
       type = "SNS"

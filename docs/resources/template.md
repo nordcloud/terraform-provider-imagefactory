@@ -110,8 +110,8 @@ resource "imagefactory_template" "template" {
       replica_regions     = ["westeurope"]
     }
     notifications {
-      type = "SNS"
-      uri  = "arn:aws:sns:eu-west-1:123456789012:Topic"
+      type = "WEB_HOOK"
+      uri  = "https://webhook.call.api.address"
     }
     tags {
       key   = "KEY_ONE"

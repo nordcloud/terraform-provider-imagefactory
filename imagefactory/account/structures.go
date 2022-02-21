@@ -25,8 +25,8 @@ func expandAwsAccountAccess(in []interface{}, scope graphql.Scope) graphql.Accou
 			},
 		}
 	} else {
-		accessKeyID := graphql.String(access["AWS_ACCESS_KEY_ID"].(string))
-		secretAccessKey := graphql.String(access["AWS_SECRET_ACCESS_KEY"].(string))
+		accessKeyID := graphql.String(access["aws_access_key_id"].(string))
+		secretAccessKey := graphql.String(access["aws_secret_access_key"].(string))
 		accountCredentials.Aws = &graphql.AWSCredentials{
 			Credentials: &graphql.AWSCredentialsAccessKey{
 				AWSACCESSKEYID:     accessKeyID,
@@ -111,4 +111,21 @@ func flattenAccountState(in *graphql.AccountState) map[string]string {
 	}
 
 	return out
+}
+
+func expandAwsAccountProperties(in interface{}) *graphql.AccountCloudPropertiesInput {
+	awsAccountProps := graphql.AccountCloudPropertiesInput{}
+
+	if in == nil {
+		return nil
+	}
+
+	props := in.([]interface{})[0].(map[string]interface{})
+	s3Bucket := graphql.String(props["s3_bucket_name"].(string))
+	region := graphql.String(props["region"].(string))
+
+	awsAccountProps.AwsChinaRegionName = &region
+	awsAccountProps.AwsChinaS3BucketName = &s3Bucket
+
+	return &awsAccountProps
 }

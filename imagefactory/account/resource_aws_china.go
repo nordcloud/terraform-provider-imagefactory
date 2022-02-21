@@ -13,11 +13,24 @@ import (
 
 var awsChinaAccountAccessResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
-		"AWS_ACCESS_KEY_ID": {
+		"aws_access_key_id": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
-		"AWS_SECRET_ACCESS_KEY": {
+		"aws_secret_access_key": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+	},
+}
+
+var awsChinaAccountProperties = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"s3_bucket_name": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"region": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
@@ -39,8 +52,13 @@ var awsChinaAccountSchema = map[string]*schema.Schema{
 	},
 	"access": {
 		Type:     schema.TypeList,
-		Optional: true,
 		Elem:     awsChinaAccountAccessResource,
+		Required: true,
+	},
+	"properties": {
+		Type:     schema.TypeList,
+		Required: true,
+		Elem:     awsChinaAccountProperties,
 	},
 	"state": {
 		Type:     schema.TypeMap,

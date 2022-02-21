@@ -42,6 +42,7 @@ func accountCreate(d *schema.ResourceData, m interface{}, provider graphql.Provi
 	switch provider {
 	case graphql.ProviderAWS:
 		input.Credentials = expandAwsAccountAccess(d.Get("access").([]interface{}), scope)
+		input.Properties = expandAwsAccountProperties(d.Get("properties"))
 	case graphql.ProviderAZURE:
 		input.Credentials = expandAzureSubscriptionAccess(d.Get("access").([]interface{}))
 	case graphql.ProviderGCP:

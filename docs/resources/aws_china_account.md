@@ -13,7 +13,7 @@ description: |-
 ## Example Usage
 
 ```terraform
-// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 resource "imagefactory_aws_china_account" "aws_china_account" {
   alias       = "IF AWS China Account"
@@ -22,6 +22,10 @@ resource "imagefactory_aws_china_account" "aws_china_account" {
   access {
     AWS_ACCESS_KEY_ID     = "A...B"
     AWS_SECRET_ACCESS_KEY = "A..SECRET..B"
+  }
+  properties {
+    s3_bucket_name = "s3_bucket_name"
+    region = "cn-north-1"
   }
 }
 
@@ -35,12 +39,13 @@ output "aws_china_account" {
 
 ### Required
 
+- **access** (Block List, Min: 1) (see [below for nested schema](#nestedblock--access))
 - **account_id** (String)
 - **alias** (String)
+- **properties** (Block List, Min: 1) (see [below for nested schema](#nestedblock--properties))
 
 ### Optional
 
-- **access** (Block List) (see [below for nested schema](#nestedblock--access))
 - **description** (String)
 - **id** (String) The ID of this resource.
 
@@ -53,13 +58,24 @@ output "aws_china_account" {
 
 Required:
 
-- **AWS_ACCESS_KEY_ID** (String)
-- **AWS_SECRET_ACCESS_KEY** (String)
+- **aws_access_key_id** (String)
+- **aws_secret_access_key** (String)
+
+
+<a id="nestedblock--properties"></a>
+### Nested Schema for `properties`
+
+Required:
+
+- **region** (String)
+- **s3_bucket_name** (String)
 
 ## Import
 
 Import is supported using the following syntax:
 
 ```shell
+# Copyright 2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 terraform import imagefactory_aws_china_account.tf_name RESOURCE_ID
 ```

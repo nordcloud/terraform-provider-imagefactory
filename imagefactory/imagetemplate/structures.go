@@ -90,7 +90,7 @@ func expandTemplateConfig(in []interface{}) (*graphql.NewTemplateConfig, error) 
 	}
 
 	m := in[0].(map[string]interface{})
-	scope := m["scope"].(graphql.Scope)
+	scope := graphql.Scope(m["scope"].(string))
 
 	awsCfg, err := expandTemplateAwsConfig(m["aws"].([]interface{}), scope)
 	if err != nil {

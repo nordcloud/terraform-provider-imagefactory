@@ -1,3 +1,5 @@
+# Copyright 2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 enum AccountStatus {
 	ACCESS_SUCCESS
 	ACCESS_MISSING

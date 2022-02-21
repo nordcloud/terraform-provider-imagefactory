@@ -50,3 +50,8 @@ var validCloudProviders = []string{
 	"IBMCLOUD",
 	"VMWARE",
 }
+
+var validScopes = []string{
+	"PUBLIC",
+	"CHINA",
+}

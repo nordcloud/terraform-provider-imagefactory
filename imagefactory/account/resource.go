@@ -28,7 +28,7 @@ func getCloudProviderKeyName(provider graphql.Provider) string {
 	return cloudProviderKey
 }
 
-func accountCreate(d *schema.ResourceData, m interface{}, provider graphql.Provider) diag.Diagnostics {
+func accountCreate(d *schema.ResourceData, m interface{}, provider graphql.Provider, scope graphql.Scope) diag.Diagnostics {
 	c := m.(*config.Config)
 
 	alias := graphql.String(d.Get("alias").(string))
@@ -36,11 +36,12 @@ func accountCreate(d *schema.ResourceData, m interface{}, provider graphql.Provi
 		Alias:           &alias,
 		CloudProviderId: graphql.String(d.Get(getCloudProviderKeyName(provider)).(string)),
 		Provider:        provider,
+		Scope:           &scope,
 	}
 
 	switch provider {
 	case graphql.ProviderAWS:
-		input.Credentials = expandAwsAccountAccess(d.Get("access").([]interface{}))
+		input.Credentials = expandAwsAccountAccess(d.Get("access").([]interface{}), scope)
 	case graphql.ProviderAZURE:
 		input.Credentials = expandAzureSubscriptionAccess(d.Get("access").([]interface{}))
 	case graphql.ProviderGCP:

@@ -1927,7 +1927,6 @@ type Float float64
 type Boolean bool
 type String string
 type ID string
-type Upload string
 
 //
 // Enums
@@ -1957,17 +1956,11 @@ const (
 	BuildStatusIMAGEBUILDING   BuildStatus = "IMAGE_BUILDING"
 	BuildStatusIMAGECREATED    BuildStatus = "IMAGE_CREATED"
 	BuildStatusIMAGEERROR      BuildStatus = "IMAGE_ERROR"
+	BuildStatusIMAGEQUEUED     BuildStatus = "IMAGE_QUEUED"
 	BuildStatusIMAGETESTING    BuildStatus = "IMAGE_TESTING"
 	BuildStatusTEMPLATECREATED BuildStatus = "TEMPLATE_CREATED"
 	BuildStatusTEMPLATEERROR   BuildStatus = "TEMPLATE_ERROR"
 	BuildStatusTEMPLATEPENDING BuildStatus = "TEMPLATE_PENDING"
-)
-
-type CacheControlScope string
-
-const (
-	CacheControlScopePRIVATE CacheControlScope = "PRIVATE"
-	CacheControlScopePUBLIC  CacheControlScope = "PUBLIC"
 )
 
 type ComponentAttribute string
@@ -2107,6 +2100,13 @@ const (
 	RoleSUPERADMIN Role = "SUPER_ADMIN"
 )
 
+type Scope string
+
+const (
+	ScopeCHINA  Scope = "CHINA"
+	ScopePUBLIC Scope = "PUBLIC"
+)
+
 type ScriptProvisioner string
 
 const (
@@ -2155,17 +2155,17 @@ const (
 //
 
 type AccountChanges struct {
-	Alias           *String                      `json:"alias,omitempty"`
-	CloudProviderId *String                      `json:"cloudProviderId,omitempty"`
-	Credentials     *AccountCredentials          `json:"credentials,omitempty"`
-	Description     *String                      `json:"description,omitempty"`
-	ID              String                       `json:"id"`
-	Properties      *AccountCloudPropertiesInput `json:"properties,omitempty"`
-	Provider        *Provider                    `json:"provider,omitempty"`
+	Alias       *String                      `json:"alias,omitempty"`
+	Credentials *AccountCredentials          `json:"credentials,omitempty"`
+	Description *String                      `json:"description,omitempty"`
+	ID          String                       `json:"id"`
+	Properties  *AccountCloudPropertiesInput `json:"properties,omitempty"`
 }
 
 type AccountCloudPropertiesInput struct {
-	AwsShareAccounts *[]String `json:"awsShareAccounts,omitempty"`
+	AwsChinaRegionName   *String   `json:"awsChinaRegionName,omitempty"`
+	AwsChinaS3BucketName *String   `json:"awsChinaS3BucketName,omitempty"`
+	AwsShareAccounts     *[]String `json:"awsShareAccounts,omitempty"`
 }
 
 type AccountCredentials struct {
@@ -2417,10 +2417,11 @@ type ImagesFilters struct {
 type NewAccount struct {
 	Alias           *String                      `json:"alias,omitempty"`
 	CloudProviderId String                       `json:"cloudProviderId"`
-	Credentials     *AccountCredentials          `json:"credentials,omitempty"`
+	Credentials     AccountCredentials           `json:"credentials"`
 	Description     *String                      `json:"description,omitempty"`
 	Properties      *AccountCloudPropertiesInput `json:"properties,omitempty"`
 	Provider        Provider                     `json:"provider"`
+	Scope           *Scope                       `json:"scope,omitempty"`
 }
 
 type NewApiKey struct {
@@ -2469,7 +2470,7 @@ type NewTemplate struct {
 
 type NewTemplateAWSConfig struct {
 	CustomImageName *String `json:"customImageName,omitempty"`
-	Region          String  `json:"region"`
+	Region          *String `json:"region,omitempty"`
 }
 
 type NewTemplateAZUREConfig struct {
@@ -2493,6 +2494,7 @@ type NewTemplateConfig struct {
 	Azure           *NewTemplateAZUREConfig `json:"azure,omitempty"`
 	BuildComponents *[]NewTemplateComponent `json:"buildComponents,omitempty"`
 	Notifications   *[]NewNotification      `json:"notifications,omitempty"`
+	Scope           *Scope                  `json:"scope,omitempty"`
 	Tags            *[]NewTag               `json:"tags,omitempty"`
 	TestComponents  *[]NewTemplateComponent `json:"testComponents,omitempty"`
 }
@@ -2568,10 +2570,6 @@ type TemplatesSort struct {
 	Order SortOrder         `json:"order"`
 }
 
-type Variable struct {
-	Name String `json:"name"`
-}
-
 //
 // Objects
 //
@@ -2584,12 +2582,15 @@ type Account struct {
 	ID              String                  `json:"id"`
 	Properties      *AccountCloudProperties `json:"properties,omitempty"`
 	Provider        Provider                `json:"provider"`
+	Scope           Scope                   `json:"scope"`
 	State           *AccountState           `json:"state,omitempty"`
 	UpdatedAt       String                  `json:"updatedAt"`
 }
 
 type AccountCloudProperties struct {
-	AwsShareAccounts *[]String `json:"awsShareAccounts,omitempty"`
+	AwsChinaRegionName   *String   `json:"awsChinaRegionName,omitempty"`
+	AwsChinaS3BucketName *String   `json:"awsChinaS3BucketName,omitempty"`
+	AwsShareAccounts     *[]String `json:"awsShareAccounts,omitempty"`
 }
 
 type AccountResults struct {
@@ -2617,6 +2618,17 @@ type ApiKeyResults struct {
 	Count   Int       `json:"count"`
 	Pages   Int       `json:"pages"`
 	Results *[]ApiKey `json:"results,omitempty"`
+}
+
+type Compliance struct {
+	JsonReport *String `json:"jsonReport,omitempty"`
+	PdfReport  *String `json:"pdfReport,omitempty"`
+	Score      *String `json:"score,omitempty"`
+}
+
+type ComplianceScore struct {
+	LevelOne *String `json:"levelOne,omitempty"`
+	LevelTwo *String `json:"levelTwo,omitempty"`
 }
 
 type Component struct {
@@ -2657,15 +2669,16 @@ type CustomerResults struct {
 }
 
 type Distribution struct {
-	CreatedAt   String     `json:"createdAt"`
-	Description *String    `json:"description,omitempty"`
-	ID          String     `json:"id"`
-	Name        String     `json:"name"`
-	OsFamily    OSFamily   `json:"osFamily"`
-	OsSubtype   *OSSubtype `json:"osSubtype,omitempty"`
-	OsType      OSType     `json:"osType"`
-	Provider    Provider   `json:"provider"`
-	UpdatedAt   String     `json:"updatedAt"`
+	ComplianceScore *ComplianceScore `json:"complianceScore,omitempty"`
+	CreatedAt       String           `json:"createdAt"`
+	Description     *String          `json:"description,omitempty"`
+	ID              String           `json:"id"`
+	Name            String           `json:"name"`
+	OsFamily        OSFamily         `json:"osFamily"`
+	OsSubtype       *OSSubtype       `json:"osSubtype,omitempty"`
+	OsType          OSType           `json:"osType"`
+	Provider        Provider         `json:"provider"`
+	UpdatedAt       String           `json:"updatedAt"`
 }
 
 type DistributionResults struct {
@@ -2693,6 +2706,7 @@ type ImageBuildDetails struct {
 	BuildTimeSec       *Int                      `json:"buildTimeSec,omitempty"`
 	ChangeLog          *String                   `json:"changeLog,omitempty"`
 	CloudDistributions *[]ImageCloudDistribution `json:"cloudDistributions,omitempty"`
+	Compliance         *Compliance               `json:"compliance,omitempty"`
 	ResultImageId      *String                   `json:"resultImageId,omitempty"`
 	ResultImageUri     *String                   `json:"resultImageUri,omitempty"`
 	SourceImage        *String                   `json:"sourceImage,omitempty"`
@@ -2725,26 +2739,26 @@ type ImageState struct {
 }
 
 type Mutation struct {
-	CreateAccount             Account         `json:"createAccount"`
-	CreateApiKey              ApiKey          `json:"createApiKey"`
-	CreateComponent           Component       `json:"createComponent"`
-	CreateComponentVersion    Component       `json:"createComponentVersion"`
-	CreateRoleBinding         RoleBinding     `json:"createRoleBinding"`
-	CreateTemplate            Template        `json:"createTemplate"`
-	CreateVariable            VariableResults `json:"createVariable"`
-	DeleteAccount             *Boolean        `json:"deleteAccount,omitempty"`
-	DeleteApiKey              *Boolean        `json:"deleteApiKey,omitempty"`
-	DeleteComponent           *Boolean        `json:"deleteComponent,omitempty"`
-	DeleteComponentVersion    *Boolean        `json:"deleteComponentVersion,omitempty"`
-	DeleteRoleBinding         *Boolean        `json:"deleteRoleBinding,omitempty"`
-	DeleteTemplate            *Boolean        `json:"deleteTemplate,omitempty"`
-	DeleteVariable            *Boolean        `json:"deleteVariable,omitempty"`
-	RebuildTemplate           Template        `json:"rebuildTemplate"`
-	SetComponentVersionActive Component       `json:"setComponentVersionActive"`
-	UpdateAccount             Account         `json:"updateAccount"`
-	UpdateComponent           Component       `json:"updateComponent"`
-	UpdateRoleBinding         RoleBinding     `json:"updateRoleBinding"`
-	UpdateTemplate            Template        `json:"updateTemplate"`
+	CreateAccount             Account     `json:"createAccount"`
+	CreateApiKey              ApiKey      `json:"createApiKey"`
+	CreateComponent           Component   `json:"createComponent"`
+	CreateComponentVersion    Component   `json:"createComponentVersion"`
+	CreateRoleBinding         RoleBinding `json:"createRoleBinding"`
+	CreateTemplate            Template    `json:"createTemplate"`
+	CreateVariable            Variable    `json:"createVariable"`
+	DeleteAccount             *Boolean    `json:"deleteAccount,omitempty"`
+	DeleteApiKey              *Boolean    `json:"deleteApiKey,omitempty"`
+	DeleteComponent           *Boolean    `json:"deleteComponent,omitempty"`
+	DeleteComponentVersion    *Boolean    `json:"deleteComponentVersion,omitempty"`
+	DeleteRoleBinding         *Boolean    `json:"deleteRoleBinding,omitempty"`
+	DeleteTemplate            *Boolean    `json:"deleteTemplate,omitempty"`
+	DeleteVariable            *Boolean    `json:"deleteVariable,omitempty"`
+	RebuildTemplate           Template    `json:"rebuildTemplate"`
+	SetComponentVersionActive Component   `json:"setComponentVersionActive"`
+	UpdateAccount             Account     `json:"updateAccount"`
+	UpdateComponent           Component   `json:"updateComponent"`
+	UpdateRoleBinding         RoleBinding `json:"updateRoleBinding"`
+	UpdateTemplate            Template    `json:"updateTemplate"`
 }
 
 type Notification struct {
@@ -2767,6 +2781,7 @@ type Query struct {
 	Images        ImageResults        `json:"images"`
 	RoleBinding   RoleBinding         `json:"roleBinding"`
 	RoleBindings  RoleBindingResults  `json:"roleBindings"`
+	Settings      SettingsResult      `json:"settings"`
 	Template      Template            `json:"template"`
 	Templates     TemplateResults     `json:"templates"`
 	Variables     VariableResults     `json:"variables"`
@@ -2798,6 +2813,12 @@ type RoleBindingResults struct {
 	Results *[]RoleBinding `json:"results,omitempty"`
 }
 
+type SettingsResult struct {
+	AwsChinaRegions *[]String `json:"awsChinaRegions,omitempty"`
+	AwsRegions      *[]String `json:"awsRegions,omitempty"`
+	AzureRegions    *[]String `json:"azureRegions,omitempty"`
+}
+
 type Tag struct {
 	Key   String `json:"key"`
 	Value String `json:"value"`
@@ -2824,7 +2845,7 @@ type Template struct {
 
 type TemplateAWSConfig struct {
 	CustomImageName *String `json:"customImageName,omitempty"`
-	Region          String  `json:"region"`
+	Region          *String `json:"region,omitempty"`
 }
 
 type TemplateAZUREConfig struct {
@@ -2849,6 +2870,7 @@ type TemplateConfig struct {
 	Azure           *TemplateAZUREConfig `json:"azure,omitempty"`
 	BuildComponents *[]TemplateComponent `json:"buildComponents,omitempty"`
 	Notifications   *[]Notification      `json:"notifications,omitempty"`
+	Scope           *Scope               `json:"scope,omitempty"`
 	Tags            *[]Tag               `json:"tags,omitempty"`
 	TestComponents  *[]TemplateComponent `json:"testComponents,omitempty"`
 }
@@ -2864,6 +2886,10 @@ type TemplateState struct {
 	Error            *String     `json:"error,omitempty"`
 	LastBuildTimeSec *Int        `json:"lastBuildTimeSec,omitempty"`
 	Status           BuildStatus `json:"status"`
+}
+
+type Variable struct {
+	Name String `json:"name"`
 }
 
 type VariableResults struct {

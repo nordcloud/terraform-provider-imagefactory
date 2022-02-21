@@ -11,7 +11,7 @@ var awsTemplateConfigResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"region": {
 			Type:     schema.TypeString,
-			Required: true,
+			Optional: true,
 		},
 	},
 }
@@ -100,6 +100,12 @@ var templateConfigResource = &schema.Resource{
 			Type:     schema.TypeList,
 			Optional: true,
 			Elem:     templateTagsResource,
+		},
+		"scope": {
+			Type:         schema.TypeString,
+			Optional:     true,
+			ValidateFunc: validation.StringInSlice(validScopes, false),
+			Default:      "PUBLIC",
 		},
 	},
 }

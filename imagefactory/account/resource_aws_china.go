@@ -11,52 +11,20 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
-var gcpProjectAccessResource = &schema.Resource{
+var awsChinaAccountAccessResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
-		"type": {
+		"AWS_ACCESS_KEY_ID": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
-		"private_key": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"auth_uri": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"client_id": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"client_email": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"token_uri": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"auth_provider_x509_cert_url": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"client_x509_cert_url": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"project_id": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"private_key_id": {
+		"AWS_SECRET_ACCESS_KEY": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
 	},
 }
 
-var gcpProjectSchema = map[string]*schema.Schema{
+var awsChinaAccountSchema = map[string]*schema.Schema{
 	"alias": {
 		Type:     schema.TypeString,
 		Required: true,
@@ -65,14 +33,14 @@ var gcpProjectSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
 	},
-	"project_id": {
+	"account_id": {
 		Type:     schema.TypeString,
 		Required: true,
 	},
 	"access": {
 		Type:     schema.TypeList,
 		Optional: true,
-		Elem:     gcpProjectAccessResource,
+		Elem:     awsChinaAccountAccessResource,
 	},
 	"state": {
 		Type:     schema.TypeMap,
@@ -81,15 +49,15 @@ var gcpProjectSchema = map[string]*schema.Schema{
 	},
 }
 
-func ResourceGCP() *schema.Resource { // nolint: dupl
+func ResourceAWSChina() *schema.Resource { // nolint: dupl
 	return &schema.Resource{
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-			return accountCreate(d, m, graphql.ProviderGCP, graphql.ScopePUBLIC)
+			return accountCreate(d, m, graphql.ProviderAWS, graphql.ScopeCHINA)
 		},
 		ReadContext:   resourceAccountRead,
 		UpdateContext: resourceAccountUpdate,
 		DeleteContext: resourceAccountDelete,
-		Schema:        gcpProjectSchema,
+		Schema:        awsChinaAccountSchema,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},

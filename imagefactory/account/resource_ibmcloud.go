@@ -64,7 +64,7 @@ var ibmCloudAccountSchema = map[string]*schema.Schema{
 func ResourceIBMCloud() *schema.Resource { // nolint: dupl
 	return &schema.Resource{
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-			return accountCreate(d, m, graphql.ProviderIBMCLOUD)
+			return accountCreate(d, m, graphql.ProviderIBMCLOUD, graphql.ScopePUBLIC)
 		},
 		ReadContext:   resourceAccountRead,
 		UpdateContext: resourceAccountUpdate,

@@ -39,8 +39,8 @@ var awsAccountSchema = map[string]*schema.Schema{
 	},
 	"access": {
 		Type:     schema.TypeList,
-		Optional: true,
 		Elem:     awsAccountAccessResource,
+		Required: true,
 	},
 	"state": {
 		Type:     schema.TypeMap,
@@ -52,7 +52,7 @@ var awsAccountSchema = map[string]*schema.Schema{
 func ResourceAWS() *schema.Resource { // nolint: dupl
 	return &schema.Resource{
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-			return accountCreate(d, m, graphql.ProviderAWS)
+			return accountCreate(d, m, graphql.ProviderAWS, graphql.ScopePUBLIC)
 		},
 		ReadContext:   resourceAccountRead,
 		UpdateContext: resourceAccountUpdate,

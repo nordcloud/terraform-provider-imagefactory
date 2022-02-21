@@ -1,0 +1,1 @@
+terraform import imagefactory_aws_china_account.tf_name RESOURCE_ID

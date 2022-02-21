@@ -6,29 +6,40 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
-func expandAwsAccountAccess(in []interface{}) *graphql.AccountCredentials {
-	accountCredentials := &graphql.AccountCredentials{}
+func expandAwsAccountAccess(in []interface{}, scope graphql.Scope) graphql.AccountCredentials {
+	accountCredentials := graphql.AccountCredentials{}
 
 	if len(in) == 0 {
 		return accountCredentials
 	}
 
 	access := in[0].(map[string]interface{})
-	roleExternalID := graphql.String(access["role_external_id"].(string))
-	accountCredentials.Aws = &graphql.AWSCredentials{
-		Roles: &[]graphql.AWSCredentialsRole{
-			{
-				Arn:        graphql.String(access["role_arn"].(string)),
-				ExternalId: &roleExternalID,
+	if scope == graphql.ScopePUBLIC {
+		roleExternalID := graphql.String(access["role_external_id"].(string))
+		accountCredentials.Aws = &graphql.AWSCredentials{
+			Roles: &[]graphql.AWSCredentialsRole{
+				{
+					Arn:        graphql.String(access["role_arn"].(string)),
+					ExternalId: &roleExternalID,
+				},
 			},
-		},
+		}
+	} else {
+		accessKeyID := graphql.String(access["AWS_ACCESS_KEY_ID"].(string))
+		secretAccessKey := graphql.String(access["AWS_SECRET_ACCESS_KEY"].(string))
+		accountCredentials.Aws = &graphql.AWSCredentials{
+			Credentials: &graphql.AWSCredentialsAccessKey{
+				AWSACCESSKEYID:     accessKeyID,
+				AWSSECRETACCESSKEY: secretAccessKey,
+			},
+		}
 	}
 
 	return accountCredentials
 }
 
-func expandAzureSubscriptionAccess(in []interface{}) *graphql.AccountCredentials {
-	accountCredentials := &graphql.AccountCredentials{}
+func expandAzureSubscriptionAccess(in []interface{}) graphql.AccountCredentials {
+	accountCredentials := graphql.AccountCredentials{}
 
 	if len(in) == 0 {
 		return accountCredentials
@@ -48,8 +59,8 @@ func expandAzureSubscriptionAccess(in []interface{}) *graphql.AccountCredentials
 	return accountCredentials
 }
 
-func expandGcpOrganizationAccess(in []interface{}) *graphql.AccountCredentials {
-	accountCredentials := &graphql.AccountCredentials{}
+func expandGcpOrganizationAccess(in []interface{}) graphql.AccountCredentials {
+	accountCredentials := graphql.AccountCredentials{}
 
 	if len(in) == 0 {
 		return accountCredentials
@@ -72,8 +83,8 @@ func expandGcpOrganizationAccess(in []interface{}) *graphql.AccountCredentials {
 	return accountCredentials
 }
 
-func expandIMBCloudAccountAccess(in []interface{}) *graphql.AccountCredentials {
-	accountCredentials := &graphql.AccountCredentials{}
+func expandIMBCloudAccountAccess(in []interface{}) graphql.AccountCredentials {
+	accountCredentials := graphql.AccountCredentials{}
 
 	if len(in) == 0 {
 		return accountCredentials

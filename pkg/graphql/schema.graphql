@@ -1,1131 +1,1378 @@
-directive @cacheControl(
-  maxAge: Int
-  scope: CacheControlScope
-) on FIELD_DEFINITION | OBJECT | INTERFACE
-
 enum AccountStatus {
-  ACCESS_SUCCESS
-  ACCESS_MISSING
-  ACCESS_ERROR
+	ACCESS_SUCCESS
+	ACCESS_MISSING
+	ACCESS_ERROR
 }
 
-# AccountState defines what is the current state of the account cloud credentials.
-#
-# ACCESS_SUCCESS - cloud credentials are valid and provided correctly.
-# ACCESS_MISSING - cloud credentials not provided. This account won't be used to distribute images.
-# ACCESS_ERROR - credentials were provided correctly, but there was as error in processing. This often occurs
-#                when the credentials are missing the required permissions. The detailed `error` message
-#                will be provided in this case.
+"""
+AccountState defines what is the current state of the account cloud credentials.
+
+ACCESS_SUCCESS - cloud credentials are valid and provided correctly.
+ACCESS_MISSING - cloud credentials not provided. This account won't be used to distribute images.
+ACCESS_ERROR - credentials were provided correctly, but there was as error in processing. This often occurs
+			   when the credentials are missing the required permissions. The detailed `error` message
+			   will be provided in this case.
+"""
 type AccountState {
-  status: AccountStatus!
-  error: String
+	status: AccountStatus!
+	error: String
 }
 
 type AccountCloudProperties {
-  awsShareAccounts: [String!]
+	awsShareAccounts: [String!]
+	awsChinaS3BucketName: String
+	awsChinaRegionName: String
 }
 
 type Account {
-  id: String!
-  cloudProviderId: String!
-  provider: Provider!
-  state: AccountState
-  alias: String
-  description: String
-  createdAt: String!
-  updatedAt: String!
-  properties: AccountCloudProperties
+	id: String!
+	cloudProviderId: String!
+	provider: Provider!
+	state: AccountState
+	alias: String
+	description: String
+	createdAt: String!
+	updatedAt: String!
+	properties: AccountCloudProperties
+	scope: Scope!
 }
 
 type AccountResults {
-  results: [Account!]
-  pages: Int!
-  count: Int!
+	results: [Account!]
+	pages: Int!
+	count: Int!
 }
 
 input AWSCredentialsRole {
-  externalId: String
-  arn: String!
+	externalId: String
+	arn: String!
 }
 
-# AWSCredentialsAccessKey can be used to access AWS account using the IAM user credentials.
-#
-# This is not recommended for the normal use case. For security reason AWSCredentialsRole should be used.
+"""
+AWSCredentialsAccessKey can be used to access AWS account using the IAM user credentials.
+
+This is not recommended for the normal use case. For security reason AWSCredentialsRole should be used.
+"""
 input AWSCredentialsAccessKey {
-  AWS_ACCESS_KEY_ID: String!
-  AWS_SECRET_ACCESS_KEY: String!
+	AWS_ACCESS_KEY_ID: String!
+	AWS_SECRET_ACCESS_KEY: String!
 }
 
 input AWSCredentials {
-  credentials: AWSCredentialsAccessKey
-  roles: [AWSCredentialsRole]
+	credentials: AWSCredentialsAccessKey
+	roles: [AWSCredentialsRole]
 }
 
 input GCPCredentials {
-  type: String!
-  privateKey: String!
-  authUri: String!
-  clientId: String!
-  clientEmail: String!
-  tokenUri: String!
-  authProviderX509CertUrl: String!
-  clientX509CertUrl: String!
-  projectId: String!
-  privateKeyId: String!
+	type: String!
+	privateKey: String!
+	authUri: String!
+	clientId: String!
+	clientEmail: String!
+	tokenUri: String!
+	authProviderX509CertUrl: String!
+	clientX509CertUrl: String!
+	projectId: String!
+	privateKeyId: String!
 }
 
 input AzureCredentials {
-  password: String!
-  appId: String!
-  tenantId: String!
-  storageAccountKey: String!
-  storageAccount: String!
-  sharedImageGallery: String!
-  resourceGroupName: String!
+	password: String!
+	appId: String!
+	tenantId: String!
+	storageAccountKey: String!
+	storageAccount: String!
+	sharedImageGallery: String!
+	resourceGroupName: String!
 }
 
 input IBMCloudCredentials {
-  apikey: String!
-  region: String!
-  cosBucket: String!
-  resourceGroupName: String!
-  resourceGroupId: String!
+	apikey: String!
+	region: String!
+	cosBucket: String!
+	resourceGroupName: String!
+	resourceGroupId: String!
 }
 
-# AccountCredentials defines the credentials used to access AWS account, GCP project or Azure subscription where
-# the result image created by HBI should be distributed.
-#
-# Please note that only one of the AWS, GCP or Azure credentials can be provided and it has match the provider
-# defined in account model.
-#
-# To get the account credentials, please check the onboarding section in HBI documentation:
-# https://docs.hbi.nordcloudapp.com/onboarding
+"""
+AccountCredentials defines the credentials used to access AWS account, GCP project or Azure subscription where
+the result image created by HBI should be distributed.
+
+Please note that only one of the AWS, GCP or Azure credentials can be provided and it has match the provider
+defined in account model.
+
+To get the account credentials, please check the onboarding section in HBI documentation:
+https://docs.imagefactory.nordcloudapp.com/onboarding
+"""
 input AccountCredentials {
-  aws: AWSCredentials
-  gcp: GCPCredentials
-  azure: AzureCredentials
-  ibmcloud: IBMCloudCredentials
+	aws: AWSCredentials
+	gcp: GCPCredentials
+	azure: AzureCredentials
+	ibmcloud: IBMCloudCredentials
 }
 
 input AccountCloudPropertiesInput {
-  # awsShareAccounts can be used to share distributed image from the account where it was copied.
-  #
-  # Hardened image is first copied to the account based on the cloud credentials. If awsShareAccounts
-  # is specified, hbi adds the IAM policy to the result image so it can be used from the AWS accounts specified in
-  # `awsShareAccounts` list.
-  #
-  # This field is valid for AWS cloud credentials only.
-  awsShareAccounts: [String!]
+	"""
+	awsShareAccounts can be used to share distributed image from the account where it was copied.
+
+	Hardened image is first copied to the account based on the cloud credentials. If awsShareAccounts
+	is specified, hbi adds the IAM policy to the result image so it can be used from the AWS accounts specified in
+	`awsShareAccounts` list.
+
+	This field is valid for AWS cloud credentials only.
+	"""
+	awsShareAccounts: [String!]
+	awsChinaS3BucketName: String
+	awsChinaRegionName: String
 }
 
 input NewAccount {
-  provider: Provider!
-  cloudProviderId: String!
-  alias: String
-  description: String
-  credentials: AccountCredentials
-  properties: AccountCloudPropertiesInput
+	provider: Provider!
+	cloudProviderId: String!
+	alias: String
+	description: String
+	credentials: AccountCredentials!
+	properties: AccountCloudPropertiesInput
+	scope: Scope
 }
 
 input AccountChanges {
-  id: String!
-  provider: Provider
-  cloudProviderId: String
-  alias: String
-  description: String
-  credentials: AccountCredentials
-  properties: AccountCloudPropertiesInput
+	id: String!
+	alias: String
+	description: String
+	credentials: AccountCredentials
+	properties: AccountCloudPropertiesInput
 }
 
+
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 type ApiKey {
-  id: String!
-  name: String!
-  secret: String!
-  createdAt: String!
-  updatedAt: String!
-  createdBy: String!
-  updatedBy: String!
+	id: String!
+	name: String!
+	secret: String!
+	createdAt: String!
+	updatedAt: String!
+	createdBy: String!
+	updatedBy: String!
 }
 
 type ApiKeyResults {
-  results: [ApiKey!]
-  pages: Int!
-  count: Int!
+	results: [ApiKey!]
+	pages: Int!
+	count: Int!
 }
 
 input NewApiKey {
-  name: String!
+	name: String!
 }
 
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 enum Provider {
-  AWS
-  AZURE
-  GCP
-  IBMCLOUD
-  VMWARE
+	AWS
+	AZURE
+	GCP
+	IBMCLOUD
+	VMWARE
+}
+
+enum Scope {
+	PUBLIC
+	CHINA
 }
 
 enum OSType {
-  LINUX
-  WINDOWS
+	LINUX
+	WINDOWS
 }
 
 enum OSSubtype {
-  UBUNTU
-  CENTOS
-  AMAZON
-  REDHAT
-  SUSE
-  ORACLE_LINUX
+	UBUNTU
+	CENTOS
+	AMAZON
+	REDHAT
+	SUSE
+	ORACLE_LINUX
 }
 
 enum OSFamily {
-  WINDOWS
-  UBUNTU
-  CENTOS
-  AMAZON
-  REDHAT
-  SUSE
-  ORACLE_LINUX
-  OTHER
+	WINDOWS
+	UBUNTU
+	CENTOS
+	AMAZON
+	REDHAT
+	SUSE
+	ORACLE_LINUX
+	OTHER
 }
 
 enum SortOrder {
-  ASC
-  DESC
+	ASC
+	DESC
 }
 
 enum SearchAlgorithm {
-  EXACT_MATCH
-  SUBSTRING_MATCH
-  REGEXP_MATCH
-  FUZZY_MATCH
+	EXACT_MATCH
+	SUBSTRING_MATCH
+	REGEXP_MATCH
+	FUZZY_MATCH
 }
 
 input Search {
-  searchValue: String!
-  algorithm: SearchAlgorithm!
+	searchValue: String!
+	algorithm: SearchAlgorithm!
 }
 
+
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 enum ComponentType {
-  SYSTEM
-  CUSTOM
+	SYSTEM
+	CUSTOM
 }
 
 enum ComponentStage {
-  BUILD
-  TEST
+	BUILD
+	TEST
 }
 
 enum ScriptProvisioner {
-  POWERSHELL
-  SHELL
-  ANSIBLE
+	POWERSHELL
+	SHELL
+	ANSIBLE
 }
 
 type VersionedContent {
-  version: String!
-  active: Boolean!
-  ansibleTags: [String!]
-  scriptUrl: String
-  docsUrl: String
-  scriptProvisioner: ScriptProvisioner!
+	version: String!
+	active: Boolean!
+	ansibleTags: [String!]
+	scriptUrl: String
+	docsUrl: String
+	scriptProvisioner: ScriptProvisioner!
 }
 
-# Component defines an additional step in building hardened images.
-#
-# Component can be executed on BUILD stage (to install software) or on the TEST stage to verify if the image is correct.
-# We have 2 types of components:
-#     SYSTEM - components delivered by the HBI that contain hardening components or scripts to install popular software
-#     CUSTOM - components defined by the users containing shell or powershell script
-# Before creating custom component clease check if HBI does not provided predefined component
-#
-# Component content is versioned. It means that every time you want to update your component you have to create new component version.
-# Component may contain multiple versions, but only one can be active. During image building HBI will use only the active component version.
+"""
+Component defines an additional step in building hardened images.
+
+Component can be executed on BUILD stage (to install software) or on the TEST stage to verify if the image is correct.
+We have 2 types of components:
+	SYSTEM - components delivered by the HBI that contain hardening components or scripts to install popular software
+	CUSTOM - components defined by the users containing shell or powershell script
+Before creating custom component clease check if HBI does not provided predefined component 
+
+Component content is versioned. It means that every time you want to update your component you have to create new component version.
+Component may contain multiple versions, but only one can be active. During image building HBI will use only the active component version.
+"""
 type Component {
-  id: String!
-  name: String!
-  description: String
-  type: ComponentType!
-  stage: ComponentStage!
-  providers: [Provider!]!
-  osTypes: [OSType!]!
-  content: [VersionedContent!]
-  createdAt: String!
-  updatedAt: String!
-  createdBy: String!
-  updatedBy: String!
+	id: String!
+	name: String!
+	description: String
+	type: ComponentType!
+	stage: ComponentStage!
+	providers: [Provider!]!
+	osTypes: [OSType!]!
+	content: [VersionedContent!]
+	createdAt: String!
+	updatedAt: String!
+	createdBy: String!
+	updatedBy: String!
 }
 
 type ComponentResults {
-  results: [Component!]
-  pages: Int!
-  count: Int!
+	results: [Component!]
+	pages: Int!
+	count: Int!
 }
+
 
 enum ShellScriptProvisioner {
-  POWERSHELL
-  SHELL
+	POWERSHELL
+	SHELL
 }
 
-# NewVersionedContent contains the script that will be executed by the component.
-#
-# Script provided as a plain text is saved in the HBI S3. You can access it later using the presigned URL.
+"""
+NewVersionedContent contains the script that will be executed by the component.
+
+Script provided as a plain text is saved in the HBI S3. You can access it later using the presigned URL.
+"""
 input NewVersionedContent {
-  active: Boolean
-  scriptProvisioner: ShellScriptProvisioner!
-  script: String!
+	active: Boolean
+	scriptProvisioner: ShellScriptProvisioner!
+	script: String!
 }
 
 input NewComponent {
-  name: String!
-  description: String
-  stage: ComponentStage!
-  providers: [Provider!]!
-  osTypes: [OSType!]!
-  content: NewVersionedContent!
+	name: String!
+	description: String
+	stage: ComponentStage!
+	providers: [Provider!]!
+	osTypes: [OSType!]!
+	content: NewVersionedContent!
 }
 
 input ComponentChanges {
-  id: String!
-  name: String
-  description: String
-  stage: ComponentStage
-  providers: [Provider!]
-  osTypes: [OSType!]
+	id: String!
+	name: String
+	description: String
+	stage: ComponentStage
+	providers: [Provider!]
+	osTypes: [OSType!]
 }
 
 input NewComponentContent {
-  id: String!
-  active: Boolean
-  scriptProvisioner: ShellScriptProvisioner!
-  script: String!
+	id: String!
+	active: Boolean
+	scriptProvisioner: ShellScriptProvisioner!
+	script: String!
 }
 
+
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 type Customer {
-  id: String!
-  name: String!
-  createdAt: String!
-  updatedAt: String!
+	id: String!
+	name: String!
+	createdAt: String!
+	updatedAt: String!
 
-  # accounts contains list of the account credentials
-  #
-  # instead of this field resolver, query `accounts` can be used to receive the same data
-  accounts(input: CustomerAccountsResolverInput!): AccountResults
+	"""
+	accounts contains list of the account credentials
+	
+	instead of this field resolver, query `accounts` can be used to receive the same data
+	"""    
+	accounts(input: CustomerAccountsResolverInput!): AccountResults
 
-  # components contains list of the components that can be used by the customer
-  #
-  # instead of this field resolver, query `components` can be used to receive the same data
-  components(input: CustomerComponentsResolverInput!): ComponentResults
+	"""
+	components contains list of the components that can be used by the customer
+	
+	instead of this field resolver, query `components` can be used to receive the same data
+	"""
+	components(input: CustomerComponentsResolverInput!): ComponentResults
 
-  # templates contains list of the templates created by the customer
-  #
-  # instead of this field resolver, query `templates` can be used to receive the same data
-  templates(input: CustomerTemplatesResolverInput!): TemplateResults
+	"""
+	templates contains list of the templates created by the customer
+	
+	instead of this field resolver, query `templates` can be used to receive the same data
+	"""
+	templates(input: CustomerTemplatesResolverInput!): TemplateResults
 }
 
 type CustomerResults {
-  results: [Customer!]
-  pages: Int!
-  count: Int!
+	results: [Customer!]
+	pages: Int!
+	count: Int!
 }
 
 input CustomerComponentsResolverInput {
-  page: Int = 1
-  limit: Int = 10
-  includeSystem: Boolean = true
-  sort: ComponentsSort
-  search: Search
-  filters: ComponentsFilters
+	page: Int = 1
+	limit: Int = 10
+	includeSystem: Boolean = true
+	sort: ComponentsSort
+	search: Search
+	filters: ComponentsFilters
 }
 
 input CustomerAccountsResolverInput {
-  page: Int = 1
-  limit: Int = 10
-  sort: CustomerAccountsSort
-  search: Search
-  filters: AccountsFilters
+	page: Int = 1
+	limit: Int = 10
+	sort: CustomerAccountsSort
+	search: Search
+	filters: AccountsFilters
 }
 
 input CustomerTemplatesResolverInput {
-  page: Int = 1
-  limit: Int = 10
-  sort: TemplatesSort
-  search: Search
-  filters: TemplatesFilters
+	page: Int = 1
+	limit: Int = 10
+	sort: TemplatesSort
+	search: Search
+	filters: TemplatesFilters
 }
 
-# Distribution defines the cloud image that can be created by the HBI.
-#
-# To build an image you have to select one of the distributions and create image template based on this.
-# Please check the `createTemplate` mutation.
-#
-# The same version of operating system (e.g. Ubuntu 20.04) are represented as a separate distributions for each cloud provider.
+
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+"""
+Distribution defines the cloud image that can be created by the HBI.
+
+To build an image you have to select one of the distributions and create image template based on this.
+Please check the `createTemplate` mutation.
+
+The same version of operating system (e.g. Ubuntu 20.04) are represented as a separate distributions for each cloud provider.
+"""
 type Distribution {
-  id: String!
-  name: String!
-  description: String
-  createdAt: String!
-  updatedAt: String!
-  provider: Provider!
-  osType: OSType!
-  osFamily: OSFamily!
-  osSubtype: OSSubtype
+	id: String!
+	name: String!
+	description: String
+	createdAt: String!
+	updatedAt: String!
+	provider: Provider!
+	osType: OSType!
+	osFamily: OSFamily!
+	osSubtype: OSSubtype
+	complianceScore: ComplianceScore
+}
+
+type ComplianceScore {
+	levelOne: String
+	levelTwo: String
 }
 
 type DistributionResults {
-  results: [Distribution!]
-  pages: Int!
-  count: Int!
+	results: [Distribution!]
+	pages: Int!
+	count: Int!
 }
 
-type ImageComponent {
-  id: String!
-  version: String!
 
-  # name is retrieved with an additional field resolver.
-  # Please include this field only if required.
-  name: String
+# Copyright 2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+type ImageComponent {
+	id: String!
+	version: String!
+
+	"""
+	name is retrieved with an additional field resolver.
+	Please include this field only if required.
+	"""
+	name: String
 }
 
 type ImageCloudDistribution {
-  # accountId is the UUID of the account in HBI.
-  accountId: String!
+	"""
+	accountId is the UUID of the account in HBI.
+	"""
+	accountId: String!
 
-  # cloudProviderId is the AWS account ID, subscription ID or the project ID where the image was distributed.
-  cloudProviderId: String!
+	"""
+	cloudProviderId is the AWS account ID, subscription ID or the project ID where the image was distributed.
+	"""
+	cloudProviderId: String!
 
-  # resultImageId contains the name reference to the distributed image.
-  #
-  # For AWS it contains the AMI ID of the image in the target destination.
-  # For the GCP and Azure it contains the name of the image in target destination.
-  resultImageId: String
+	"""
+	resultImageId contains the name reference to the distributed image.
 
-  # error conatins detailed error message if the image distribution process failed.
-  error: String
+	For AWS it contains the AMI ID of the image in the target destination.
+	For the GCP and Azure it contains the name of the image in target destination.
+	"""
+	resultImageId: String
+
+	"""
+	error conatins detailed error message if the image distribution process failed.
+	"""
+	error: String
 }
 
 enum ImageStatus {
-  PENDING
-  CREATED
-  ERROR
-  SHARE_ERROR
+	PENDING
+	CREATED
+	ERROR
+	SHARE_ERROR
 }
 
 type ImageState {
-  status: ImageStatus!
-  error: String
+	status: ImageStatus!
+	error: String
+}
+
+type Compliance {
+	score: String
+	jsonReport: String
+	pdfReport: String
 }
 
 type ImageBuildDetails {
-  buildComponents: [ImageComponent!]
-  testComponents: [ImageComponent!]
-  tags: [Tag!]
-  changeLog: String
-  resultImageId: String
-  resultImageUri: String
-  buildTimeSec: Int
-  buildEndTime: String
-  buildStartTime: String
-  sourceImage: String
+	buildComponents: [ImageComponent!]
+	testComponents: [ImageComponent!]
+	tags: [Tag!]
+	changeLog: String
+	compliance: Compliance
+	resultImageId: String
+	resultImageUri: String
+	buildTimeSec: Int
+	buildEndTime: String
+	buildStartTime: String
+	sourceImage: String
 
-  # cloudDistributions contains the list of the cloud accounts where the image was distributed.
-  #
-  # If this list is empty the image was not distributed to any account. This may happen if you do not specified any
-  # account cloud credentials or the credentials are invalid.
-  cloudDistributions: [ImageCloudDistribution!]
+	"""
+	cloudDistributions contains the list of the cloud accounts where the image was distributed.
+
+	If this list is empty the image was not distributed to any account. This may happen if you do not specified any
+	account cloud credentials or the credentials are invalid.
+	"""
+	cloudDistributions: [ImageCloudDistribution!]
 }
 
 type Image {
-  id: String!
-  templateId: String!
-  name: String!
-  provider: Provider!
-  state: ImageState!
-  description: String
-  createdAt: String!
-  updatedAt: String!
+	id: String!
+	templateId: String!
+	name: String!
+	provider: Provider!
+	state: ImageState!
+	description: String
+	createdAt: String!
+	updatedAt: String!
 
-  # details contains the configuration based on which the image has been created. Basically it contains the copy of the
-  # image template configuration. It can be used to compare the images reated within the same image template.
-  details: ImageBuildDetails
+	"""
+	details contains the configuration based on which the image has been created. Basically it contains the copy of the
+	image template configuration. It can be used to compare the images reated within the same image template.
+	"""
+	details: ImageBuildDetails
 }
 
 type ImageResults {
-  results: [Image!]
-  pages: Int!
-  count: Int!
+	results: [Image!]
+	pages: Int!
+	count: Int!
 }
 
+
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 enum Role {
-  # READ_ONLY role grants permissions to get and list all resources excluding RoleBinding and ApiKey.
-  READ_ONLY
+	"""
+	READ_ONLY role grants permissions to get and list all resources excluding RoleBinding and ApiKey.
+	"""
+	READ_ONLY
 
-  # ADMIN role grants full write permissions to all resources excluding RoleBinding and ApiKey.
-  ADMIN
+	"""
+	ADMIN role grants full write permissions to all resources excluding RoleBinding and ApiKey.
+	"""
+	ADMIN
 
-  # SUPER_ADMIN grants full permissions including RBAC management. For security reason this role cannot be assigned to the ApiKey.
-  SUPER_ADMIN
+	"""
+	SUPER_ADMIN grants full permissions including RBAC management. For security reason this role cannot be assigned to the ApiKey.
+	"""
+	SUPER_ADMIN
 }
 
 enum Kind {
-  USER
-  API_KEY
+	USER
+	API_KEY
 }
 
 type RoleBinding {
-  id: String!
-  kind: Kind!
-  role: Role!
-
-  # subject defines the binding target - user email or the api key id.
-  subject: String!
-  createdAt: String!
-  updatedAt: String!
-  createdBy: String!
-  updatedBy: String!
+	id: String!
+	kind: Kind!
+	role: Role!
+	"""
+	subject defines the binding target - user email or the api key id.
+	"""
+	subject: String!
+	createdAt: String!
+	updatedAt: String!
+	createdBy: String!
+	updatedBy: String!
 }
 
 type RoleBindingResults {
-  results: [RoleBinding!]
-  pages: Int!
-  count: Int!
+	results: [RoleBinding!]
+	pages: Int!
+	count: Int!
 }
 
 input NewRoleBinding {
-  kind: Kind!
-  role: Role!
+	kind: Kind!
+	role: Role!
 
-  # subject defines the role binding target.
-  # If the kind is `USER`, the user email should be provided.
-  # If the kind is `API_KEY`, the id of the existing key should be provided.
-  subject: String!
+	"""
+	subject defines the role binding target. 
+	If the kind is `USER`, the user email should be provided.
+	If the kind is `API_KEY`, the id of the existing key should be provided. 
+	"""
+	subject: String!
 }
 
 input RoleBindingChanges {
-  id: String!
-  role: Role
+	id: String!
+	role: Role
 }
 
+
+# Copyright 2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+type SettingsResult {
+	awsRegions: [String!]
+	awsChinaRegions: [String!]
+	azureRegions: [String!]
+}
+
+
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 enum RebuildReasonType {
-  SECURITY_CHECK
-  SOURCE_IMAGE_CHANGE
-  HARDENING_SCRIPT_CHANGE
-  WEEKLY_UPDATES
-  MANUAL
+	SECURITY_CHECK
+	SOURCE_IMAGE_CHANGE
+	HARDENING_SCRIPT_CHANGE
+	WEEKLY_UPDATES
+	MANUAL
 }
 
 enum BuildStatus {
-  TEMPLATE_CREATED
-  TEMPLATE_PENDING
-  TEMPLATE_ERROR
-  IMAGE_BUILDING
-  IMAGE_TESTING
-  IMAGE_CREATED
-  IMAGE_ERROR
+	TEMPLATE_CREATED
+	TEMPLATE_PENDING
+	TEMPLATE_ERROR
+	IMAGE_BUILDING
+	IMAGE_TESTING
+	IMAGE_CREATED
+	IMAGE_ERROR
+	IMAGE_QUEUED
 }
 
 enum NotificationType {
-  SNS
-  PUB_SUB
-  WEB_HOOK
+	SNS
+	PUB_SUB
+	WEB_HOOK
 }
 
 type RebuildReason {
-  type: RebuildReasonType!
-  description: String
+	type: RebuildReasonType!
+	description: String
 }
 
 type Rebuild {
-  reason: [RebuildReason!]
+	reason: [RebuildReason!]
 }
 
 type TemplateState {
-  status: BuildStatus!
-  error: String
-  lastBuildTimeSec: Int
-  buildStartTime: String
+	status: BuildStatus!
+	error: String
+	lastBuildTimeSec: Int
+	buildStartTime: String
 }
 
 type TemplateComponentProperty {
-  name: String!
-  value: String!
+	name: String!
+	value: String!
 }
 
 type TemplateComponent {
-  id: String!
-  version: String
-  properties: [TemplateComponentProperty!]
+	id: String!
+	version: String
+	properties: [TemplateComponentProperty!]
 
-  # name is retrieved with an additional field resolver.
-  # Please include this field only if required.
-  name: String
+	"""
+	name is retrieved with an additional field resolver.
+	Please include this field only if required.
+	"""
+	name: String
 }
 
 type Tag {
-  key: String!
-  value: String!
+	key: String!
+	value: String!
 }
 
 type Notification {
-  type: NotificationType!
-  uri: String!
+	type: NotificationType!
+	uri: String!
 }
 
 type TemplateAWSConfig {
-  region: String!
-  customImageName: String
+	region: String
+	customImageName: String
 }
 
 type TemplateAZUREConfig {
-  replicaRegions: [String]
-  excludeFromLatest: Boolean
+	replicaRegions: [String]
+	excludeFromLatest: Boolean
 }
 
 type TemplateConfig {
-  buildComponents: [TemplateComponent!]
-  testComponents: [TemplateComponent!]
-  tags: [Tag!]
-  notifications: [Notification!]
-  aws: TemplateAWSConfig
-  azure: TemplateAZUREConfig
+	buildComponents: [TemplateComponent!]
+	testComponents: [TemplateComponent!]
+	tags: [Tag!]
+	notifications: [Notification!]
+	scope: Scope
+	aws: TemplateAWSConfig
+	azure: TemplateAZUREConfig
 }
 
 type Template {
-  id: String!
-  customerId: String!
-  name: String!
-  provider: Provider!
-  description: String
-  distributionId: String!
-  osFamily: OSFamily!
-  rebuild: Rebuild
-  state: TemplateState!
-  config: TemplateConfig
-  createdAt: String!
-  updatedAt: String!
-  createdBy: String!
-  updatedBy: String!
+	id: String!
+	customerId: String!
+	name: String!
+	provider: Provider!
+	description: String
+	distributionId: String!
+	osFamily: OSFamily!
+	rebuild: Rebuild
+	state: TemplateState!
+	config: TemplateConfig
+	createdAt: String!
+	updatedAt: String!
+	createdBy: String!
+	updatedBy: String!
 
-  # distribution contains distribution details resolved using distributionId field
-  # instead of this field resolver, query `distribution` can be used to get the same data
-  distribution: Distribution
+	"""
+	distribution contains distribution details resolved using distributionId field
+	instead of this field resolver, query `distribution` can be used to get the same data
+	"""
+	distribution: Distribution
 
-  # images contains all images created by this template
-  # instead of this field resolver, query `images` can be used to get the same data
-  images(input: TemplateImagesResolverInput!): ImageResults
+	"""
+	images contains all images created by this template
+	instead of this field resolver, query `images` can be used to get the same data
+	"""
+	images(input: TemplateImagesResolverInput!): ImageResults
 }
 
 type TemplateResults {
-  results: [Template!]
-  pages: Int!
-  count: Int!
+	results: [Template!]
+	pages: Int!
+	count: Int!
 }
 
 input TemplateImagesResolverInput {
-  page: Int = 1
-  limit: Int = 5
-  sort: TemplateImagesSort
-  search: Search
-  filters: ImagesFilters
+	page: Int = 1
+	limit: Int = 5
+	sort: TemplateImagesSort
+	search: Search
+	filters: ImagesFilters
 }
 
 input NewTemplateComponentProperty {
-  name: String!
-  value: String!
+	name: String!
+	value: String!
 }
 
 input NewTemplateComponent {
-  id: String!
-  version: String
-  properties: [NewTemplateComponentProperty!]
+	id: String!
+	version: String
+	properties: [NewTemplateComponentProperty!]
 }
 
 input NewTag {
-  key: String!
-  value: String!
+	key: String!
+	value: String!
 }
 
 input NewNotification {
-  type: NotificationType!
-  uri: String!
+	type: NotificationType!
+	uri: String!
 }
 
 input NewTemplateAWSConfig {
-  region: String!
-  customImageName: String
+	region: String
+	customImageName: String
 }
 
 input NewTemplateAZUREConfig {
-  replicaRegions: [String]
-  excludeFromLatest: Boolean
+	replicaRegions: [String]
+	excludeFromLatest: Boolean
 }
 
-# NewTemplateConfig defines the image customization.
-#
-# Please note that some of the configuration settings are available only for the specified cloud provider. (e.g. AWS region)
+"""
+NewTemplateConfig defines the image customization.
+
+Please note that some of the configuration settings are available only for the specified cloud provider. (e.g. AWS region)
+"""
 input NewTemplateConfig {
-  buildComponents: [NewTemplateComponent!]
-  testComponents: [NewTemplateComponent!]
-  tags: [NewTag!]
+	buildComponents: [NewTemplateComponent!]
+	testComponents: [NewTemplateComponent!]
+	tags: [NewTag!]
 
-  # notifications defines how to notify about the created & distributed image.
-  #
-  # There are possible types of notifications: SNS topic (AWS), PUB/SUB topic (GCP) and web hook.
-  # Please note that HBI will send notification about every distributed image. It means that if you have single image template,
-  # but 10 cloud accounts you will receive 10 notifications because HBI created 10 different images.
-  notifications: [NewNotification!]
+	"""
+	notifications defines how to notify about the created & distributed image.
 
-  # aws defines additional configuration for the AWS provider. This is required for the AWS image templates.
-  aws: NewTemplateAWSConfig
+	There are possible types of notifications: SNS topic (AWS), PUB/SUB topic (GCP) and web hook.
+	Please note that HBI will send notification about every distributed image. It means that if you have single image template,
+	but 10 cloud accounts you will receive 10 notifications because HBI created 10 different images.
+	"""
+	notifications: [NewNotification!]
 
-  # azure defines additional configuration for the Azure provider. This is optional and can be used only for AZURE template.
-  azure: NewTemplateAZUREConfig
+	"""
+	scope defines the scope of the template.
+	"""
+	scope: Scope
+
+	"""
+	aws defines additional configuration for the AWS provider. This is required for the AWS image templates.
+	"""
+	aws: NewTemplateAWSConfig
+
+	"""
+	azure defines additional configuration for the Azure provider. This is optional and can be used only for AZURE template.
+	"""
+	azure: NewTemplateAZUREConfig
 }
 
 input NewTemplate {
-  name: String!
-  provider: Provider!
-  description: String
-  distributionId: String!
-  config: NewTemplateConfig!
+	name: String!
+	provider: Provider!
+	description: String
+	distributionId: String!
+	config: NewTemplateConfig!
 }
 
 input TemplateChanges {
-  id: String!
-  name: String
-  description: String
-  config: NewTemplateConfig
+	id: String!
+	name: String
+	description: String
+	config: NewTemplateConfig
 }
 
-input Variable {
-  name: String!
+
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+type Variable {
+	name: String!
 }
 
 type VariableResults {
-  results: [String]
+	results: [String]
 }
 
 input NewVariable {
-  name: String!
-  value: String!
+	name: String!
+	value: String!
 }
 
+
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 enum AccountAttribute {
-  ALIAS
-  CLOUD_PROVIDER_ID
-  PROVIDER
-  STATUS
-  CREATED_AT
+	ALIAS
+	CLOUD_PROVIDER_ID
+	PROVIDER
+	STATUS
+	CREATED_AT
 }
 
 input CustomerAccountsSort {
-  order: SortOrder!
-  field: AccountAttribute!
+	order: SortOrder!
+	field: AccountAttribute!
 }
 
 input CustomerAccountIdInput {
-  accountId: String!
+	accountId: String!
 }
 
 input AccountsFilter {
-  field: AccountAttribute!
-  values: [String!]!
-  exclusive: Boolean
+	field: AccountAttribute!
+	values: [String!]!
+	exclusive: Boolean
 }
 
 input AccountsFilters {
-  filters: [AccountsFilter!]!
+	filters: [AccountsFilter!]!
 }
 
 input CustomerAccountsInput {
-  page: Int
-  limit: Int
-  sort: CustomerAccountsSort
-  search: Search
-  filters: AccountsFilters
+	page: Int
+	limit: Int
+	sort: CustomerAccountsSort
+	search: Search
+	filters: AccountsFilters
 }
 
 type Mutation {
-  # createAccount adds new AZURE, GCP or AWS cloud credentials.
-  #
-  # Account can be created without providing cloud credentials, but it won't be used to distribute images.
-  # Image will be distributed to the accounts with the correct credentials only.
-  createAccount(input: NewAccount!): Account!
+	"""
+	createAccount adds new AZURE, GCP or AWS cloud credentials.
 
-  # updateAccount partially updates account cloud credentials.
-  updateAccount(input: AccountChanges!): Account!
+	Account can be created without providing cloud credentials, but it won't be used to distribute images.
+	Image will be distributed to the accounts with the correct credentials only. 
+	"""
+	createAccount(input: NewAccount!): Account!
 
-  # deleteAccount removes the existing account cloud credentials.
-  deleteAccount(input: CustomerAccountIdInput!): Boolean
+	"""
+	updateAccount partially updates account cloud credentials.
+	"""
+	updateAccount(input: AccountChanges!): Account!
 
-  # createApiKey adds the new apiKey and generates secret value.
-  #
-  # This mutation returns the secret value generated for this apiKey. Please save this value because
-  # it won't be possible to get it later. For security reasons HBI stores only the secret hash (generated
-  # with cryptographic algorithm) so the plain text value can be retrieved from this mutation only. If you lost
-  # apiKey secret you have to create new ApiKey.
-  #
-  # apikey can be used to access HBI API by providing the `x-api-key` header in format:
-  # {API_KEY_ID}/{API_KEY_SECRET}. `x-customer-id` header is not required in this case.
-  #
-  # apiKey does not grant any permissions to access API itself. You have to create the `roleBinding` and assign the access
-  # role to it to make it working. Please check `createRoleBinding` mutation.
-  createApiKey(input: NewApiKey!): ApiKey!
-
-  # deleteApiKey removes existing apiKey.
-  deleteApiKey(input: CustomerApiKeyIdInput!): Boolean
-
-  # createComponent adds a new custom component.
-  createComponent(input: NewComponent!): Component!
-
-  # createComponent updates an existing custom component.
-  updateComponent(input: ComponentChanges!): Component!
-
-  # deleteComponent removes an existing component.
-  #
-  # Please note that you have to delete all component versions first and all image templates that refers to this component.
-  deleteComponent(input: ComponentIdInput!): Boolean
-
-  # createComponentVersion adds new content to the existing component.
-  createComponentVersion(input: NewComponentContent!): Component!
-
-  # deleteComponentVersion removes the existing component version.
-  #
-  # Please note, that you cannot delete the active component version. You have to disable component version first.
-  deleteComponentVersion(input: ComponentVersionIdInput!): Boolean
-
-  # setComponentVersionActive sets the component version to active.
-  #
-  # Because there can be only 1 active component version, the previous one is disable.
-  setComponentVersionActive(input: ComponentVersionIdInput!): Component!
-
-  # createRoleBinding adds new role binding.
-  #
-  # Role binding assigns the predefined role to the specified user or existing api key.
-  # Please note that permissions can be propagated with a small delay (max 2 min.), so you have wait
-  # after creating roleBinding.
-  createRoleBinding(input: NewRoleBinding!): RoleBinding!
-
-  # updateRoleBinding partially updates role binding.
-  #
-  # This mutation can be used to change assigned role only. If you want to change the subject you have to define new roleBinding.
-  updateRoleBinding(input: RoleBindingChanges!): RoleBinding!
-
-  # deleteRoleBinding removes the existing role binding. This operation will
-  # remove the permissions for the defined subject.
-  deleteRoleBinding(input: CustomerRoleBindingIdInput!): Boolean
-
-  # createTemplate adds the new image template.
-  #
-  # This operation will automatically start building a new image.
-  createTemplate(input: NewTemplate!): Template!
-
-  # updateTemplate partially updates the existing template.
-  #
-  # This operation do not start build a new image. If you want to trigger new build you have to wait for the next building window
-  # or force it by running `rebuildTemplate` mutation.
-  updateTemplate(input: TemplateChanges!): Template!
-
-  # deleteTemplate removes the existing image template.
-  #
-  # Images created by this template won't be deleted.
-  deleteTemplate(input: CustomerTemplateIdInput!): Boolean
-
-  # rebuildTemplate forces HBI to build the new image from this template.
-  rebuildTemplate(input: CustomerTemplateIdInput!): Template!
-
-  # createVariable adds or updates customer variable.
-  createVariable(input: NewVariable!): VariableResults!
-
-  # deleteVariable removes existing customer variable.
-  deleteVariable(input: CustomerVariableNameInput!): Boolean
+	"""
+	deleteAccount removes the existing account cloud credentials.
+	"""
+	deleteAccount(input: CustomerAccountIdInput!): Boolean
 }
 
 type Query {
-  # account gets the single account cloud credentials.
-  account(input: CustomerAccountIdInput!): Account!
+	"""
+	account gets the single account cloud credentials.
+	"""
+	account(input: CustomerAccountIdInput!): Account!
 
-  # accounts gets the single list of account cloud credentials.
-  accounts(input: CustomerAccountsInput!): AccountResults!
-
-  # apiKey gets single api key.
-  #
-  # It does not return secret value. Secret can be retrieved from the createApiKey mutation only.
-  apiKey(input: CustomerApiKeyIdInput!): ApiKey!
-
-  # apiKeys gets single page of api keys.
-  #
-  # It does not return secret value. Secret can be retrieved from the createApiKey mutation only.
-  apiKeys(input: CustomerApiKeysInput!): ApiKeyResults!
-
-  # component returns the single component and all it's versions.
-  #
-  # If you want to receive the content of the component version (shell script) you have to set `presign` flag to true
-  # and download script from the received URL.
-  component(input: GetComponentInput!): Component!
-
-  # components gets single page of the components.
-  #
-  # By default it returns the custom components only. If you want to receive the SYSTEM components
-  # you have to set `includeSystem` flag to true.
-  components(input: ComponentsInput!): ComponentResults!
-
-  # customer gets the customer details. The customer id is defined by the `x-customer-id` header
-  # that is required for every query or mutation (unless you use `x-api-key` header).
-  customer: Customer!
-
-  # customers gets all available customers that can be accessed by the user.
-  #
-  # This query returns more than 1 customer for the Nordcloud admins who have access to
-  # multiple customer environments only.
-  customers(input: CustomersInput!): CustomerResults!
-
-  # distribution gets single image distribution that can be used to create image template.
-  distribution(input: DistributionIdInput!): Distribution!
-
-  # distributions gets single page of the available distributions that can be used to create image templates.
-  distributions(input: DistributionsInput!): DistributionResults!
-
-  # image gets single cloud image that was created based on the image template definition.
-  image(input: TemplateImageIdInput!): Image!
-
-  # images gets single page of the cloud images that were created based on the image template definitions.
-  #
-  # images are sorted from the newest to the oldest by default.
-  images(input: TemplateImages!): ImageResults!
-
-  # roleBinding gets single role binding.
-  roleBinding(input: CustomerRoleBindingIdInput!): RoleBinding!
-
-  # roleBindings gets single page of role bindings.
-  roleBindings(input: CustomerRoleBindingsInput!): RoleBindingResults!
-
-  # template gets single image template.
-  template(input: CustomerTemplateIdInput!): Template!
-
-  # templates gets single page of the image templates.
-  templates(input: CustomerTemplatesInput!): TemplateResults!
-
-  # variables gets list of customer variables.
-  #
-  # It does not return variable values, just a list of variables.
-  variables: VariableResults!
+	"""
+	accounts gets the single list of account cloud credentials.
+	"""
+	accounts(input: CustomerAccountsInput!): AccountResults!
 }
 
+
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 input CustomerApiKeyIdInput {
-  apiKeyId: String!
+	apiKeyId: String!
 }
 
 input CustomerApiKeysInput {
-  page: Int
-  limit: Int
+	page: Int
+	limit: Int
 }
 
+extend type Mutation {
+	"""
+	createApiKey adds the new apiKey and generates secret value.
+
+	This mutation returns the secret value generated for this apiKey. Please save this value because
+	it won't be possible to get it later. For security reasons HBI stores only the secret hash (generated
+	with cryptographic algorithm) so the plain text value can be retrieved from this mutation only. If you lost
+	apiKey secret you have to create new ApiKey.
+
+	apikey can be used to access HBI API by providing the `x-api-key` header in format:
+	{API_KEY_ID}/{API_KEY_SECRET}. `x-customer-id` header is not required in this case.
+
+	apiKey does not grant any permissions to access API itself. You have to create the `roleBinding` and assign the access
+	role to it to make it working. Please check `createRoleBinding` mutation.
+	"""
+	createApiKey(input: NewApiKey!): ApiKey!
+
+	"""
+	deleteApiKey removes existing apiKey.
+	"""
+	deleteApiKey(input: CustomerApiKeyIdInput!): Boolean
+}
+
+extend type Query {
+	"""
+	apiKey gets single api key.
+
+	It does not return secret value. Secret can be retrieved from the createApiKey mutation only.
+	"""
+	apiKey(input: CustomerApiKeyIdInput!): ApiKey!
+
+	"""
+	apiKeys gets single page of api keys.
+
+	It does not return secret value. Secret can be retrieved from the createApiKey mutation only.
+	"""
+	apiKeys(input: CustomerApiKeysInput!): ApiKeyResults!
+}
+
+
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 enum ComponentAttribute {
-  NAME
-  TYPE
-  STAGE
-  CREATED_AT
-  PROVIDERS
-  OS_TYPES
+	NAME
+	TYPE
+	STAGE
+	CREATED_AT
+	PROVIDERS
+	OS_TYPES
 }
 
 input ComponentsSort {
-  order: SortOrder!
-  field: ComponentAttribute!
+	order: SortOrder!
+	field: ComponentAttribute!
 }
 
 input ComponentsFilter {
-  field: ComponentAttribute!
-  values: [String!]!
-  exclusive: Boolean
+	field: ComponentAttribute!
+	values: [String!]!
+	exclusive: Boolean
 }
 
 input ComponentsFilters {
-  filters: [ComponentsFilter!]!
+	filters: [ComponentsFilter!]!
 }
 
 input ComponentsInput {
-  includeSystem: Boolean
-  page: Int
-  limit: Int
-  sort: ComponentsSort
-  search: Search
-  filters: ComponentsFilters
+	includeSystem: Boolean
+	page: Int
+	limit: Int
+	sort: ComponentsSort
+	search: Search
+	filters: ComponentsFilters
 }
 
 input GetComponentInput {
-  componentId: String!
-  presign: Boolean
+	componentId: String!
+	presign: Boolean
 }
 
 input ComponentVersionIdInput {
-  componentId: String!
-  version: String!
+	componentId: String!
+	version: String!
 }
 
 input ComponentIdInput {
-  componentId: String!
+	componentId: String!
 }
+
+extend type Mutation {
+	"""
+	createComponent adds a new custom component.
+	"""
+	createComponent(input: NewComponent!): Component!
+
+	"""
+	createComponent updates an existing custom component.
+	"""
+	updateComponent(input: ComponentChanges!): Component!
+
+	"""
+	deleteComponent removes an existing component.
+
+	Please note that you have to delete all component versions first and all image templates that refers to this component.
+	"""
+	deleteComponent(input: ComponentIdInput!): Boolean
+
+	"""
+	createComponentVersion adds new content to the existing component.
+	"""
+	createComponentVersion(input: NewComponentContent!): Component!
+
+	"""
+	deleteComponentVersion removes the existing component version.
+
+	Please note, that you cannot delete the active component version. You have to disable component version first.
+	"""
+	deleteComponentVersion(input: ComponentVersionIdInput!): Boolean
+
+	"""
+	setComponentVersionActive sets the component version to active.
+
+	Because there can be only 1 active component version, the previous one is disable.
+	"""
+	setComponentVersionActive(input: ComponentVersionIdInput!): Component!
+}
+
+extend type Query {
+	"""
+	component returns the single component and all it's versions.
+
+	If you want to receive the content of the component version (shell script) you have to set `presign` flag to true
+	and download script from the received URL.
+	"""
+	component(input: GetComponentInput!): Component!
+
+	"""
+	components gets single page of the components.
+
+	By default it returns the custom components only. If you want to receive the SYSTEM components
+	you have to set `includeSystem` flag to true.
+	"""
+	components(input: ComponentsInput!): ComponentResults!
+}
+
+
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 input CustomersInput {
-  page: Int
-  limit: Int
+	page: Int
+	limit: Int
 }
 
+extend type Query {
+	"""
+	customer gets the customer details. The customer id is defined by the `x-customer-id` header
+	that is required for every query or mutation (unless you use `x-api-key` header).
+	"""
+	customer: Customer!
+
+	"""
+	customers gets all available customers that can be accessed by the user.
+
+	This query returns more than 1 customer for the Nordcloud admins who have access to
+	multiple customer environments only.
+	"""
+	customers(input: CustomersInput!): CustomerResults!
+}
+
+
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 enum DistributionAttribute {
-  NAME
-  PROVIDER
-  OS_TYPE
-  OS_SUBTYPE
-  OS_FAMILY
+	NAME
+	PROVIDER
+	OS_TYPE
+	OS_SUBTYPE
+	OS_FAMILY
 }
 
 input DistributionsSort {
-  order: SortOrder!
-  field: DistributionAttribute!
+	order: SortOrder!
+	field: DistributionAttribute!
 }
 
 input DistributionIdInput {
-  distributionId: String!
+	distributionId: String!
 }
 
 input DistributionsFilter {
-  field: DistributionAttribute!
-  values: [String!]!
-  exclusive: Boolean
+	field: DistributionAttribute!
+	values: [String!]!
+	exclusive: Boolean
 }
 
 input DistributionsFilters {
-  filters: [DistributionsFilter!]!
+	filters: [DistributionsFilter!]!
 }
 
 input DistributionsInput {
-  page: Int
-  limit: Int
-  sort: DistributionsSort
-  search: Search
-  filters: DistributionsFilters
+	page: Int
+	limit: Int
+	sort: DistributionsSort
+	search: Search
+	filters: DistributionsFilters
 }
 
+extend type Query {
+	"""
+	distribution gets single image distribution that can be used to create image template.
+	"""
+	distribution(input: DistributionIdInput!): Distribution!
+
+	"""
+	distributions gets single page of the available distributions that can be used to create image templates.
+	"""
+	distributions(input: DistributionsInput!): DistributionResults!
+}
+
+
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 enum ImageAttribute {
-  NAME
-  STATUS
-  BUILD_START_TIME
-  BUILD_END_TIME
+	NAME
+	STATUS
+	BUILD_START_TIME
+	BUILD_END_TIME
 }
 
 input TemplateImagesSort {
-  order: SortOrder!
-  field: ImageAttribute!
+	order: SortOrder!
+	field: ImageAttribute!
 }
 
 input TemplateImageIdInput {
-  templateId: String!
-  imageId: String!
-  presign: Boolean
+	templateId: String!
+	imageId: String!
+	presign: Boolean
 }
 
 input ImagesFilter {
-  field: ImageAttribute!
-  values: [String!]!
-  exclusive: Boolean
+	field: ImageAttribute!
+	values: [String!]!
+	exclusive: Boolean
 }
 
 input ImagesFilters {
-  filters: [ImagesFilter!]!
+	filters: [ImagesFilter!]!
 }
 
 input TemplateImages {
-  templateId: String!
-  page: Int
-  limit: Int
-  sort: TemplateImagesSort
-  search: Search
-  filters: ImagesFilters
+	templateId: String!
+	page: Int
+	limit: Int
+	sort: TemplateImagesSort
+	search: Search
+	filters: ImagesFilters
 }
 
+extend type Query {
+	"""
+	image gets single cloud image that was created based on the image template definition.
+	"""
+	image(input: TemplateImageIdInput!): Image!
+
+	"""
+	images gets single page of the cloud images that were created based on the image template definitions.
+
+	images are sorted from the newest to the oldest by default.
+	"""
+	images(input: TemplateImages!): ImageResults!
+}
+
+
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 enum CustomerRoleBindingsAttribute {
-  KIND
-  ROLE
-  SUBJECT
-  CREATED_AT
-  UPDATED_AT
+	KIND
+	ROLE
+	SUBJECT
+	CREATED_AT
+	UPDATED_AT
 }
 
 input CustomerRoleBindingsSort {
-  order: SortOrder!
-  field: CustomerRoleBindingsAttribute!
+	order: SortOrder!
+	field: CustomerRoleBindingsAttribute!
 }
 
 input CustomerRoleBindingIdInput {
-  roleBindingId: String!
+	roleBindingId: String!
 }
 
 input CustomerRoleBindingsFilter {
-  field: CustomerRoleBindingsAttribute!
-  values: [String!]!
-  exclusive: Boolean
+	field: CustomerRoleBindingsAttribute!
+	values: [String!]!
+	exclusive: Boolean
 }
 
 input CustomerRoleBindingsFilters {
-  filters: [CustomerRoleBindingsFilter!]!
+	filters: [CustomerRoleBindingsFilter!]!
 }
 
 input CustomerRoleBindingsInput {
-  page: Int
-  limit: Int
-  sort: CustomerRoleBindingsSort
-  search: Search
-  filters: CustomerRoleBindingsFilters
+	page: Int
+	limit: Int
+	sort: CustomerRoleBindingsSort
+	search: Search
+	filters: CustomerRoleBindingsFilters
 }
 
+extend type Mutation {
+	"""
+	createRoleBinding adds new role binding.
+
+	Role binding assigns the predefined role to the specified user or existing api key.
+	Please note that permissions can be propagated with a small delay (max 2 min.), so you have wait
+	after creating roleBinding.
+	"""
+	createRoleBinding(input: NewRoleBinding!): RoleBinding!
+
+	"""
+	updateRoleBinding partially updates role binding.
+
+	This mutation can be used to change assigned role only. If you want to change the subject you have to define new roleBinding.
+	"""
+	updateRoleBinding(input: RoleBindingChanges!): RoleBinding!
+
+	"""
+	deleteRoleBinding removes the existing role binding. This operation will
+	remove the permissions for the defined subject.
+	"""
+	deleteRoleBinding(input: CustomerRoleBindingIdInput!): Boolean
+}
+
+extend type Query {
+	"""
+	roleBinding gets single role binding.
+	"""
+	roleBinding(input: CustomerRoleBindingIdInput!): RoleBinding!
+
+	"""
+	roleBindings gets single page of role bindings.
+	"""
+	roleBindings(input: CustomerRoleBindingsInput!): RoleBindingResults!
+}
+
+
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+extend type Query {
+	"""
+	settings gets imageFactory settings.
+	"""
+	settings: SettingsResult!
+}
+
+
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 enum TemplateAttribute {
-  NAME
-  PROVIDER
-  STATUS
-  OS_FAMILY
-  CREATED_AT
-  UPDATED_AT
-  BUILD_START_TIME
+	NAME
+	PROVIDER
+	STATUS
+	OS_FAMILY
+	CREATED_AT
+	UPDATED_AT
+	BUILD_START_TIME
 }
 
 input TemplatesSort {
-  order: SortOrder!
-  field: TemplateAttribute!
+	order: SortOrder!
+	field: TemplateAttribute!
 }
 
 input CustomerTemplateIdInput {
-  templateId: String!
+	templateId: String!
 }
 
 input TemplatesFilter {
-  field: TemplateAttribute!
-  values: [String!]!
-  exclusive: Boolean
+	field: TemplateAttribute!
+	values: [String!]!
+	exclusive: Boolean
 }
 
 input TemplatesFilters {
-  filters: [TemplatesFilter!]!
+	filters: [TemplatesFilter!]!
 }
+
 
 input CustomerTemplatesInput {
-  page: Int
-  limit: Int
-  sort: TemplatesSort
-  search: Search
-  filters: TemplatesFilters
+	page: Int
+	limit: Int
+	sort: TemplatesSort
+	search: Search
+	filters: TemplatesFilters
 }
+
+extend type Mutation {
+	"""
+	createTemplate adds the new image template.
+
+	This operation will automatically start building a new image.
+	"""
+	createTemplate(input: NewTemplate!): Template!
+
+	"""
+	updateTemplate partially updates the existing template.
+
+	This operation do not start build a new image. If you want to trigger new build you have to wait for the next building window
+	or force it by running `rebuildTemplate` mutation.
+	"""
+	updateTemplate(input: TemplateChanges!): Template!
+
+	"""
+	deleteTemplate removes the existing image template.
+
+	Images created by this template won't be deleted.
+	"""
+	deleteTemplate(input: CustomerTemplateIdInput!): Boolean
+
+	"""
+	rebuildTemplate forces HBI to build the new image from this template.
+	"""
+	rebuildTemplate(input: CustomerTemplateIdInput!): Template!
+}
+
+extend type Query {
+	"""
+	template gets single image template.
+	"""
+	template(input: CustomerTemplateIdInput!): Template!
+
+	"""
+	templates gets single page of the image templates.
+	"""
+	templates(input: CustomerTemplatesInput!): TemplateResults!
+}
+
+
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 input CustomerVariableNameInput {
-  variableName: String!
+	variableName: String!
 }
 
-enum CacheControlScope {
-  PUBLIC
-  PRIVATE
+extend type Mutation {
+	"""
+	createVariable adds or updates customer variable.
+	"""
+	createVariable(input: NewVariable!): Variable!
+
+	"""
+	deleteVariable removes existing customer variable.
+	"""
+	deleteVariable(input: CustomerVariableNameInput!): Boolean
 }
 
-# The `Upload` scalar type represents a file upload.
-scalar Upload
+extend type Query {
+	"""
+	variables gets list of customer variables.
+
+	It does not return variable values, just a list of variables.
+	"""
+	variables: VariableResults!
+}

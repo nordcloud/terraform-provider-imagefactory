@@ -53,7 +53,7 @@ func expandTemplateAwsConfig(in []interface{}, scope graphql.Scope) (*graphql.Ne
 
 	m := in[0].(map[string]interface{})
 	if m["region"] == nil || m["region"].(string) == "" {
-		return nil, errors.New("AWS regions is required for the AWS template with PUBLIC scope.")
+		return nil, errors.New("AWS region is required for the AWS template with PUBLIC scope")
 	}
 
 	region := graphql.String(m["region"].(string))

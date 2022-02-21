@@ -8,6 +8,10 @@ resource "imagefactory_aws_china_account" "aws_china_account" {
     AWS_ACCESS_KEY_ID     = "A...B"
     AWS_SECRET_ACCESS_KEY = "A..SECRET..B"
   }
+  properties {
+    s3_bucket_name = "s3_bucket_name"
+    region = "cn-north-1"
+  }
 }
 
 output "aws_china_account" {

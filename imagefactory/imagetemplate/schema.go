@@ -1,17 +1,18 @@
-// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package imagetemplate
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
 var awsTemplateConfigResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"region": {
 			Type:     schema.TypeString,
-			Required: true,
+			Optional: true,
 		},
 	},
 }
@@ -100,6 +101,12 @@ var templateConfigResource = &schema.Resource{
 			Type:     schema.TypeList,
 			Optional: true,
 			Elem:     templateTagsResource,
+		},
+		"scope": {
+			Type:         schema.TypeString,
+			Optional:     true,
+			ValidateFunc: validation.StringInSlice(validScopes, false),
+			Default:      graphql.ScopePUBLIC,
 		},
 	},
 }

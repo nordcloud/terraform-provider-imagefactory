@@ -1,6 +1,8 @@
-// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package imagetemplate
+
+import "github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 
 var validAzureRegions = []string{
 	"australiacentral",
@@ -38,15 +40,20 @@ var validAzureRegions = []string{
 }
 
 var validNotificationTypes = []string{
-	"PUB_SUB",
-	"SNS",
-	"WEB_HOOK",
+	string(graphql.NotificationTypePUBSUB),
+	string(graphql.NotificationTypeSNS),
+	string(graphql.NotificationTypeWEBHOOK),
 }
 
 var validCloudProviders = []string{
-	"AWS",
-	"AZURE",
-	"GCP",
-	"IBMCLOUD",
-	"VMWARE",
+	string(graphql.ProviderAWS),
+	string(graphql.ProviderAZURE),
+	string(graphql.ProviderGCP),
+	string(graphql.ProviderIBMCLOUD),
+	string(graphql.ProviderVMWARE),
+}
+
+var validScopes = []string{
+	string(graphql.ScopePUBLIC),
+	string(graphql.ScopeCHINA),
 }

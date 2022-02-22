@@ -35,12 +35,12 @@ output "aws_account" {
 
 ### Required
 
+- **access** (Block List, Min: 1) (see [below for nested schema](#nestedblock--access))
 - **account_id** (String)
 - **alias** (String)
 
 ### Optional
 
-- **access** (Block List) (see [below for nested schema](#nestedblock--access))
 - **description** (String)
 - **id** (String) The ID of this resource.
 

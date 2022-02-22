@@ -1,4 +1,4 @@
-// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package imagetemplate
 
@@ -29,11 +29,16 @@ func Resource() *schema.Resource {
 func resourceTemplateCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*config.Config)
 
+	tplCfg, err := expandTemplateConfig(d.Get("config").([]interface{}))
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	input := sdk.NewTemplate{
 		Name:           graphql.String(d.Get("name").(string)),
 		DistributionId: graphql.String(d.Get("distribution_id").(string)),
 		Provider:       graphql.Provider(d.Get("cloud_provider").(string)),
-		Config:         *expandTemplateConfig(d.Get("config").([]interface{})),
+		Config:         *tplCfg,
 	}
 	if len(d.Get("description").(string)) > 0 {
 		description := graphql.String(d.Get("description").(string))
@@ -64,12 +69,17 @@ func resourceTemplateUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	c := m.(*config.Config)
 
 	templateID := d.Id()
-
 	name := graphql.String(d.Get("name").(string))
+
+	tplCfg, err := expandTemplateConfig(d.Get("config").([]interface{}))
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	input := sdk.TemplateChanges{
 		ID:     graphql.String(templateID),
 		Name:   &name,
-		Config: expandTemplateConfig(d.Get("config").([]interface{})),
+		Config: tplCfg,
 	}
 	if len(d.Get("description").(string)) > 0 {
 		description := graphql.String(d.Get("description").(string))

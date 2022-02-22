@@ -1,4 +1,4 @@
-// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package account
 
@@ -6,29 +6,40 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
-func expandAwsAccountAccess(in []interface{}) *graphql.AccountCredentials {
-	accountCredentials := &graphql.AccountCredentials{}
+func expandAwsAccountAccess(in []interface{}, scope graphql.Scope) graphql.AccountCredentials {
+	accountCredentials := graphql.AccountCredentials{}
 
 	if len(in) == 0 {
 		return accountCredentials
 	}
 
 	access := in[0].(map[string]interface{})
-	roleExternalID := graphql.String(access["role_external_id"].(string))
-	accountCredentials.Aws = &graphql.AWSCredentials{
-		Roles: &[]graphql.AWSCredentialsRole{
-			{
-				Arn:        graphql.String(access["role_arn"].(string)),
-				ExternalId: &roleExternalID,
+	if scope == graphql.ScopePUBLIC {
+		roleExternalID := graphql.String(access["role_external_id"].(string))
+		accountCredentials.Aws = &graphql.AWSCredentials{
+			Roles: &[]graphql.AWSCredentialsRole{
+				{
+					Arn:        graphql.String(access["role_arn"].(string)),
+					ExternalId: &roleExternalID,
+				},
 			},
-		},
+		}
+	} else {
+		accessKeyID := graphql.String(access["aws_access_key_id"].(string))
+		secretAccessKey := graphql.String(access["aws_secret_access_key"].(string))
+		accountCredentials.Aws = &graphql.AWSCredentials{
+			Credentials: &graphql.AWSCredentialsAccessKey{
+				AWSACCESSKEYID:     accessKeyID,
+				AWSSECRETACCESSKEY: secretAccessKey,
+			},
+		}
 	}
 
 	return accountCredentials
 }
 
-func expandAzureSubscriptionAccess(in []interface{}) *graphql.AccountCredentials {
-	accountCredentials := &graphql.AccountCredentials{}
+func expandAzureSubscriptionAccess(in []interface{}) graphql.AccountCredentials {
+	accountCredentials := graphql.AccountCredentials{}
 
 	if len(in) == 0 {
 		return accountCredentials
@@ -48,8 +59,8 @@ func expandAzureSubscriptionAccess(in []interface{}) *graphql.AccountCredentials
 	return accountCredentials
 }
 
-func expandGcpOrganizationAccess(in []interface{}) *graphql.AccountCredentials {
-	accountCredentials := &graphql.AccountCredentials{}
+func expandGcpOrganizationAccess(in []interface{}) graphql.AccountCredentials {
+	accountCredentials := graphql.AccountCredentials{}
 
 	if len(in) == 0 {
 		return accountCredentials
@@ -72,8 +83,8 @@ func expandGcpOrganizationAccess(in []interface{}) *graphql.AccountCredentials {
 	return accountCredentials
 }
 
-func expandIMBCloudAccountAccess(in []interface{}) *graphql.AccountCredentials {
-	accountCredentials := &graphql.AccountCredentials{}
+func expandIMBCloudAccountAccess(in []interface{}) graphql.AccountCredentials {
+	accountCredentials := graphql.AccountCredentials{}
 
 	if len(in) == 0 {
 		return accountCredentials
@@ -100,4 +111,21 @@ func flattenAccountState(in *graphql.AccountState) map[string]string {
 	}
 
 	return out
+}
+
+func expandAwsAccountProperties(in interface{}) *graphql.AccountCloudPropertiesInput {
+	awsAccountProps := graphql.AccountCloudPropertiesInput{}
+
+	if in == nil {
+		return nil
+	}
+
+	props := in.([]interface{})[0].(map[string]interface{})
+	s3Bucket := graphql.String(props["s3_bucket_name"].(string))
+	region := graphql.String(props["region"].(string))
+
+	awsAccountProps.AwsChinaRegionName = &region
+	awsAccountProps.AwsChinaS3BucketName = &s3Bucket
+
+	return &awsAccountProps
 }

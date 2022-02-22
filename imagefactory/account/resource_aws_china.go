@@ -11,40 +11,33 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
-var azureSubscriptionAccessResource = &schema.Resource{
+var awsChinaAccountAccessResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
-		"resource_group_name": {
+		"aws_access_key_id": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
-		"tenant_id": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"app_id": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"password": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"storage_account": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"storage_account_key": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"shared_image_gallery": {
+		"aws_secret_access_key": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
 	},
 }
 
-var azureSubscriptionSchema = map[string]*schema.Schema{
+var awsChinaAccountProperties = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"s3_bucket_name": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+		"region": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+	},
+}
+
+var awsChinaAccountSchema = map[string]*schema.Schema{
 	"alias": {
 		Type:     schema.TypeString,
 		Required: true,
@@ -53,14 +46,19 @@ var azureSubscriptionSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
 	},
-	"subscription_id": {
+	"account_id": {
 		Type:     schema.TypeString,
 		Required: true,
 	},
 	"access": {
 		Type:     schema.TypeList,
-		Optional: true,
-		Elem:     azureSubscriptionAccessResource,
+		Elem:     awsChinaAccountAccessResource,
+		Required: true,
+	},
+	"properties": {
+		Type:     schema.TypeList,
+		Required: true,
+		Elem:     awsChinaAccountProperties,
 	},
 	"state": {
 		Type:     schema.TypeMap,
@@ -69,15 +67,15 @@ var azureSubscriptionSchema = map[string]*schema.Schema{
 	},
 }
 
-func ResourceAzure() *schema.Resource { // nolint: dupl
+func ResourceAWSChina() *schema.Resource { // nolint: dupl
 	return &schema.Resource{
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-			return accountCreate(d, m, graphql.ProviderAZURE, graphql.ScopePUBLIC)
+			return accountCreate(d, m, graphql.ProviderAWS, graphql.ScopeCHINA)
 		},
 		ReadContext:   resourceAccountRead,
 		UpdateContext: resourceAccountUpdate,
 		DeleteContext: resourceAccountDelete,
-		Schema:        azureSubscriptionSchema,
+		Schema:        awsChinaAccountSchema,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},

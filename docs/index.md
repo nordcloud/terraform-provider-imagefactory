@@ -16,7 +16,7 @@ Based on Nordcloud's extensive experience of managing cloud services, ImageFacto
 ImageFactory offers:
 
 - a hardening solution which is based on the most relevant and highly regarded security standards
-- support for AWS, Azure, GCP, IBMCLOUD and VMWare, along with most common Windows and Linux versions
+- support for AWS, Azure, GCP, IBM Cloud and VMware, along with most common Windows and Linux versions
 - automatic delivery updated images to all your cloud accounts and subscriptions
 - various options to customize images with additional tools and extensions
 
@@ -25,12 +25,16 @@ Please check https://klarity.nordcloud.com to learn more about the ImageFactory 
 ## Example Usage
 
 ```terraform
+/**
+ * Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+ */
+
 terraform {
   required_version = ">= 0.14"
   required_providers {
     imagefactory = {
       source  = "nordcloud/imagefactory"
-      version = "1.0.1"
+      version = "1.0.3"
     }
   }
 }

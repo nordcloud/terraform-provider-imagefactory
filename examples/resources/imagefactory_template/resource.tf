@@ -1,4 +1,4 @@
-// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 resource "imagefactory_custom_component" "build_template" {
   name            = "Install nginx"
@@ -111,4 +111,16 @@ resource "imagefactory_template" "template" {
 
 output "template" {
   value = imagefactory_template.template
+}
+
+# AWS CHINA template
+
+resource "imagefactory_template" "template" {
+  name            = "Ubuntu1804"
+  description     = "Ubuntu 18.04 on AWS"
+  cloud_provider  = "AWS"
+  distribution_id = data.imagefactory_distribution.ubuntu18.id
+  config {
+    scope = "CHINA"
+  }
 }

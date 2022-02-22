@@ -2,6 +2,8 @@
 
 package imagetemplate
 
+import "github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
+
 var validAzureRegions = []string{
 	"australiacentral",
 	"australiacentral2",
@@ -38,20 +40,20 @@ var validAzureRegions = []string{
 }
 
 var validNotificationTypes = []string{
-	"PUB_SUB",
-	"SNS",
-	"WEB_HOOK",
+	string(graphql.NotificationTypePUBSUB),
+	string(graphql.NotificationTypeSNS),
+	string(graphql.NotificationTypeWEBHOOK),
 }
 
 var validCloudProviders = []string{
-	"AWS",
-	"AZURE",
-	"GCP",
-	"IBMCLOUD",
-	"VMWARE",
+	string(graphql.ProviderAWS),
+	string(graphql.ProviderAZURE),
+	string(graphql.ProviderGCP),
+	string(graphql.ProviderIBMCLOUD),
+	string(graphql.ProviderVMWARE),
 }
 
 var validScopes = []string{
-	"PUBLIC",
-	"CHINA",
+	string(graphql.ScopePUBLIC),
+	string(graphql.ScopeCHINA),
 }

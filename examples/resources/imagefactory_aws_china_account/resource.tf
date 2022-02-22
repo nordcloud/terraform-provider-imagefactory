@@ -5,8 +5,8 @@ resource "imagefactory_aws_china_account" "aws_china_account" {
   description = "Account to distribute AWS images"
   account_id  = "123456789012"
   access {
-    AWS_ACCESS_KEY_ID     = "A...B"
-    AWS_SECRET_ACCESS_KEY = "A..SECRET..B"
+    aws_access_key_id     = "A...B"
+    aws_secret_access_key = "A..SECRET..B"
   }
   properties {
     s3_bucket_name = "s3_bucket_name"

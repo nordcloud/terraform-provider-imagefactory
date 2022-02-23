@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+ * Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
  */
 
 terraform {

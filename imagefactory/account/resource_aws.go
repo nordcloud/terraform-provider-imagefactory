@@ -24,6 +24,18 @@ var awsAccountAccessResource = &schema.Resource{
 	},
 }
 
+var awsAccountProperties = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"aws_share_accounts": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+		},
+	},
+}
+
 var awsAccountSchema = map[string]*schema.Schema{
 	"alias": {
 		Type:     schema.TypeString,
@@ -41,6 +53,11 @@ var awsAccountSchema = map[string]*schema.Schema{
 		Type:     schema.TypeList,
 		Elem:     awsAccountAccessResource,
 		Required: true,
+	},
+	"properties": {
+		Type:     schema.TypeList,
+		Required: true,
+		Elem:     awsAccountProperties,
 	},
 	"state": {
 		Type:     schema.TypeMap,

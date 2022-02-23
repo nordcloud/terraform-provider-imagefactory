@@ -70,6 +70,10 @@ Required:
 - **region** (String)
 - **s3_bucket_name** (String)
 
+Optional:
+
+- **aws_share_accounts** (List of String)
+
 ## Import
 
 Import is supported using the following syntax:

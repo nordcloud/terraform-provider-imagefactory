@@ -127,5 +127,15 @@ func expandAwsAccountProperties(in interface{}) *graphql.AccountCloudPropertiesI
 	awsAccountProps.AwsChinaRegionName = &region
 	awsAccountProps.AwsChinaS3BucketName = &s3Bucket
 
+	if props["aws_share_accounts"] != nil {
+		var shareAccounts []graphql.String
+		shareAccountsIn := props["aws_share_accounts"].([]interface{})
+		for _, acc := range shareAccountsIn {
+			shareAccounts = append(shareAccounts, graphql.String(acc.(string)))
+		}
+
+		awsAccountProps.AwsShareAccounts = &shareAccounts
+	}
+
 	return &awsAccountProps
 }

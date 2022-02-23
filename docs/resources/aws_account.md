@@ -38,6 +38,7 @@ output "aws_account" {
 - **access** (Block List, Min: 1) (see [below for nested schema](#nestedblock--access))
 - **account_id** (String)
 - **alias** (String)
+- **properties** (Block List, Min: 1) (see [below for nested schema](#nestedblock--properties))
 
 ### Optional
 
@@ -55,6 +56,14 @@ Required:
 
 - **role_arn** (String)
 - **role_external_id** (String)
+
+
+<a id="nestedblock--properties"></a>
+### Nested Schema for `properties`
+
+Optional:
+
+- **aws_share_accounts** (List of String)
 
 ## Import
 

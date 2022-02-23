@@ -121,6 +121,10 @@ func setProps(d *schema.ResourceData, t sdk.Template) diag.Diagnostics {
 	if err := d.Set("cloud_provider", t.Provider); err != nil {
 		return diag.FromErr(err)
 	}
+	if err := d.Set("distribution_id", t.DistributionId); err != nil {
+		return diag.FromErr(err)
+	}
+
 	if err := d.Set("state", flattenTemplateState(t.State)); err != nil {
 		return diag.FromErr(err)
 	}

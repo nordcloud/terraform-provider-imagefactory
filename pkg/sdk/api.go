@@ -40,4 +40,10 @@ type API interface {
 	// Component GET
 	GetSystemComponent(name string) (Component, error)
 	GetCustomComponent(name, cloudProvider, stage string) (Component, error)
+
+	// Variables CRUD
+	GetVariable(name string) (Variable, error)
+	CreateVariable(input NewVariable) (Variable, error)
+	UpdateVariable(input NewVariable) (Variable, error)
+	DeleteVariable(name string) error
 }

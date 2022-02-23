@@ -3,6 +3,7 @@
 package sdk
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
@@ -465,3 +466,73 @@ func (c APIClient) GetCustomComponent(name, cloudProvider, stage string) (Compon
 
 	return Component(result[0]), nil
 }
+
+func (c APIClient) GetVariable(name string) (Variable, error) {
+	req, err := graphql.NewGetVariablesRequest(c.apiURL)
+	if err != nil {
+		return Variable{}, fmt.Errorf("getting variable request %w", err)
+	}
+
+	r := &graphql.Query{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return Variable{}, fmt.Errorf("getting variable %w", err)
+	}
+
+	for _, v := range *r.Variables.Results {
+		if string(v) == name {
+			return Variable{Name: v}, nil
+		}
+	}
+
+	return Variable{}, errors.New("variable does not exist")
+}
+
+func (c APIClient) CreateVariable(input NewVariable) (Variable, error) {
+	req, err := graphql.NewCreateVariableRequest(c.apiURL, &graphql.CreateVariableVariables{
+		Input: graphql.NewVariable(input),
+	})
+	if err != nil {
+		return Variable{}, fmt.Errorf("getting create variable request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return Variable{}, fmt.Errorf("creating variable %w", err)
+	}
+
+	return Variable(r.CreateVariable), nil
+}
+
+func (c APIClient) UpdateVariable(input NewVariable) (Variable, error) {
+	return c.CreateVariable(input)
+}
+
+func (c APIClient) DeleteVariable(name string) error {
+	req, err := graphql.NewDeleteVariableRequest(c.apiURL, &graphql.DeleteVariableVariables{
+		Input: graphql.CustomerVariableNameInput{VariableName: graphql.String(name)},
+	})
+	if err != nil {
+		return fmt.Errorf("getting delete variable request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return fmt.Errorf("deleting variable %w", err)
+	}
+
+	return nil
+}
+
+// req, err := graphql.NewGetAccountRequest(c.apiURL, &graphql.GetAccountVariables{
+// 	Input: graphql.CustomerAccountIdInput{
+// 		AccountId: graphql.String(accountID),
+// 	},
+// })
+// if err != nil {
+// 	return Account{}, fmt.Errorf("getting account request %w", err)
+// }
+
+// r := &graphql.Query{}
+// if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+// 	return Account{}, fmt.Errorf("getting account %w", err)
+// }

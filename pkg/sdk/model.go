@@ -2,7 +2,9 @@
 
 package sdk
 
-import "github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
+import (
+	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
+)
 
 type Account graphql.Account
 
@@ -33,3 +35,7 @@ type NewRoleBinding graphql.NewRoleBinding
 type RoleBindingChanges graphql.RoleBindingChanges
 
 type ApiKey graphql.ApiKey
+
+type Variable graphql.Variable
+
+type NewVariable graphql.NewVariable

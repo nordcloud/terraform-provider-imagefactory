@@ -14,6 +14,7 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/distribution"
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/imagetemplate"
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/rolebinding"
+	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/variable"
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
 )
 
@@ -35,6 +36,7 @@ func Provider() *schema.Provider {
 			"imagefactory_custom_component":   component.Resource(),
 			"imagefactory_template":           imagetemplate.Resource(),
 			"imagefactory_role_binding":       rolebinding.Resource(),
+			"imagefactory_variable":           variable.Resource(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

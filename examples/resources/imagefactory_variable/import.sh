@@ -1,0 +1,1 @@
+terraform import imagefactory_variable.tf_name RESOURCE_ID

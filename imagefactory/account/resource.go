@@ -37,6 +37,7 @@ func accountCreate(d *schema.ResourceData, m interface{}, provider graphql.Provi
 		CloudProviderId: graphql.String(d.Get(getCloudProviderKeyName(provider)).(string)),
 		Provider:        provider,
 		Scope:           &scope,
+		Properties:      &graphql.AccountCloudPropertiesInput{},
 	}
 
 	switch provider {
@@ -125,6 +126,12 @@ func setProps(d *schema.ResourceData, a sdk.Account) diag.Diagnostics {
 		return diag.FromErr(err)
 	}
 	if err := d.Set("state", flattenAccountState(a.State)); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("properties", []map[string]interface{}{
+		flattenAccountProperties(a.Properties),
+	}); err != nil {
 		return diag.FromErr(err)
 	}
 

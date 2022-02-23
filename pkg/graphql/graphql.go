@@ -99,6 +99,11 @@ type GetAccountResponse struct {
 			Status string `json:"status"`
 			Error  string `json:"error"`
 		} `json:"state"`
+		Properties struct {
+			AwsChinaRegionName   string `json:"awsChinaRegionName"`
+			AwsChinaS3BucketName string `json:"awsChinaS3BucketName"`
+			AwsShareAccounts     string `json:"awsShareAccounts"`
+		} `json:"properties"`
 	} `json:"account"`
 }
 
@@ -123,6 +128,11 @@ func NewGetAccountRequest(url string, vars *GetAccountVariables) (*GetAccountReq
     state {
       status
       error
+    }
+    properties {
+      awsChinaRegionName
+      awsChinaS3BucketName
+      awsShareAccounts
     }
   }
 }`,
@@ -182,6 +192,11 @@ type GetAccountsResponse struct {
 				Status string `json:"status"`
 				Error  string `json:"error"`
 			} `json:"state"`
+			Properties struct {
+				AwsChinaRegionName   string `json:"awsChinaRegionName"`
+				AwsChinaS3BucketName string `json:"awsChinaS3BucketName"`
+				AwsShareAccounts     string `json:"awsShareAccounts"`
+			} `json:"properties"`
 		} `json:"results"`
 	} `json:"accounts"`
 }
@@ -208,6 +223,11 @@ func NewGetAccountsRequest(url string, vars *GetAccountsVariables) (*GetAccounts
       state {
         status
         error
+      }
+      properties {
+        awsChinaRegionName
+        awsChinaS3BucketName
+        awsShareAccounts
       }
     }
   }
@@ -267,6 +287,11 @@ type CreateAccountResponse struct {
 			Status string `json:"status"`
 			Error  string `json:"error"`
 		} `json:"state"`
+		Properties struct {
+			AwsChinaRegionName   string `json:"awsChinaRegionName"`
+			AwsChinaS3BucketName string `json:"awsChinaS3BucketName"`
+			AwsShareAccounts     string `json:"awsShareAccounts"`
+		} `json:"properties"`
 	} `json:"createAccount"`
 }
 
@@ -291,6 +316,11 @@ func NewCreateAccountRequest(url string, vars *CreateAccountVariables) (*CreateA
     state {
       status
       error
+    }
+    properties {
+      awsChinaRegionName
+      awsChinaS3BucketName
+      awsShareAccounts
     }
   }
 }`,
@@ -349,6 +379,11 @@ type UpdateAccountResponse struct {
 			Status string `json:"status"`
 			Error  string `json:"error"`
 		} `json:"state"`
+		Properties struct {
+			AwsChinaRegionName   string `json:"awsChinaRegionName"`
+			AwsChinaS3BucketName string `json:"awsChinaS3BucketName"`
+			AwsShareAccounts     string `json:"awsShareAccounts"`
+		} `json:"properties"`
 	} `json:"updateAccount"`
 }
 
@@ -373,6 +408,11 @@ func NewUpdateAccountRequest(url string, vars *UpdateAccountVariables) (*UpdateA
     state {
       status
       error
+    }
+    properties {
+      awsChinaRegionName
+      awsChinaS3BucketName
+      awsShareAccounts
     }
   }
 }`,
@@ -1916,6 +1956,191 @@ func DeleteTemplate(url string, client *http.Client, vars *DeleteTemplateVariabl
 
 func (client *Client) DeleteTemplate(vars *DeleteTemplateVariables) (*DeleteTemplateResponse, error) {
 	return DeleteTemplate(client.Url, client.Client, vars)
+}
+
+//
+// query GetVariables
+//
+
+type GetVariablesResponse struct {
+	Variables struct {
+		Results string `json:"results"`
+	} `json:"variables"`
+}
+
+type GetVariablesRequest struct {
+	*http.Request
+}
+
+func NewGetVariablesRequest(url string) (*GetVariablesRequest, error) {
+	b, err := json.Marshal(&GraphQLOperation{
+		Query: `query GetVariables {
+  variables {
+    results
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &GetVariablesRequest{req}, nil
+}
+
+func (req *GetVariablesRequest) Execute(client *http.Client) (*GetVariablesResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result GetVariablesResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func GetVariables(url string, client *http.Client) (*GetVariablesResponse, error) {
+	req, err := NewGetVariablesRequest(url)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) GetVariables() (*GetVariablesResponse, error) {
+	return GetVariables(client.Url, client.Client)
+}
+
+//
+// mutation CreateVariable($input: NewVariable!)
+//
+
+type CreateVariableVariables struct {
+	Input NewVariable `json:"input"`
+}
+
+type CreateVariableResponse struct {
+	CreateVariable struct {
+		Name string `json:"name"`
+	} `json:"createVariable"`
+}
+
+type CreateVariableRequest struct {
+	*http.Request
+}
+
+func NewCreateVariableRequest(url string, vars *CreateVariableVariables) (*CreateVariableRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation CreateVariable($input: NewVariable!) {
+  createVariable(input: $input) {
+    name
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &CreateVariableRequest{req}, nil
+}
+
+func (req *CreateVariableRequest) Execute(client *http.Client) (*CreateVariableResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result CreateVariableResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func CreateVariable(url string, client *http.Client, vars *CreateVariableVariables) (*CreateVariableResponse, error) {
+	req, err := NewCreateVariableRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) CreateVariable(vars *CreateVariableVariables) (*CreateVariableResponse, error) {
+	return CreateVariable(client.Url, client.Client, vars)
+}
+
+//
+// mutation DeleteVariable($input: CustomerVariableNameInput!)
+//
+
+type DeleteVariableVariables struct {
+	Input CustomerVariableNameInput `json:"input"`
+}
+
+type DeleteVariableResponse struct {
+	DeleteVariable string `json:"deleteVariable"`
+}
+
+type DeleteVariableRequest struct {
+	*http.Request
+}
+
+func NewDeleteVariableRequest(url string, vars *DeleteVariableVariables) (*DeleteVariableRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation DeleteVariable($input: CustomerVariableNameInput!) {
+  deleteVariable(input: $input)
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &DeleteVariableRequest{req}, nil
+}
+
+func (req *DeleteVariableRequest) Execute(client *http.Client) (*DeleteVariableResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result DeleteVariableResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func DeleteVariable(url string, client *http.Client, vars *DeleteVariableVariables) (*DeleteVariableResponse, error) {
+	req, err := NewDeleteVariableRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) DeleteVariable(vars *DeleteVariableVariables) (*DeleteVariableResponse, error) {
+	return DeleteVariable(client.Url, client.Client, vars)
 }
 
 //

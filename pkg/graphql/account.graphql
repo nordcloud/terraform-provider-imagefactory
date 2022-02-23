@@ -11,6 +11,11 @@ query GetAccount($input: CustomerAccountIdInput!) {
       status
       error
     }
+    properties {
+      awsChinaRegionName
+      awsChinaS3BucketName
+      awsShareAccounts
+    }
   }
 }
 
@@ -25,6 +30,11 @@ query GetAccounts($input: CustomerAccountsInput!) {
       state {
         status
         error
+      }
+      properties {
+        awsChinaRegionName
+        awsChinaS3BucketName
+        awsShareAccounts
       }
     }
   }
@@ -41,6 +51,11 @@ mutation CreateAccount($input: NewAccount!) {
       status
       error
     }
+    properties {
+      awsChinaRegionName
+      awsChinaS3BucketName
+      awsShareAccounts
+    }
   }
 }
 
@@ -54,6 +69,11 @@ mutation UpdateAccount($input: AccountChanges!) {
     state {
       status
       error
+    }
+    properties {
+      awsChinaRegionName
+      awsChinaS3BucketName
+      awsShareAccounts
     }
   }
 }

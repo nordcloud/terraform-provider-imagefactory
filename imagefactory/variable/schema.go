@@ -1,3 +1,5 @@
+// Copyright 2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+
 package variable
 
 import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"

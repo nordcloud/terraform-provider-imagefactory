@@ -522,17 +522,3 @@ func (c APIClient) DeleteVariable(name string) error {
 
 	return nil
 }
-
-// req, err := graphql.NewGetAccountRequest(c.apiURL, &graphql.GetAccountVariables{
-// 	Input: graphql.CustomerAccountIdInput{
-// 		AccountId: graphql.String(accountID),
-// 	},
-// })
-// if err != nil {
-// 	return Account{}, fmt.Errorf("getting account request %w", err)
-// }
-
-// r := &graphql.Query{}
-// if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
-// 	return Account{}, fmt.Errorf("getting account %w", err)
-// }

@@ -23,7 +23,7 @@ query GetComponent($input: GetComponentInput!) {
     osTypes
     content {
       version
-      active
+      latest
     }
   }
 }
@@ -39,7 +39,6 @@ mutation CreateComponent($input: NewComponent!) {
     osTypes
     content {
       version
-      active
     }
   }
 }
@@ -55,7 +54,6 @@ mutation UpdateComponent($input: ComponentChanges!) {
     osTypes
     content {
       version
-      active
     }
   }
 }
@@ -75,7 +73,6 @@ mutation CreateComponentVersion($input: NewComponentContent!) {
     osTypes
     content {
       version
-      active
     }
   }
 }

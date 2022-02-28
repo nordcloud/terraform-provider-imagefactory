@@ -94,10 +94,8 @@ func resourceComponentUpdate(ctx context.Context, d *schema.ResourceData, m inte
 		in := d.Get("content").([]interface{})
 		m := in[0].(map[string]interface{})
 
-		active := graphql.Boolean(true)
 		input := sdk.NewComponentContent{
 			ID:                graphql.String(componentID),
-			Active:            &active,
 			Script:            graphql.String(m["script"].(string)),
 			ScriptProvisioner: graphql.ShellScriptProvisioner(m["provisioner"].(string)),
 		}
@@ -125,7 +123,7 @@ func resourceComponentDelete(ctx context.Context, d *schema.ResourceData, m inte
 
 	if component.Content != nil && len(*component.Content) > 1 {
 		for _, v := range *component.Content {
-			if v.Active {
+			if v.Latest {
 				continue
 			}
 

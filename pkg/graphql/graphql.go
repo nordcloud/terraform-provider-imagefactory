@@ -683,7 +683,7 @@ type GetComponentResponse struct {
 		OsTypes     string `json:"osTypes"`
 		Content     *[]struct {
 			Version string `json:"version"`
-			Active  string `json:"active"`
+			Latest  string `json:"latest"`
 		} `json:"content"`
 	} `json:"component"`
 }
@@ -710,7 +710,7 @@ func NewGetComponentRequest(url string, vars *GetComponentVariables) (*GetCompon
     osTypes
     content {
       version
-      active
+      latest
     }
   }
 }`,
@@ -769,7 +769,6 @@ type CreateComponentResponse struct {
 		OsTypes     string `json:"osTypes"`
 		Content     *[]struct {
 			Version string `json:"version"`
-			Active  string `json:"active"`
 		} `json:"content"`
 	} `json:"createComponent"`
 }
@@ -796,7 +795,6 @@ func NewCreateComponentRequest(url string, vars *CreateComponentVariables) (*Cre
     osTypes
     content {
       version
-      active
     }
   }
 }`,
@@ -855,7 +853,6 @@ type UpdateComponentResponse struct {
 		OsTypes     string `json:"osTypes"`
 		Content     *[]struct {
 			Version string `json:"version"`
-			Active  string `json:"active"`
 		} `json:"content"`
 	} `json:"updateComponent"`
 }
@@ -882,7 +879,6 @@ func NewUpdateComponentRequest(url string, vars *UpdateComponentVariables) (*Upd
     osTypes
     content {
       version
-      active
     }
   }
 }`,
@@ -1003,7 +999,6 @@ type CreateComponentVersionResponse struct {
 		OsTypes     string `json:"osTypes"`
 		Content     *[]struct {
 			Version string `json:"version"`
-			Active  string `json:"active"`
 		} `json:"content"`
 	} `json:"createComponentVersion"`
 }
@@ -1030,7 +1025,6 @@ func NewCreateComponentVersionRequest(url string, vars *CreateComponentVersionVa
     osTypes
     content {
       version
-      active
     }
   }
 }`,
@@ -2663,8 +2657,8 @@ type NewComponent struct {
 }
 
 type NewComponentContent struct {
-	Active            *Boolean               `json:"active,omitempty"`
 	ID                String                 `json:"id"`
+	Latest            *Boolean               `json:"latest,omitempty"`
 	Script            String                 `json:"script"`
 	ScriptProvisioner ShellScriptProvisioner `json:"scriptProvisioner"`
 }
@@ -2730,7 +2724,7 @@ type NewVariable struct {
 }
 
 type NewVersionedContent struct {
-	Active            *Boolean               `json:"active,omitempty"`
+	Latest            *Boolean               `json:"latest,omitempty"`
 	Script            String                 `json:"script"`
 	ScriptProvisioner ShellScriptProvisioner `json:"scriptProvisioner"`
 }
@@ -2964,26 +2958,25 @@ type ImageState struct {
 }
 
 type Mutation struct {
-	CreateAccount             Account     `json:"createAccount"`
-	CreateApiKey              ApiKey      `json:"createApiKey"`
-	CreateComponent           Component   `json:"createComponent"`
-	CreateComponentVersion    Component   `json:"createComponentVersion"`
-	CreateRoleBinding         RoleBinding `json:"createRoleBinding"`
-	CreateTemplate            Template    `json:"createTemplate"`
-	CreateVariable            Variable    `json:"createVariable"`
-	DeleteAccount             *Boolean    `json:"deleteAccount,omitempty"`
-	DeleteApiKey              *Boolean    `json:"deleteApiKey,omitempty"`
-	DeleteComponent           *Boolean    `json:"deleteComponent,omitempty"`
-	DeleteComponentVersion    *Boolean    `json:"deleteComponentVersion,omitempty"`
-	DeleteRoleBinding         *Boolean    `json:"deleteRoleBinding,omitempty"`
-	DeleteTemplate            *Boolean    `json:"deleteTemplate,omitempty"`
-	DeleteVariable            *Boolean    `json:"deleteVariable,omitempty"`
-	RebuildTemplate           Template    `json:"rebuildTemplate"`
-	SetComponentVersionActive Component   `json:"setComponentVersionActive"`
-	UpdateAccount             Account     `json:"updateAccount"`
-	UpdateComponent           Component   `json:"updateComponent"`
-	UpdateRoleBinding         RoleBinding `json:"updateRoleBinding"`
-	UpdateTemplate            Template    `json:"updateTemplate"`
+	CreateAccount          Account     `json:"createAccount"`
+	CreateApiKey           ApiKey      `json:"createApiKey"`
+	CreateComponent        Component   `json:"createComponent"`
+	CreateComponentVersion Component   `json:"createComponentVersion"`
+	CreateRoleBinding      RoleBinding `json:"createRoleBinding"`
+	CreateTemplate         Template    `json:"createTemplate"`
+	CreateVariable         Variable    `json:"createVariable"`
+	DeleteAccount          *Boolean    `json:"deleteAccount,omitempty"`
+	DeleteApiKey           *Boolean    `json:"deleteApiKey,omitempty"`
+	DeleteComponent        *Boolean    `json:"deleteComponent,omitempty"`
+	DeleteComponentVersion *Boolean    `json:"deleteComponentVersion,omitempty"`
+	DeleteRoleBinding      *Boolean    `json:"deleteRoleBinding,omitempty"`
+	DeleteTemplate         *Boolean    `json:"deleteTemplate,omitempty"`
+	DeleteVariable         *Boolean    `json:"deleteVariable,omitempty"`
+	RebuildTemplate        Template    `json:"rebuildTemplate"`
+	UpdateAccount          Account     `json:"updateAccount"`
+	UpdateComponent        Component   `json:"updateComponent"`
+	UpdateRoleBinding      RoleBinding `json:"updateRoleBinding"`
+	UpdateTemplate         Template    `json:"updateTemplate"`
 }
 
 type Notification struct {
@@ -3122,9 +3115,9 @@ type VariableResults struct {
 }
 
 type VersionedContent struct {
-	Active            Boolean           `json:"active"`
 	AnsibleTags       *[]String         `json:"ansibleTags,omitempty"`
 	DocsUrl           *String           `json:"docsUrl,omitempty"`
+	Latest            Boolean           `json:"latest"`
 	ScriptProvisioner ScriptProvisioner `json:"scriptProvisioner"`
 	ScriptUrl         *String           `json:"scriptUrl,omitempty"`
 	Version           String            `json:"version"`

@@ -1,4 +1,4 @@
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 query GetComponents($input: ComponentsInput!) {
   components(input: $input) {
@@ -23,7 +23,7 @@ query GetComponent($input: GetComponentInput!) {
     osTypes
     content {
       version
-      active
+      latest
     }
   }
 }
@@ -39,7 +39,6 @@ mutation CreateComponent($input: NewComponent!) {
     osTypes
     content {
       version
-      active
     }
   }
 }
@@ -55,7 +54,6 @@ mutation UpdateComponent($input: ComponentChanges!) {
     osTypes
     content {
       version
-      active
     }
   }
 }
@@ -75,7 +73,6 @@ mutation CreateComponentVersion($input: NewComponentContent!) {
     osTypes
     content {
       version
-      active
     }
   }
 }

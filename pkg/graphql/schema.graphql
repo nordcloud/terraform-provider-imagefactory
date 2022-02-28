@@ -98,12 +98,12 @@ input IBMCloudCredentials {
 
 """
 AccountCredentials defines the credentials used to access AWS account, GCP project or Azure subscription where
-the result image created by HBI should be distributed.
+the result image created by ImageFactory should be distributed.
 
 Please note that only one of the AWS, GCP or Azure credentials can be provided and it has match the provider
 defined in account model.
 
-To get the account credentials, please check the onboarding section in HBI documentation:
+To get the account credentials, please check the onboarding section in ImageFactory documentation:
 https://docs.imagefactory.nordcloudapp.com/onboarding
 """
 input AccountCredentials {
@@ -227,7 +227,7 @@ input Search {
 }
 
 
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum ComponentType {
 	SYSTEM
@@ -247,7 +247,7 @@ enum ScriptProvisioner {
 
 type VersionedContent {
 	version: String!
-	active: Boolean!
+	latest: Boolean!
 	ansibleTags: [String!]
 	scriptUrl: String
 	docsUrl: String
@@ -259,12 +259,12 @@ Component defines an additional step in building hardened images.
 
 Component can be executed on BUILD stage (to install software) or on the TEST stage to verify if the image is correct.
 We have 2 types of components:
-	SYSTEM - components delivered by the HBI that contain hardening components or scripts to install popular software
+	SYSTEM - components delivered by the ImageFactory that contain hardening components or scripts to install popular software
 	CUSTOM - components defined by the users containing shell or powershell script
-Before creating custom component clease check if HBI does not provided predefined component 
+Before creating custom component clease check if ImageFactory does not provided predefined component
 
 Component content is versioned. It means that every time you want to update your component you have to create new component version.
-Component may contain multiple versions, but only one can be active. During image building HBI will use only the active component version.
+Component may contain multiple versions. During image building ImageFactory, if it is not selected, will use the latest component version.
 """
 type Component {
 	id: String!
@@ -296,10 +296,10 @@ enum ShellScriptProvisioner {
 """
 NewVersionedContent contains the script that will be executed by the component.
 
-Script provided as a plain text is saved in the HBI S3. You can access it later using the presigned URL.
+Script provided as a plain text is saved in the ImageFactory S3. You can access it later using the presigned URL.
 """
 input NewVersionedContent {
-	active: Boolean
+	latest: Boolean
 	scriptProvisioner: ShellScriptProvisioner!
 	script: String!
 }
@@ -324,7 +324,7 @@ input ComponentChanges {
 
 input NewComponentContent {
 	id: String!
-	active: Boolean
+	latest: Boolean
 	scriptProvisioner: ShellScriptProvisioner!
 	script: String!
 }
@@ -342,7 +342,7 @@ type Customer {
 	accounts contains list of the account credentials
 	
 	instead of this field resolver, query `accounts` can be used to receive the same data
-	"""    
+	"""
 	accounts(input: CustomerAccountsResolverInput!): AccountResults
 
 	"""
@@ -395,7 +395,7 @@ input CustomerTemplatesResolverInput {
 # Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 """
-Distribution defines the cloud image that can be created by the HBI.
+Distribution defines the cloud image that can be created by the ImageFactory.
 
 To build an image you have to select one of the distributions and create image template based on this.
 Please check the `createTemplate` mutation.
@@ -442,7 +442,7 @@ type ImageComponent {
 
 type ImageCloudDistribution {
 	"""
-	accountId is the UUID of the account in HBI.
+	accountId is the UUID of the account in ImageFactory.
 	"""
 	accountId: String!
 
@@ -778,8 +778,8 @@ input NewTemplateConfig {
 	notifications defines how to notify about the created & distributed image.
 
 	There are possible types of notifications: SNS topic (AWS), PUB/SUB topic (GCP) and web hook.
-	Please note that HBI will send notification about every distributed image. It means that if you have single image template,
-	but 10 cloud accounts you will receive 10 notifications because HBI created 10 different images.
+	Please note that ImageFactory will send notification about every distributed image. It means that if you have single image template,
+	but 10 cloud accounts you will receive 10 notifications because ImageFactory created 10 different images.
 	"""
 	notifications: [NewNotification!]
 
@@ -901,7 +901,7 @@ type Query {
 }
 
 
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 input CustomerApiKeyIdInput {
 	apiKeyId: String!
@@ -917,11 +917,11 @@ extend type Mutation {
 	createApiKey adds the new apiKey and generates secret value.
 
 	This mutation returns the secret value generated for this apiKey. Please save this value because
-	it won't be possible to get it later. For security reasons HBI stores only the secret hash (generated
+	it won't be possible to get it later. For security reasons ImageFactory stores only the secret hash (generated
 	with cryptographic algorithm) so the plain text value can be retrieved from this mutation only. If you lost
 	apiKey secret you have to create new ApiKey.
 
-	apikey can be used to access HBI API by providing the `x-api-key` header in format:
+	apikey can be used to access ImageFactory API by providing the `x-api-key` header in format:
 	{API_KEY_ID}/{API_KEY_SECRET}. `x-customer-id` header is not required in this case.
 
 	apiKey does not grant any permissions to access API itself. You have to create the `roleBinding` and assign the access
@@ -952,7 +952,7 @@ extend type Query {
 }
 
 
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum ComponentAttribute {
 	NAME
@@ -1026,17 +1026,8 @@ extend type Mutation {
 
 	"""
 	deleteComponentVersion removes the existing component version.
-
-	Please note, that you cannot delete the active component version. You have to disable component version first.
 	"""
 	deleteComponentVersion(input: ComponentVersionIdInput!): Boolean
-
-	"""
-	setComponentVersionActive sets the component version to active.
-
-	Because there can be only 1 active component version, the previous one is disable.
-	"""
-	setComponentVersionActive(input: ComponentVersionIdInput!): Component!
 }
 
 extend type Query {
@@ -1270,7 +1261,7 @@ extend type Query {
 }
 
 
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum TemplateAttribute {
 	NAME
@@ -1334,7 +1325,7 @@ extend type Mutation {
 	deleteTemplate(input: CustomerTemplateIdInput!): Boolean
 
 	"""
-	rebuildTemplate forces HBI to build the new image from this template.
+	rebuildTemplate forces ImageFactory to build the new image from this template.
 	"""
 	rebuildTemplate(input: CustomerTemplateIdInput!): Template!
 }

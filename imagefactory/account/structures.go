@@ -113,6 +113,30 @@ func flattenAccountState(in *graphql.AccountState) map[string]string {
 	return out
 }
 
+func flattenAccountProperties(in *graphql.AccountCloudProperties) map[string]interface{} {
+	out := map[string]interface{}{}
+
+	if in == nil {
+		return out
+	}
+
+	if in.AwsChinaRegionName != nil {
+		out["region"] = string(*in.AwsChinaRegionName)
+	}
+	if in.AwsChinaS3BucketName != nil {
+		out["s3_bucket_name"] = string(*in.AwsChinaS3BucketName)
+	}
+	if in.AwsShareAccounts != nil {
+		shAcc := []string{}
+		for _, v := range *in.AwsShareAccounts {
+			shAcc = append(shAcc, string(v))
+		}
+		out["aws_share_accounts"] = shAcc
+	}
+
+	return out
+}
+
 func expandAwsAccountProperties(in interface{}) *graphql.AccountCloudPropertiesInput {
 	awsAccountProps := graphql.AccountCloudPropertiesInput{}
 
@@ -126,6 +150,16 @@ func expandAwsAccountProperties(in interface{}) *graphql.AccountCloudPropertiesI
 
 	awsAccountProps.AwsChinaRegionName = &region
 	awsAccountProps.AwsChinaS3BucketName = &s3Bucket
+
+	if props["aws_share_accounts"] != nil {
+		var shareAccounts []graphql.String
+		shareAccountsIn := props["aws_share_accounts"].([]interface{})
+		for _, acc := range shareAccountsIn {
+			shareAccounts = append(shareAccounts, graphql.String(acc.(string)))
+		}
+
+		awsAccountProps.AwsShareAccounts = &shareAccounts
+	}
 
 	return &awsAccountProps
 }

@@ -1,8 +1,10 @@
-// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package sdk
 
-import "github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
+import (
+	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
+)
 
 type Account graphql.Account
 
@@ -33,3 +35,7 @@ type NewRoleBinding graphql.NewRoleBinding
 type RoleBindingChanges graphql.RoleBindingChanges
 
 type ApiKey graphql.ApiKey
+
+type Variable graphql.Variable
+
+type NewVariable graphql.NewVariable

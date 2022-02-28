@@ -57,9 +57,16 @@ func expandTemplateAwsConfig(in []interface{}, scope graphql.Scope) (*graphql.Ne
 	}
 
 	region := graphql.String(m["region"].(string))
-	return &graphql.NewTemplateAWSConfig{
+	tplConfig := &graphql.NewTemplateAWSConfig{
 		Region: &region,
-	}, nil
+	}
+
+	if m["custom_image_name"] != nil || m["custom_image_name"].(string) != "" {
+		imageName := graphql.String(m["custom_image_name"].(string))
+		tplConfig.CustomImageName = &imageName
+	}
+
+	return tplConfig, nil
 }
 
 func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig {

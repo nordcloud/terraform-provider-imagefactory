@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+ * Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
  */
 
 terraform {
@@ -7,7 +7,7 @@ terraform {
   required_providers {
     imagefactory = {
       source  = "nordcloud/imagefactory"
-      version = "1.0.3"
+      version = "1.1.0"
     }
   }
 }

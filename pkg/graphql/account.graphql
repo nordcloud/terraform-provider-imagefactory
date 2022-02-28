@@ -1,4 +1,4 @@
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 query GetAccount($input: CustomerAccountIdInput!) {
   account(input: $input) {
@@ -10,6 +10,11 @@ query GetAccount($input: CustomerAccountIdInput!) {
     state {
       status
       error
+    }
+    properties {
+      awsChinaRegionName
+      awsChinaS3BucketName
+      awsShareAccounts
     }
   }
 }
@@ -26,6 +31,11 @@ query GetAccounts($input: CustomerAccountsInput!) {
         status
         error
       }
+      properties {
+        awsChinaRegionName
+        awsChinaS3BucketName
+        awsShareAccounts
+      }
     }
   }
 }
@@ -41,6 +51,11 @@ mutation CreateAccount($input: NewAccount!) {
       status
       error
     }
+    properties {
+      awsChinaRegionName
+      awsChinaS3BucketName
+      awsShareAccounts
+    }
   }
 }
 
@@ -54,6 +69,11 @@ mutation UpdateAccount($input: AccountChanges!) {
     state {
       status
       error
+    }
+    properties {
+      awsChinaRegionName
+      awsChinaS3BucketName
+      awsShareAccounts
     }
   }
 }

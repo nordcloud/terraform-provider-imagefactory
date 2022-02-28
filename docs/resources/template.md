@@ -178,6 +178,7 @@ Optional:
 
 Optional:
 
+- **custom_image_name** (String)
 - **region** (String)
 
 

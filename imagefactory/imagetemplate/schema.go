@@ -14,6 +14,10 @@ var awsTemplateConfigResource = &schema.Resource{
 			Type:     schema.TypeString,
 			Optional: true,
 		},
+		"custom_image_name": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
 	},
 }
 

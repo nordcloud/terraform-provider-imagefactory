@@ -34,6 +34,13 @@ var awsChinaAccountProperties = &schema.Resource{
 			Type:     schema.TypeString,
 			Required: true,
 		},
+		"aws_share_accounts": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+		},
 	},
 }
 

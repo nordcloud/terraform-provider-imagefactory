@@ -2169,6 +2169,22 @@ const (
 	AccountStatusACCESSSUCCESS AccountStatus = "ACCESS_SUCCESS"
 )
 
+type AuditLogIdentityType string
+
+const (
+	AuditLogIdentityTypeAPIKEY AuditLogIdentityType = "API_KEY"
+	AuditLogIdentityTypeSYSTEM AuditLogIdentityType = "SYSTEM"
+	AuditLogIdentityTypeUSER   AuditLogIdentityType = "USER"
+)
+
+type AuditLogResponseStatus string
+
+const (
+	AuditLogResponseStatusCLIENTERROR AuditLogResponseStatus = "CLIENT_ERROR"
+	AuditLogResponseStatusERROR       AuditLogResponseStatus = "ERROR"
+	AuditLogResponseStatusOK          AuditLogResponseStatus = "OK"
+)
+
 type BuildStatus string
 
 const (
@@ -2402,6 +2418,40 @@ type AccountsFilter struct {
 
 type AccountsFilters struct {
 	Filters *[]AccountsFilter `json:"filters,omitempty"`
+}
+
+type AuditLogSearchFilters struct {
+	Identity     *String               `json:"identity,omitempty"`
+	IdentityType *AuditLogIdentityType `json:"identityType,omitempty"`
+	Operation    *String               `json:"operation,omitempty"`
+	Source       *String               `json:"source,omitempty"`
+	Tags         *AuditLogTagsInput    `json:"tags,omitempty"`
+	Version      *String               `json:"version,omitempty"`
+}
+
+type AuditLogSearchInput struct {
+	Filters        *AuditLogSearchFilters `json:"filters,omitempty"`
+	Limit          *Int                   `json:"limit,omitempty"`
+	Page           *Int                   `json:"page,omitempty"`
+	TimeRangeEnd   *String                `json:"timeRangeEnd,omitempty"`
+	TimeRangeStart *String                `json:"timeRangeStart,omitempty"`
+}
+
+type AuditLogSearchReportInput struct {
+	Filters        *AuditLogSearchFilters `json:"filters,omitempty"`
+	TimeRangeEnd   *String                `json:"timeRangeEnd,omitempty"`
+	TimeRangeStart *String                `json:"timeRangeStart,omitempty"`
+}
+
+type AuditLogTagsInput struct {
+	ClientIp       *String                 `json:"clientIp,omitempty"`
+	GqlMethod      *String                 `json:"gqlMethod,omitempty"`
+	HttpMethod     *String                 `json:"httpMethod,omitempty"`
+	HttpStatusCode *String                 `json:"httpStatusCode,omitempty"`
+	HttpUrl        *String                 `json:"httpUrl,omitempty"`
+	ResourceId     *String                 `json:"resourceId,omitempty"`
+	Status         *AuditLogResponseStatus `json:"status,omitempty"`
+	UserAgent      *String                 `json:"userAgent,omitempty"`
 }
 
 type AWSCredentials struct {
@@ -2658,7 +2708,6 @@ type NewComponent struct {
 
 type NewComponentContent struct {
 	ID                String                 `json:"id"`
-	Latest            *Boolean               `json:"latest,omitempty"`
 	Script            String                 `json:"script"`
 	ScriptProvisioner ShellScriptProvisioner `json:"scriptProvisioner"`
 }
@@ -2693,8 +2742,9 @@ type NewTemplateAWSConfig struct {
 }
 
 type NewTemplateAZUREConfig struct {
-	ExcludeFromLatest *Boolean  `json:"excludeFromLatest,omitempty"`
-	ReplicaRegions    *[]String `json:"replicaRegions,omitempty"`
+	ExcludeFromLatest *Boolean              `json:"excludeFromLatest,omitempty"`
+	ReplicaRegions    *[]String             `json:"replicaRegions,omitempty"`
+	VmImageDefinition *NewVMImageDefinition `json:"vmImageDefinition,omitempty"`
 }
 
 type NewTemplateComponent struct {
@@ -2724,9 +2774,14 @@ type NewVariable struct {
 }
 
 type NewVersionedContent struct {
-	Latest            *Boolean               `json:"latest,omitempty"`
 	Script            String                 `json:"script"`
 	ScriptProvisioner ShellScriptProvisioner `json:"scriptProvisioner"`
+}
+
+type NewVMImageDefinition struct {
+	Name  String `json:"name"`
+	Offer String `json:"offer"`
+	Sku   String `json:"sku"`
 }
 
 type RoleBindingChanges struct {
@@ -2795,6 +2850,7 @@ type TemplatesSort struct {
 
 type Account struct {
 	Alias           *String                 `json:"alias,omitempty"`
+	ChangeDetails   ChangeDetails           `json:"changeDetails"`
 	CloudProviderId String                  `json:"cloudProviderId"`
 	CreatedAt       String                  `json:"createdAt"`
 	Description     *String                 `json:"description,omitempty"`
@@ -2824,19 +2880,57 @@ type AccountState struct {
 }
 
 type ApiKey struct {
-	CreatedAt String `json:"createdAt"`
-	CreatedBy String `json:"createdBy"`
-	ID        String `json:"id"`
-	Name      String `json:"name"`
-	Secret    String `json:"secret"`
-	UpdatedAt String `json:"updatedAt"`
-	UpdatedBy String `json:"updatedBy"`
+	ChangeDetails ChangeDetails `json:"changeDetails"`
+	CreatedAt     String        `json:"createdAt"`
+	ID            String        `json:"id"`
+	Name          String        `json:"name"`
+	Secret        String        `json:"secret"`
+	UpdatedAt     String        `json:"updatedAt"`
 }
 
 type ApiKeyResults struct {
 	Count   Int       `json:"count"`
 	Pages   Int       `json:"pages"`
 	Results *[]ApiKey `json:"results,omitempty"`
+}
+
+type AuditLog struct {
+	Data         *String              `json:"data,omitempty"`
+	Datetime     String               `json:"datetime"`
+	Identity     String               `json:"identity"`
+	IdentityType AuditLogIdentityType `json:"identityType"`
+	Operation    String               `json:"operation"`
+	Source       String               `json:"source"`
+	Tags         *AuditLogTags        `json:"tags,omitempty"`
+	Version      String               `json:"version"`
+}
+
+type AuditLogReport struct {
+	Url String `json:"url"`
+}
+
+type AuditLogResults struct {
+	Count   Int         `json:"count"`
+	Pages   Int         `json:"pages"`
+	Results *[]AuditLog `json:"results,omitempty"`
+}
+
+type AuditLogTags struct {
+	ClientIp       *String                 `json:"clientIp,omitempty"`
+	GqlMethod      *String                 `json:"gqlMethod,omitempty"`
+	HttpMethod     *String                 `json:"httpMethod,omitempty"`
+	HttpStatusCode *String                 `json:"httpStatusCode,omitempty"`
+	HttpUrl        *String                 `json:"httpUrl,omitempty"`
+	ResourceId     *String                 `json:"resourceId,omitempty"`
+	Status         *AuditLogResponseStatus `json:"status,omitempty"`
+	UserAgent      *String                 `json:"userAgent,omitempty"`
+}
+
+type ChangeDetails struct {
+	CreatedAt String `json:"createdAt"`
+	CreatedBy String `json:"createdBy"`
+	UpdatedAt String `json:"updatedAt"`
+	UpdatedBy String `json:"updatedBy"`
 }
 
 type Compliance struct {
@@ -2851,18 +2945,17 @@ type ComplianceScore struct {
 }
 
 type Component struct {
-	Content     *[]VersionedContent `json:"content,omitempty"`
-	CreatedAt   String              `json:"createdAt"`
-	CreatedBy   String              `json:"createdBy"`
-	Description *String             `json:"description,omitempty"`
-	ID          String              `json:"id"`
-	Name        String              `json:"name"`
-	OsTypes     *[]OSType           `json:"osTypes,omitempty"`
-	Providers   *[]Provider         `json:"providers,omitempty"`
-	Stage       ComponentStage      `json:"stage"`
-	Type        ComponentType       `json:"type"`
-	UpdatedAt   String              `json:"updatedAt"`
-	UpdatedBy   String              `json:"updatedBy"`
+	ChangeDetails ChangeDetails       `json:"changeDetails"`
+	Content       *[]VersionedContent `json:"content,omitempty"`
+	CreatedAt     String              `json:"createdAt"`
+	Description   *String             `json:"description,omitempty"`
+	ID            String              `json:"id"`
+	Name          String              `json:"name"`
+	OsTypes       *[]OSType           `json:"osTypes,omitempty"`
+	Providers     *[]Provider         `json:"providers,omitempty"`
+	Stage         ComponentStage      `json:"stage"`
+	Type          ComponentType       `json:"type"`
+	UpdatedAt     String              `json:"updatedAt"`
 }
 
 type ComponentResults struct {
@@ -2893,9 +2986,12 @@ type Distribution struct {
 	Description     *String          `json:"description,omitempty"`
 	ID              String           `json:"id"`
 	Name            String           `json:"name"`
+	OsEolDate       *String          `json:"osEolDate,omitempty"`
 	OsFamily        OSFamily         `json:"osFamily"`
+	OsLatest        *Boolean         `json:"osLatest,omitempty"`
 	OsSubtype       *OSSubtype       `json:"osSubtype,omitempty"`
 	OsType          OSType           `json:"osType"`
+	OsVersion       *String          `json:"osVersion,omitempty"`
 	Provider        Provider         `json:"provider"`
 	UpdatedAt       String           `json:"updatedAt"`
 }
@@ -2928,6 +3024,7 @@ type ImageBuildDetails struct {
 	Compliance         *Compliance               `json:"compliance,omitempty"`
 	ResultImageId      *String                   `json:"resultImageId,omitempty"`
 	ResultImageUri     *String                   `json:"resultImageUri,omitempty"`
+	SourceDistribution *SourceDistribution       `json:"sourceDistribution,omitempty"`
 	SourceImage        *String                   `json:"sourceImage,omitempty"`
 	Tags               *[]Tag                    `json:"tags,omitempty"`
 	TestComponents     *[]ImageComponent         `json:"testComponents,omitempty"`
@@ -2985,24 +3082,26 @@ type Notification struct {
 }
 
 type Query struct {
-	Account       Account             `json:"account"`
-	Accounts      AccountResults      `json:"accounts"`
-	ApiKey        ApiKey              `json:"apiKey"`
-	ApiKeys       ApiKeyResults       `json:"apiKeys"`
-	Component     Component           `json:"component"`
-	Components    ComponentResults    `json:"components"`
-	Customer      Customer            `json:"customer"`
-	Customers     CustomerResults     `json:"customers"`
-	Distribution  Distribution        `json:"distribution"`
-	Distributions DistributionResults `json:"distributions"`
-	Image         Image               `json:"image"`
-	Images        ImageResults        `json:"images"`
-	RoleBinding   RoleBinding         `json:"roleBinding"`
-	RoleBindings  RoleBindingResults  `json:"roleBindings"`
-	Settings      SettingsResult      `json:"settings"`
-	Template      Template            `json:"template"`
-	Templates     TemplateResults     `json:"templates"`
-	Variables     VariableResults     `json:"variables"`
+	Account              Account             `json:"account"`
+	Accounts             AccountResults      `json:"accounts"`
+	ApiKey               ApiKey              `json:"apiKey"`
+	ApiKeys              ApiKeyResults       `json:"apiKeys"`
+	AuditLogSearch       AuditLogResults     `json:"auditLogSearch"`
+	AuditLogSearchReport AuditLogReport      `json:"auditLogSearchReport"`
+	Component            Component           `json:"component"`
+	Components           ComponentResults    `json:"components"`
+	Customer             Customer            `json:"customer"`
+	Customers            CustomerResults     `json:"customers"`
+	Distribution         Distribution        `json:"distribution"`
+	Distributions        DistributionResults `json:"distributions"`
+	Image                Image               `json:"image"`
+	Images               ImageResults        `json:"images"`
+	RoleBinding          RoleBinding         `json:"roleBinding"`
+	RoleBindings         RoleBindingResults  `json:"roleBindings"`
+	Settings             SettingsResult      `json:"settings"`
+	Template             Template            `json:"template"`
+	Templates            TemplateResults     `json:"templates"`
+	Variables            VariableResults     `json:"variables"`
 }
 
 type Rebuild struct {
@@ -3015,14 +3114,13 @@ type RebuildReason struct {
 }
 
 type RoleBinding struct {
-	CreatedAt String `json:"createdAt"`
-	CreatedBy String `json:"createdBy"`
-	ID        String `json:"id"`
-	Kind      Kind   `json:"kind"`
-	Role      Role   `json:"role"`
-	Subject   String `json:"subject"`
-	UpdatedAt String `json:"updatedAt"`
-	UpdatedBy String `json:"updatedBy"`
+	ChangeDetails ChangeDetails `json:"changeDetails"`
+	CreatedAt     String        `json:"createdAt"`
+	ID            String        `json:"id"`
+	Kind          Kind          `json:"kind"`
+	Role          Role          `json:"role"`
+	Subject       String        `json:"subject"`
+	UpdatedAt     String        `json:"updatedAt"`
 }
 
 type RoleBindingResults struct {
@@ -3037,15 +3135,22 @@ type SettingsResult struct {
 	AzureRegions    *[]String `json:"azureRegions,omitempty"`
 }
 
+type SourceDistribution struct {
+	ComplianceScore *ComplianceScore `json:"complianceScore,omitempty"`
+	Name            *String          `json:"name,omitempty"`
+	OsEolDate       *String          `json:"osEolDate,omitempty"`
+	OsVersion       *String          `json:"osVersion,omitempty"`
+}
+
 type Tag struct {
 	Key   String `json:"key"`
 	Value String `json:"value"`
 }
 
 type Template struct {
+	ChangeDetails  ChangeDetails   `json:"changeDetails"`
 	Config         *TemplateConfig `json:"config,omitempty"`
 	CreatedAt      String          `json:"createdAt"`
-	CreatedBy      String          `json:"createdBy"`
 	CustomerId     String          `json:"customerId"`
 	Description    *String         `json:"description,omitempty"`
 	Distribution   *Distribution   `json:"distribution,omitempty"`
@@ -3058,7 +3163,6 @@ type Template struct {
 	Rebuild        *Rebuild        `json:"rebuild,omitempty"`
 	State          TemplateState   `json:"state"`
 	UpdatedAt      String          `json:"updatedAt"`
-	UpdatedBy      String          `json:"updatedBy"`
 }
 
 type TemplateAWSConfig struct {
@@ -3067,8 +3171,9 @@ type TemplateAWSConfig struct {
 }
 
 type TemplateAZUREConfig struct {
-	ExcludeFromLatest *Boolean  `json:"excludeFromLatest,omitempty"`
-	ReplicaRegions    *[]String `json:"replicaRegions,omitempty"`
+	ExcludeFromLatest *Boolean           `json:"excludeFromLatest,omitempty"`
+	ReplicaRegions    *[]String          `json:"replicaRegions,omitempty"`
+	VmImageDefinition *VMImageDefinition `json:"vmImageDefinition,omitempty"`
 }
 
 type TemplateComponent struct {
@@ -3121,4 +3226,10 @@ type VersionedContent struct {
 	ScriptProvisioner ScriptProvisioner `json:"scriptProvisioner"`
 	ScriptUrl         *String           `json:"scriptUrl,omitempty"`
 	Version           String            `json:"version"`
+}
+
+type VMImageDefinition struct {
+	Name  String `json:"name"`
+	Offer String `json:"offer"`
+	Sku   String `json:"sku"`
 }

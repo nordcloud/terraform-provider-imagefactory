@@ -108,6 +108,11 @@ resource "imagefactory_template" "template" {
     azure {
       exclude_from_latest = true
       replica_regions     = ["westeurope"]
+      vm_image_definition {
+        name  = "Ubuntu1804"
+        offer = "ubuntu-18_04-lts"
+        sku   = "v1"
+      }
     }
     notifications {
       type = "WEB_HOOK"
@@ -189,6 +194,17 @@ Optional:
 
 - **exclude_from_latest** (Boolean)
 - **replica_regions** (List of String)
+- **vm_image_definition** (Block List) (see [below for nested schema](#nestedblock--config--azure--vm_image_definition))
+
+<a id="nestedblock--config--azure--vm_image_definition"></a>
+### Nested Schema for `config.azure.vm_image_definition`
+
+Required:
+
+- **name** (String)
+- **offer** (String)
+- **sku** (String)
+
 
 
 <a id="nestedblock--config--build_components"></a>

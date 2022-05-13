@@ -69,6 +69,20 @@ func expandTemplateAwsConfig(in []interface{}, scope graphql.Scope) (*graphql.Ne
 	return tplConfig, nil
 }
 
+func expandVMImageDefinitionTemplateAzureConfig(in []interface{}) *graphql.NewVMImageDefinition {
+	if len(in) == 0 {
+		return nil
+	}
+
+	m := in[0].(map[string]interface{})
+
+	return &graphql.NewVMImageDefinition{
+		Name:  graphql.String(m["name"].(string)),
+		Offer: graphql.String(m["offer"].(string)),
+		Sku:   graphql.String(m["sku"].(string)),
+	}
+}
+
 func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig {
 	if len(in) == 0 {
 		return nil
@@ -86,6 +100,7 @@ func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig
 	out := &graphql.NewTemplateAZUREConfig{
 		ExcludeFromLatest: &e,
 		ReplicaRegions:    &rr,
+		VmImageDefinition: expandVMImageDefinitionTemplateAzureConfig(m["vm_image_definition"].([]interface{})),
 	}
 
 	return out

@@ -3,8 +3,12 @@
 package imagetemplate
 
 import (
+	"fmt"
+	"regexp"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
@@ -17,6 +21,48 @@ var awsTemplateConfigResource = &schema.Resource{
 		"custom_image_name": {
 			Type:     schema.TypeString,
 			Optional: true,
+		},
+	},
+}
+
+func validateVMImageDefinitionParameter(min, max int) schema.SchemaValidateFunc { // nolint: staticcheck
+	return func(i interface{}, k string) (warnings []string, errors []error) {
+		v, ok := i.(string)
+		if !ok {
+			errors = append(errors, fmt.Errorf("expected type of %s to be string", k))
+			return warnings, errors
+		}
+
+		if len(v) < min || len(v) > max {
+			errors = append(errors, fmt.Errorf("expected length of %s to be in the range (%d - %d), got %s", k, min, max, v))
+		}
+
+		if ok := regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9_-]*[a-zA-Z0-9]$`).MatchString(v); !ok {
+			message := "The value must contain only English letters, numbers, underscores and hyphens. " +
+				"The value cannot begin or end with underscores or hyphens."
+			errors = append(errors, fmt.Errorf("invalid value for %s (%s)", k, message))
+		}
+
+		return warnings, errors
+	}
+}
+
+var vmImageDefinitionAzureTemplateConfigResource = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"name": {
+			Type:         schema.TypeString,
+			Required:     true,
+			ValidateFunc: validateVMImageDefinitionParameter(2, 80), // nolint: gomnd
+		},
+		"offer": {
+			Type:         schema.TypeString,
+			Required:     true,
+			ValidateFunc: validateVMImageDefinitionParameter(2, 64), // nolint: gomnd
+		},
+		"sku": {
+			Type:         schema.TypeString,
+			Required:     true,
+			ValidateFunc: validateVMImageDefinitionParameter(2, 64), // nolint: gomnd
 		},
 	},
 }
@@ -34,6 +80,11 @@ var azureTemplateConfigResource = &schema.Resource{
 				Type:         schema.TypeString,
 				ValidateFunc: validation.StringInSlice(validAzureRegions, false),
 			},
+		},
+		"vm_image_definition": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem:     vmImageDefinitionAzureTemplateConfigResource,
 		},
 	},
 }

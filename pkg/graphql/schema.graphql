@@ -1,4 +1,4 @@
-# Copyright 2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum AccountStatus {
 	ACCESS_SUCCESS
@@ -33,6 +33,7 @@ type Account {
 	state: AccountState
 	alias: String
 	description: String
+	changeDetails: ChangeDetails!
 	createdAt: String!
 	updatedAt: String!
 	properties: AccountCloudProperties
@@ -147,16 +148,15 @@ input AccountChanges {
 }
 
 
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 type ApiKey {
 	id: String!
 	name: String!
 	secret: String!
+	changeDetails: ChangeDetails!
 	createdAt: String!
 	updatedAt: String!
-	createdBy: String!
-	updatedBy: String!
 }
 
 type ApiKeyResults {
@@ -168,6 +168,117 @@ type ApiKeyResults {
 input NewApiKey {
 	name: String!
 }
+
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+
+enum AuditLogIdentityType {
+	USER
+	API_KEY
+	SYSTEM
+}
+
+enum AuditLogResponseStatus {
+	OK
+	CLIENT_ERROR
+	ERROR
+}
+
+type AuditLogTags {
+	httpMethod: String
+	httpUrl: String
+	gqlMethod: String
+	userAgent: String
+	clientIp: String
+	httpStatusCode: String
+	status: AuditLogResponseStatus
+	resourceId: String
+}
+
+type AuditLog {
+	identity: String!
+	identityType: AuditLogIdentityType!
+	operation: String!
+	datetime: String!
+	source: String!
+	version: String!
+	tags: AuditLogTags
+	data: String
+}
+
+
+type AuditLogReport {
+	url: String!
+}
+
+type AuditLogResults {
+	results: [AuditLog!]
+	pages: Int!
+	count: Int!
+}
+
+input AuditLogTagsInput {
+	httpMethod: String
+	httpUrl: String
+	gqlMethod: String
+	userAgent: String
+	clientIp: String
+	httpStatusCode: String
+	status: AuditLogResponseStatus
+	resourceId: String
+}
+
+input AuditLogSearchFilters {
+	source: String
+	version: String
+	identity: String
+	identityType: AuditLogIdentityType
+	operation: String
+	tags: AuditLogTagsInput
+}
+
+input AuditLogSearchInput {
+	"""
+	timeRangeStart is the beginning of search time window in RFC3339 format. e.g. 2022-04-21T14:00:31+00:00
+
+	Please note that the total length of search time window cannot be greater than 6h.
+	Default value is set to past 3h.
+	"""
+	timeRangeStart: String
+
+	"""
+	timeRangeEnd is the end of search time window in RFC3339 format. e.g. 2022-04-21T14:00:31+00:00
+
+	Please note that the total length of search time window cannot be greater than 6h.
+	Default value is set to current time.
+	"""
+	timeRangeEnd: String
+
+	filters: AuditLogSearchFilters
+	limit: Int
+	page: Int
+}
+
+input AuditLogSearchReportInput {
+	"""
+	timeRangeStart is the beginning of search time window in RFC3339 format. e.g. 2022-04-21T14:00:31+00:00
+
+	Please note that the total length of search time window cannot be greater than 6h.
+	Default value is set to past 3h.
+	"""
+	timeRangeStart: String
+
+	"""
+	timeRangeEnd is the end of search time window in RFC3339 format. e.g. 2022-04-21T14:00:31+00:00
+
+	Please note that the total length of search time window cannot be greater than 6h.
+	Default value is set to current time.
+	"""
+	timeRangeEnd: String
+
+	filters: AuditLogSearchFilters
+}
+
 
 # Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
@@ -226,6 +337,13 @@ input Search {
 	algorithm: SearchAlgorithm!
 }
 
+type ChangeDetails {
+	createdAt: String!
+	createdBy: String!
+	updatedAt: String!
+	updatedBy: String!
+}
+
 
 # Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
@@ -275,10 +393,9 @@ type Component {
 	providers: [Provider!]!
 	osTypes: [OSType!]!
 	content: [VersionedContent!]
+	changeDetails: ChangeDetails!
 	createdAt: String!
 	updatedAt: String!
-	createdBy: String!
-	updatedBy: String!
 }
 
 type ComponentResults {
@@ -299,7 +416,6 @@ NewVersionedContent contains the script that will be executed by the component.
 Script provided as a plain text is saved in the ImageFactory S3. You can access it later using the presigned URL.
 """
 input NewVersionedContent {
-	latest: Boolean
 	scriptProvisioner: ShellScriptProvisioner!
 	script: String!
 }
@@ -324,7 +440,6 @@ input ComponentChanges {
 
 input NewComponentContent {
 	id: String!
-	latest: Boolean
 	scriptProvisioner: ShellScriptProvisioner!
 	script: String!
 }
@@ -340,21 +455,21 @@ type Customer {
 
 	"""
 	accounts contains list of the account credentials
-	
+
 	instead of this field resolver, query `accounts` can be used to receive the same data
 	"""
 	accounts(input: CustomerAccountsResolverInput!): AccountResults
 
 	"""
 	components contains list of the components that can be used by the customer
-	
+
 	instead of this field resolver, query `components` can be used to receive the same data
 	"""
 	components(input: CustomerComponentsResolverInput!): ComponentResults
 
 	"""
 	templates contains list of the templates created by the customer
-	
+
 	instead of this field resolver, query `templates` can be used to receive the same data
 	"""
 	templates(input: CustomerTemplatesResolverInput!): TemplateResults
@@ -412,6 +527,9 @@ type Distribution {
 	osType: OSType!
 	osFamily: OSFamily!
 	osSubtype: OSSubtype
+	osVersion: String
+	osLatest: Boolean
+	osEolDate: String
 	complianceScore: ComplianceScore
 }
 
@@ -483,6 +601,13 @@ type Compliance {
 	pdfReport: String
 }
 
+type SourceDistribution {
+	name: String
+	osVersion: String
+	osEolDate: String
+	complianceScore: ComplianceScore
+}
+
 type ImageBuildDetails {
 	buildComponents: [ImageComponent!]
 	testComponents: [ImageComponent!]
@@ -503,6 +628,12 @@ type ImageBuildDetails {
 	account cloud credentials or the credentials are invalid.
 	"""
 	cloudDistributions: [ImageCloudDistribution!]
+
+	"""
+	sourceDistribution contains information about the distribution name, OS version, EOL OS date
+	and CIS compliance score from the distribution from which the image was built.
+	"""
+	sourceDistribution: SourceDistribution
 }
 
 type Image {
@@ -529,7 +660,7 @@ type ImageResults {
 }
 
 
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum Role {
 	"""
@@ -561,10 +692,9 @@ type RoleBinding {
 	subject defines the binding target - user email or the api key id.
 	"""
 	subject: String!
+	changeDetails: ChangeDetails!
 	createdAt: String!
 	updatedAt: String!
-	createdBy: String!
-	updatedBy: String!
 }
 
 type RoleBindingResults {
@@ -578,9 +708,9 @@ input NewRoleBinding {
 	role: Role!
 
 	"""
-	subject defines the role binding target. 
+	subject defines the role binding target.
 	If the kind is `USER`, the user email should be provided.
-	If the kind is `API_KEY`, the id of the existing key should be provided. 
+	If the kind is `API_KEY`, the id of the existing key should be provided.
 	"""
 	subject: String!
 }
@@ -675,9 +805,16 @@ type TemplateAWSConfig {
 	customImageName: String
 }
 
+type VMImageDefinition {
+	name: String!
+	offer: String!
+	sku: String!
+}
+
 type TemplateAZUREConfig {
 	replicaRegions: [String]
 	excludeFromLatest: Boolean
+	vmImageDefinition: VMImageDefinition
 }
 
 type TemplateConfig {
@@ -701,10 +838,9 @@ type Template {
 	rebuild: Rebuild
 	state: TemplateState!
 	config: TemplateConfig
+	changeDetails: ChangeDetails!
 	createdAt: String!
 	updatedAt: String!
-	createdBy: String!
-	updatedBy: String!
 
 	"""
 	distribution contains distribution details resolved using distributionId field
@@ -759,9 +895,16 @@ input NewTemplateAWSConfig {
 	customImageName: String
 }
 
+input NewVMImageDefinition {
+	name: String!
+	offer: String!
+	sku: String!
+}
+
 input NewTemplateAZUREConfig {
 	replicaRegions: [String]
 	excludeFromLatest: Boolean
+	vmImageDefinition: NewVMImageDefinition
 }
 
 """
@@ -873,7 +1016,7 @@ type Mutation {
 	createAccount adds new AZURE, GCP or AWS cloud credentials.
 
 	Account can be created without providing cloud credentials, but it won't be used to distribute images.
-	Image will be distributed to the accounts with the correct credentials only. 
+	Image will be distributed to the accounts with the correct credentials only.
 	"""
 	createAccount(input: NewAccount!): Account!
 
@@ -949,6 +1092,21 @@ extend type Query {
 	It does not return secret value. Secret can be retrieved from the createApiKey mutation only.
 	"""
 	apiKeys(input: CustomerApiKeysInput!): ApiKeyResults!
+}
+
+
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+extend type Query {
+	"""
+	auditLogSearch returns the paginated list of audit logs.
+	"""
+	auditLogSearch(input: AuditLogSearchInput!): AuditLogResults!
+
+	"""
+	auditLogSearch returns link to download report containing audit logs in CSV format
+	"""
+	auditLogSearchReport(input: AuditLogSearchReportInput!): AuditLogReport!
 }
 
 

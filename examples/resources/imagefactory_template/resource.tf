@@ -93,6 +93,11 @@ resource "imagefactory_template" "template" {
     azure {
       exclude_from_latest = true
       replica_regions     = ["westeurope"]
+      vm_image_definition {
+        name  = "Ubuntu1804"
+        offer = "ubuntu-18_04-lts"
+        sku   = "v1"
+      }
     }
     notifications {
       type = "WEB_HOOK"

@@ -2398,9 +2398,11 @@ type AccountChanges struct {
 }
 
 type AccountCloudPropertiesInput struct {
-	AwsChinaRegionName   *String   `json:"awsChinaRegionName,omitempty"`
-	AwsChinaS3BucketName *String   `json:"awsChinaS3BucketName,omitempty"`
-	AwsShareAccounts     *[]String `json:"awsShareAccounts,omitempty"`
+	AwsChinaRegionName    *String   `json:"awsChinaRegionName,omitempty"`
+	AwsChinaS3BucketName  *String   `json:"awsChinaS3BucketName,omitempty"`
+	AwsShareAccounts      *[]String `json:"awsShareAccounts,omitempty"`
+	AwsShareOrganizations *[]String `json:"awsShareOrganizations,omitempty"`
+	AwsShareOus           *[]String `json:"awsShareOus,omitempty"`
 }
 
 type AccountCredentials struct {
@@ -2863,9 +2865,11 @@ type Account struct {
 }
 
 type AccountCloudProperties struct {
-	AwsChinaRegionName   *String   `json:"awsChinaRegionName,omitempty"`
-	AwsChinaS3BucketName *String   `json:"awsChinaS3BucketName,omitempty"`
-	AwsShareAccounts     *[]String `json:"awsShareAccounts,omitempty"`
+	AwsChinaRegionName    *String   `json:"awsChinaRegionName,omitempty"`
+	AwsChinaS3BucketName  *String   `json:"awsChinaS3BucketName,omitempty"`
+	AwsShareAccounts      *[]String `json:"awsShareAccounts,omitempty"`
+	AwsShareOrganizations *[]String `json:"awsShareOrganizations,omitempty"`
+	AwsShareOus           *[]String `json:"awsShareOus,omitempty"`
 }
 
 type AccountResults struct {
@@ -2964,9 +2968,22 @@ type ComponentResults struct {
 	Results *[]Component `json:"results,omitempty"`
 }
 
+type Contact struct {
+	Email String `json:"email"`
+	Name  String `json:"name"`
+}
+
+type Contract struct {
+	Contact    Contact     `json:"contact"`
+	OsFamilies *[]OSFamily `json:"osFamilies,omitempty"`
+	Providers  *[]Provider `json:"providers,omitempty"`
+	Scopes     *[]Scope    `json:"scopes,omitempty"`
+}
+
 type Customer struct {
 	Accounts   *AccountResults   `json:"accounts,omitempty"`
 	Components *ComponentResults `json:"components,omitempty"`
+	Contract   *Contract         `json:"contract,omitempty"`
 	CreatedAt  String            `json:"createdAt"`
 	ID         String            `json:"id"`
 	Name       String            `json:"name"`

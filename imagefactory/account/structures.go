@@ -133,6 +133,20 @@ func flattenAccountProperties(in *graphql.AccountCloudProperties) map[string]int
 		}
 		out["aws_share_accounts"] = shAcc
 	}
+	if in.AwsShareOrganizations != nil {
+		shOrgs := []string{}
+		for _, v := range *in.AwsShareOrganizations {
+			shOrgs = append(shOrgs, string(v))
+		}
+		out["aws_share_organizations"] = shOrgs
+	}
+	if in.AwsShareOus != nil {
+		shOUs := []string{}
+		for _, v := range *in.AwsShareOus {
+			shOUs = append(shOUs, string(v))
+		}
+		out["aws_share_ous"] = shOUs
+	}
 
 	return out
 }
@@ -153,12 +167,24 @@ func expandAwsAccountProperties(in interface{}) *graphql.AccountCloudPropertiesI
 
 	if props["aws_share_accounts"] != nil {
 		var shareAccounts []graphql.String
-		shareAccountsIn := props["aws_share_accounts"].([]interface{})
-		for _, acc := range shareAccountsIn {
+		for _, acc := range props["aws_share_accounts"].([]interface{}) {
 			shareAccounts = append(shareAccounts, graphql.String(acc.(string)))
 		}
-
 		awsAccountProps.AwsShareAccounts = &shareAccounts
+	}
+	if props["aws_share_organizations"] != nil {
+		var shareOrganizations []graphql.String
+		for _, acc := range props["aws_share_organizations"].([]interface{}) {
+			shareOrganizations = append(shareOrganizations, graphql.String(acc.(string)))
+		}
+		awsAccountProps.AwsShareOrganizations = &shareOrganizations
+	}
+	if props["aws_share_ous"] != nil {
+		var shareOUs []graphql.String
+		for _, acc := range props["aws_share_ous"].([]interface{}) {
+			shareOUs = append(shareOUs, graphql.String(acc.(string)))
+		}
+		awsAccountProps.AwsShareOus = &shareOUs
 	}
 
 	return &awsAccountProps

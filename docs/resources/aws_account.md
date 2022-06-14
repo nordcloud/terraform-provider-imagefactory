@@ -64,6 +64,8 @@ Required:
 Optional:
 
 - **aws_share_accounts** (List of String)
+- **aws_share_organizations** (List of String)
+- **aws_share_ous** (List of String)
 
 ## Import
 

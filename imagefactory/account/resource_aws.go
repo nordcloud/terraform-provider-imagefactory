@@ -33,6 +33,20 @@ var awsAccountProperties = &schema.Resource{
 				Type: schema.TypeString,
 			},
 		},
+		"aws_share_organizations": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+		},
+		"aws_share_ous": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+		},
 	},
 }
 

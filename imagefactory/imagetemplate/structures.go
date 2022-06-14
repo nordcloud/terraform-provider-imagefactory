@@ -63,7 +63,9 @@ func expandTemplateAwsConfig(in []interface{}, scope graphql.Scope) (*graphql.Ne
 
 	if m["custom_image_name"] != nil || m["custom_image_name"].(string) != "" {
 		imageName := graphql.String(m["custom_image_name"].(string))
-		tplConfig.CustomImageName = &imageName
+		if imageName != "" {
+			tplConfig.CustomImageName = &imageName
+		}
 	}
 
 	return tplConfig, nil

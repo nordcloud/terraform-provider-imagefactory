@@ -22,6 +22,8 @@ type AccountState {
 
 type AccountCloudProperties {
 	awsShareAccounts: [String!]
+	awsShareOrganizations: [String!]
+	awsShareOus: [String!]
 	awsChinaS3BucketName: String
 	awsChinaRegionName: String
 }
@@ -116,15 +118,21 @@ input AccountCredentials {
 
 input AccountCloudPropertiesInput {
 	"""
-	awsShareAccounts can be used to share distributed image from the account where it was copied.
+	awsShareAccounts, awsShareOrganizations and/or awsShareOus can be used to share distributed image from
+	the account where it was copied.
 
-	Hardened image is first copied to the account based on the cloud credentials. If awsShareAccounts
-	is specified, hbi adds the IAM policy to the result image so it can be used from the AWS accounts specified in
-	`awsShareAccounts` list.
+	Hardened image is first copied to the account based on the cloud credentials. If awsShareAccounts,
+	awsShareOrganizations and/or awsShareOus is specified, ImageFactory adds the IAM policy to the result image
+	so it can be used from:
+	- the AWS Accounts specified in `awsShareAccounts` list
+	- the AWS Organizations specified in `awsShareOrganizations` list
+	- the AWS Organization Units specified in `awsShareOus` list
 
-	This field is valid for AWS cloud credentials only.
+	This field is valid for AWS Cloud credentials only.
 	"""
 	awsShareAccounts: [String!]
+	awsShareOrganizations: [String!]
+	awsShareOus: [String!]
 	awsChinaS3BucketName: String
 	awsChinaRegionName: String
 }
@@ -445,11 +453,24 @@ input NewComponentContent {
 }
 
 
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+type Contact {
+	name: String!
+	email: String!
+}
+
+type Contract {
+	contact: Contact!
+	providers: [Provider!]
+	scopes: [Scope!]
+	osFamilies: [OSFamily!]
+}
 
 type Customer {
 	id: String!
 	name: String!
+	contract: Contract
 	createdAt: String!
 	updatedAt: String!
 

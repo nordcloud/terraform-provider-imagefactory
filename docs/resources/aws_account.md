@@ -35,27 +35,27 @@ output "aws_account" {
 
 ### Required
 
-- **access** (Block List, Min: 1) (see [below for nested schema](#nestedblock--access))
-- **account_id** (String)
-- **alias** (String)
-- **properties** (Block List, Min: 1) (see [below for nested schema](#nestedblock--properties))
+- `access` (Block List, Min: 1) (see [below for nested schema](#nestedblock--access))
+- `account_id` (String)
+- `alias` (String)
+- `properties` (Block List, Min: 1) (see [below for nested schema](#nestedblock--properties))
 
 ### Optional
 
-- **description** (String)
-- **id** (String) The ID of this resource.
+- `description` (String)
 
 ### Read-Only
 
-- **state** (Map of String)
+- `id` (String) The ID of this resource.
+- `state` (Map of String)
 
 <a id="nestedblock--access"></a>
 ### Nested Schema for `access`
 
 Required:
 
-- **role_arn** (String)
-- **role_external_id** (String)
+- `role_arn` (String)
+- `role_external_id` (String)
 
 
 <a id="nestedblock--properties"></a>
@@ -63,9 +63,9 @@ Required:
 
 Optional:
 
-- **aws_share_accounts** (List of String)
-- **aws_share_organizations** (List of String)
-- **aws_share_ous** (List of String)
+- `aws_share_accounts` (List of String)
+- `aws_share_organizations` (List of String)
+- `aws_share_ous` (List of String)
 
 ## Import
 

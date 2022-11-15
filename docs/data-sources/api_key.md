@@ -31,10 +31,10 @@ resource "imagefactory_role_binding" "key_binding" {
 
 ### Required
 
-- **name** (String)
+- `name` (String)
 
 ### Read-Only
 
-- **id** (String) The ID of this resource.
+- `id` (String) The ID of this resource.
 
 

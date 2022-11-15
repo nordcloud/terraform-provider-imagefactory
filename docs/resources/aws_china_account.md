@@ -39,27 +39,27 @@ output "aws_china_account" {
 
 ### Required
 
-- **access** (Block List, Min: 1) (see [below for nested schema](#nestedblock--access))
-- **account_id** (String)
-- **alias** (String)
-- **properties** (Block List, Min: 1) (see [below for nested schema](#nestedblock--properties))
+- `access` (Block List, Min: 1) (see [below for nested schema](#nestedblock--access))
+- `account_id` (String)
+- `alias` (String)
+- `properties` (Block List, Min: 1) (see [below for nested schema](#nestedblock--properties))
 
 ### Optional
 
-- **description** (String)
-- **id** (String) The ID of this resource.
+- `description` (String)
 
 ### Read-Only
 
-- **state** (Map of String)
+- `id` (String) The ID of this resource.
+- `state` (Map of String)
 
 <a id="nestedblock--access"></a>
 ### Nested Schema for `access`
 
 Required:
 
-- **aws_access_key_id** (String)
-- **aws_secret_access_key** (String)
+- `aws_access_key_id` (String)
+- `aws_secret_access_key` (String)
 
 
 <a id="nestedblock--properties"></a>
@@ -67,12 +67,12 @@ Required:
 
 Required:
 
-- **region** (String)
-- **s3_bucket_name** (String)
+- `region` (String)
+- `s3_bucket_name` (String)
 
 Optional:
 
-- **aws_share_accounts** (List of String)
+- `aws_share_accounts` (List of String)
 
 ## Import
 

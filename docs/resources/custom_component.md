@@ -39,24 +39,27 @@ output "component" {
 
 ### Required
 
-- **cloud_providers** (List of String)
-- **content** (Block List, Min: 1) (see [below for nested schema](#nestedblock--content))
-- **name** (String)
-- **os_types** (List of String)
-- **stage** (String)
+- `cloud_providers` (List of String)
+- `content` (Block List, Min: 1) (see [below for nested schema](#nestedblock--content))
+- `name` (String)
+- `os_types` (List of String)
+- `stage` (String)
 
 ### Optional
 
-- **description** (String)
-- **id** (String) The ID of this resource.
+- `description` (String)
+
+### Read-Only
+
+- `id` (String) The ID of this resource.
 
 <a id="nestedblock--content"></a>
 ### Nested Schema for `content`
 
 Required:
 
-- **provisioner** (String)
-- **script** (String)
+- `provisioner` (String)
+- `script` (String)
 
 ## Import
 

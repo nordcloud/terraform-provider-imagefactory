@@ -63,34 +63,34 @@ output "gcp_project" {
 
 ### Required
 
-- **alias** (String)
-- **project_id** (String)
+- `alias` (String)
+- `project_id` (String)
 
 ### Optional
 
-- **access** (Block List) (see [below for nested schema](#nestedblock--access))
-- **description** (String)
-- **id** (String) The ID of this resource.
+- `access` (Block List) (see [below for nested schema](#nestedblock--access))
+- `description` (String)
 
 ### Read-Only
 
-- **state** (Map of String)
+- `id` (String) The ID of this resource.
+- `state` (Map of String)
 
 <a id="nestedblock--access"></a>
 ### Nested Schema for `access`
 
 Required:
 
-- **auth_provider_x509_cert_url** (String)
-- **auth_uri** (String)
-- **client_email** (String)
-- **client_id** (String)
-- **client_x509_cert_url** (String)
-- **private_key** (String)
-- **private_key_id** (String)
-- **project_id** (String)
-- **token_uri** (String)
-- **type** (String)
+- `auth_provider_x509_cert_url` (String)
+- `auth_uri` (String)
+- `client_email` (String)
+- `client_id` (String)
+- `client_x509_cert_url` (String)
+- `private_key` (String)
+- `private_key_id` (String)
+- `project_id` (String)
+- `token_uri` (String)
+- `type` (String)
 
 ## Import
 

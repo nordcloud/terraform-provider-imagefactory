@@ -1,0 +1,1 @@
+terraform import imagefactory_azure_china_subscription.tf_name RESOURCE_ID

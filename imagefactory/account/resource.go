@@ -129,10 +129,12 @@ func setProps(d *schema.ResourceData, a sdk.Account) diag.Diagnostics {
 		return diag.FromErr(err)
 	}
 
-	if err := d.Set("properties", []map[string]interface{}{
-		flattenAccountProperties(a.Properties),
-	}); err != nil {
-		return diag.FromErr(err)
+	if a.Provider == graphql.ProviderAWS {
+		if err := d.Set("properties", []map[string]interface{}{
+			flattenAccountProperties(a.Properties),
+		}); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	return diags

@@ -41,13 +41,13 @@ output "user_binding" {
 
 ### Required
 
-- **kind** (String)
-- **role** (String)
-- **subject** (String)
+- `kind` (String)
+- `role` (String)
+- `subject` (String)
 
 ### Read-Only
 
-- **id** (String) The ID of this resource.
+- `id` (String) The ID of this resource.
 
 ## Import
 

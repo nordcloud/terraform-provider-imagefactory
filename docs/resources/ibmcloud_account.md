@@ -38,29 +38,29 @@ output "ibmcloud_account" {
 
 ### Required
 
-- **account_id** (String)
-- **alias** (String)
+- `account_id` (String)
+- `alias` (String)
 
 ### Optional
 
-- **access** (Block List) (see [below for nested schema](#nestedblock--access))
-- **description** (String)
-- **id** (String) The ID of this resource.
+- `access` (Block List) (see [below for nested schema](#nestedblock--access))
+- `description` (String)
 
 ### Read-Only
 
-- **state** (Map of String)
+- `id` (String) The ID of this resource.
+- `state` (Map of String)
 
 <a id="nestedblock--access"></a>
 ### Nested Schema for `access`
 
 Required:
 
-- **apikey** (String)
-- **cos_bucket** (String)
-- **region** (String)
-- **resource_group_id** (String)
-- **resource_group_name** (String)
+- `apikey` (String)
+- `cos_bucket` (String)
+- `region` (String)
+- `resource_group_id` (String)
+- `resource_group_name` (String)
 
 ## Import
 

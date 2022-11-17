@@ -40,12 +40,12 @@ resource "imagefactory_custom_component" "component_with_variable" {
 
 ### Required
 
-- **name** (String)
-- **value** (String)
+- `name` (String)
+- `value` (String)
 
-### Optional
+### Read-Only
 
-- **id** (String) The ID of this resource.
+- `id` (String) The ID of this resource.
 
 ## Import
 

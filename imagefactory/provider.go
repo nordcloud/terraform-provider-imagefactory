@@ -16,6 +16,7 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/rolebinding"
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/variable"
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
+	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
 func Provider() *schema.Provider {
@@ -28,15 +29,16 @@ func Provider() *schema.Provider {
 			"imagefactory_custom_component": component.DataSourceCustom(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"imagefactory_aws_account":        account.ResourceAWS(),
-			"imagefactory_azure_subscription": account.ResourceAzure(),
-			"imagefactory_gcp_project":        account.ResourceGCP(),
-			"imagefactory_ibmcloud_account":   account.ResourceIBMCloud(),
-			"imagefactory_aws_china_account":  account.ResourceAWSChina(),
-			"imagefactory_custom_component":   component.Resource(),
-			"imagefactory_template":           imagetemplate.Resource(),
-			"imagefactory_role_binding":       rolebinding.Resource(),
-			"imagefactory_variable":           variable.Resource(),
+			"imagefactory_aws_account":              account.ResourceAWS(),
+			"imagefactory_aws_china_account":        account.ResourceAWSChina(),
+			"imagefactory_azure_subscription":       account.ResourceAzure(graphql.ScopePUBLIC),
+			"imagefactory_azure_china_subscription": account.ResourceAzure(graphql.ScopeCHINA),
+			"imagefactory_gcp_project":              account.ResourceGCP(),
+			"imagefactory_ibmcloud_account":         account.ResourceIBMCloud(),
+			"imagefactory_custom_component":         component.Resource(),
+			"imagefactory_template":                 imagetemplate.Resource(),
+			"imagefactory_role_binding":             rolebinding.Resource(),
+			"imagefactory_variable":                 variable.Resource(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

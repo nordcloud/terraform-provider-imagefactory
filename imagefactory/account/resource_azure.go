@@ -69,10 +69,10 @@ var azureSubscriptionSchema = map[string]*schema.Schema{
 	},
 }
 
-func ResourceAzure() *schema.Resource { // nolint: dupl
+func ResourceAzure(scope graphql.Scope) *schema.Resource { // nolint: dupl
 	return &schema.Resource{
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-			return accountCreate(d, m, graphql.ProviderAZURE, graphql.ScopePUBLIC)
+			return accountCreate(d, m, graphql.ProviderAZURE, scope)
 		},
 		ReadContext:   resourceAccountRead,
 		UpdateContext: resourceAccountUpdate,

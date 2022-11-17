@@ -151,40 +151,40 @@ resource "imagefactory_template" "template" {
 
 ### Required
 
-- **cloud_provider** (String)
-- **distribution_id** (String)
-- **name** (String)
+- `cloud_provider` (String)
+- `distribution_id` (String)
+- `name` (String)
 
 ### Optional
 
-- **config** (Block List) (see [below for nested schema](#nestedblock--config))
-- **description** (String)
-- **id** (String) The ID of this resource.
+- `config` (Block List) (see [below for nested schema](#nestedblock--config))
+- `description` (String)
 
 ### Read-Only
 
-- **state** (Map of String)
+- `id` (String) The ID of this resource.
+- `state` (Map of String)
 
 <a id="nestedblock--config"></a>
 ### Nested Schema for `config`
 
 Optional:
 
-- **aws** (Block List) (see [below for nested schema](#nestedblock--config--aws))
-- **azure** (Block List) (see [below for nested schema](#nestedblock--config--azure))
-- **build_components** (Block List) (see [below for nested schema](#nestedblock--config--build_components))
-- **notifications** (Block List) (see [below for nested schema](#nestedblock--config--notifications))
-- **scope** (String)
-- **tags** (Block List) (see [below for nested schema](#nestedblock--config--tags))
-- **test_components** (Block List) (see [below for nested schema](#nestedblock--config--test_components))
+- `aws` (Block List) (see [below for nested schema](#nestedblock--config--aws))
+- `azure` (Block List) (see [below for nested schema](#nestedblock--config--azure))
+- `build_components` (Block List) (see [below for nested schema](#nestedblock--config--build_components))
+- `notifications` (Block List) (see [below for nested schema](#nestedblock--config--notifications))
+- `scope` (String)
+- `tags` (Block List) (see [below for nested schema](#nestedblock--config--tags))
+- `test_components` (Block List) (see [below for nested schema](#nestedblock--config--test_components))
 
 <a id="nestedblock--config--aws"></a>
 ### Nested Schema for `config.aws`
 
 Optional:
 
-- **custom_image_name** (String)
-- **region** (String)
+- `custom_image_name` (String)
+- `region` (String)
 
 
 <a id="nestedblock--config--azure"></a>
@@ -192,27 +192,27 @@ Optional:
 
 Optional:
 
-- **exclude_from_latest** (Boolean)
-- **replica_regions** (List of String)
-- **vm_image_definition** (Block List) (see [below for nested schema](#nestedblock--config--azure--vm_image_definition))
+- `exclude_from_latest` (Boolean)
+- `replica_regions` (List of String)
+- `vm_image_definition` (Block List) (see [below for nested schema](#nestedblock--config--azure--vm_image_definition))
 
 <a id="nestedblock--config--azure--vm_image_definition"></a>
 ### Nested Schema for `config.azure.vm_image_definition`
 
 Required:
 
-- **name** (String)
-- **offer** (String)
-- **sku** (String)
+- `name` (String)
+- `offer` (String)
+- `sku` (String)
 
 
 
 <a id="nestedblock--config--build_components"></a>
 ### Nested Schema for `config.build_components`
 
-Required:
+Read-Only:
 
-- **id** (String) The ID of this resource.
+- `id` (String) The ID of this resource.
 
 
 <a id="nestedblock--config--notifications"></a>
@@ -220,8 +220,8 @@ Required:
 
 Required:
 
-- **type** (String)
-- **uri** (String)
+- `type` (String)
+- `uri` (String)
 
 
 <a id="nestedblock--config--tags"></a>
@@ -229,16 +229,16 @@ Required:
 
 Required:
 
-- **key** (String)
-- **value** (String)
+- `key` (String)
+- `value` (String)
 
 
 <a id="nestedblock--config--test_components"></a>
 ### Nested Schema for `config.test_components`
 
-Required:
+Read-Only:
 
-- **id** (String) The ID of this resource.
+- `id` (String) The ID of this resource.
 
 ## Import
 

@@ -214,7 +214,6 @@ type AuditLog {
 	data: String
 }
 
-
 type AuditLogReport {
 	url: String!
 }
@@ -223,6 +222,15 @@ type AuditLogResults {
 	results: [AuditLog!]
 	pages: Int!
 	count: Int!
+}
+
+type AuditLogCount {
+	datehour: String!
+	total: String!
+}
+
+type AuditLogCountResults {
+	results: [AuditLogCount!]
 }
 
 input AuditLogTagsInput {
@@ -249,7 +257,7 @@ input AuditLogSearchInput {
 	"""
 	timeRangeStart is the beginning of search time window in RFC3339 format. e.g. 2022-04-21T14:00:31+00:00
 
-	Please note that the total length of search time window cannot be greater than 6h.
+	Please note that the total length of search time window cannot be greater than 24h.
 	Default value is set to past 3h.
 	"""
 	timeRangeStart: String
@@ -257,7 +265,7 @@ input AuditLogSearchInput {
 	"""
 	timeRangeEnd is the end of search time window in RFC3339 format. e.g. 2022-04-21T14:00:31+00:00
 
-	Please note that the total length of search time window cannot be greater than 6h.
+	Please note that the total length of search time window cannot be greater than 24h.
 	Default value is set to current time.
 	"""
 	timeRangeEnd: String
@@ -271,7 +279,7 @@ input AuditLogSearchReportInput {
 	"""
 	timeRangeStart is the beginning of search time window in RFC3339 format. e.g. 2022-04-21T14:00:31+00:00
 
-	Please note that the total length of search time window cannot be greater than 6h.
+	Please note that the total length of search time window cannot be greater than 24h.
 	Default value is set to past 3h.
 	"""
 	timeRangeStart: String
@@ -279,12 +287,24 @@ input AuditLogSearchReportInput {
 	"""
 	timeRangeEnd is the end of search time window in RFC3339 format. e.g. 2022-04-21T14:00:31+00:00
 
-	Please note that the total length of search time window cannot be greater than 6h.
+	Please note that the total length of search time window cannot be greater than 24h.
 	Default value is set to current time.
 	"""
 	timeRangeEnd: String
 
 	filters: AuditLogSearchFilters
+}
+
+input AuditLogCountInput {
+	"""
+	timeRangeStart is the beginning of search time window in RFC3339 format. e.g. 2022-04-21T14:00:31+00:00
+	"""
+	timeRangeStart: String
+
+	"""
+	timeRangeEnd is the end of search time window in RFC3339 format. e.g. 2022-04-21T14:00:31+00:00
+	"""
+	timeRangeEnd: String
 }
 
 
@@ -460,17 +480,23 @@ type Contact {
 	email: String!
 }
 
+type ContractProvider {
+	name: Provider!
+	scopes: [Scope!]
+}
+
 type Contract {
 	contact: Contact!
-	providers: [Provider!]
-	scopes: [Scope!]
+	providers: [ContractProvider!]
 	osFamilies: [OSFamily!]
 }
 
 type Customer {
 	id: String!
 	name: String!
+	organizationName: String!
 	contract: Contract
+	active: Boolean
 	createdAt: String!
 	updatedAt: String!
 
@@ -525,6 +551,39 @@ input CustomerTemplatesResolverInput {
 	sort: TemplatesSort
 	search: Search
 	filters: TemplatesFilters
+}
+
+type CloudAccountStatus {
+	successful: Int!
+	failed: Int!
+}
+
+type CloudAccountStats{
+	provider: Provider!
+	status: CloudAccountStatus!
+}
+
+type EOLDistribution {
+	name: String!
+	date: String!
+}
+
+type BuildStats {
+	osFamily: OSFamily!
+	eolDistributions: [EOLDistribution!]
+	successful: Int!
+	failed: Int!
+}
+
+type ProviderStats {
+	name: Provider!
+	buildStats: [BuildStats!]
+}
+
+type CustomerStats {
+	totalEol: Int!
+	accounts: [CloudAccountStats!]
+	providers: [ProviderStats!]
 }
 
 
@@ -748,6 +807,7 @@ type SettingsResult {
 	awsRegions: [String!]
 	awsChinaRegions: [String!]
 	azureRegions: [String!]
+	azureChinaRegions: [String!]
 }
 
 
@@ -979,10 +1039,11 @@ input TemplateChanges {
 }
 
 
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 type Variable {
 	name: String!
+	hash: String!
 }
 
 type VariableResults {
@@ -1128,6 +1189,11 @@ extend type Query {
 	auditLogSearch returns link to download report containing audit logs in CSV format
 	"""
 	auditLogSearchReport(input: AuditLogSearchReportInput!): AuditLogReport!
+
+	"""
+	auditLogCount returns the total number of audit log events over a specified period of time, divided by hours.
+	"""
+	auditLogCount(input: AuditLogCountInput!): AuditLogCountResults!
 }
 
 
@@ -1164,6 +1230,7 @@ input ComponentsInput {
 	sort: ComponentsSort
 	search: Search
 	filters: ComponentsFilters
+	distributionId: String
 }
 
 input GetComponentInput {
@@ -1228,7 +1295,7 @@ extend type Query {
 }
 
 
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 input CustomersInput {
 	page: Int
@@ -1249,6 +1316,11 @@ extend type Query {
 	multiple customer environments only.
 	"""
 	customers(input: CustomersInput!): CustomerResults!
+
+	"""
+	customerStats gets detailed customer statistics: image building and onboarded cloud account statistics.
+	"""
+	customerStats: CustomerStats!
 }
 
 
@@ -1478,6 +1550,7 @@ input CustomerTemplatesInput {
 	sort: TemplatesSort
 	search: Search
 	filters: TemplatesFilters
+	distributionEol: Boolean
 }
 
 extend type Mutation {
@@ -1547,4 +1620,11 @@ extend type Query {
 	It does not return variable values, just a list of variables.
 	"""
 	variables: VariableResults!
+
+	"""
+	variable gets customer variable.
+
+	It does not return variable value, only the name of the variable name and the hash of the value.
+	"""
+	variable(input: CustomerVariableNameInput!): Variable!
 }

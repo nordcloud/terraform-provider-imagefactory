@@ -6,9 +6,17 @@ query GetVariables {
   }
 }
 
+query GetVariable($input: CustomerVariableNameInput!) {
+  variable(input: $input) {
+    name
+    hash
+  }
+}
+
 mutation CreateVariable($input: NewVariable!) {
   createVariable(input: $input) {
     name
+    hash
   }
 }
 

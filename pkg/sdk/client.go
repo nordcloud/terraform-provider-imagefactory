@@ -3,7 +3,6 @@
 package sdk
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
@@ -468,7 +467,9 @@ func (c APIClient) GetCustomComponent(name, cloudProvider, stage string) (Compon
 }
 
 func (c APIClient) GetVariable(name string) (Variable, error) {
-	req, err := graphql.NewGetVariablesRequest(c.apiURL)
+	req, err := graphql.NewGetVariableRequest(c.apiURL, &graphql.GetVariableVariables{
+		Input: graphql.CustomerVariableNameInput{VariableName: graphql.String(name)},
+	})
 	if err != nil {
 		return Variable{}, fmt.Errorf("getting variable request %w", err)
 	}
@@ -478,13 +479,7 @@ func (c APIClient) GetVariable(name string) (Variable, error) {
 		return Variable{}, fmt.Errorf("getting variable %w", err)
 	}
 
-	for _, v := range *r.Variables.Results {
-		if string(v) == name {
-			return Variable{Name: v}, nil
-		}
-	}
-
-	return Variable{}, errors.New("variable does not exist")
+	return Variable(r.Variable), nil
 }
 
 func (c APIClient) CreateVariable(input NewVariable) (Variable, error) {

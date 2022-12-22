@@ -2010,6 +2010,74 @@ func (client *Client) GetVariables() (*GetVariablesResponse, error) {
 }
 
 //
+// query GetVariable($input: CustomerVariableNameInput!)
+//
+
+type GetVariableVariables struct {
+	Input CustomerVariableNameInput `json:"input"`
+}
+
+type GetVariableResponse struct {
+	Variable struct {
+		Name string `json:"name"`
+		Hash string `json:"hash"`
+	} `json:"variable"`
+}
+
+type GetVariableRequest struct {
+	*http.Request
+}
+
+func NewGetVariableRequest(url string, vars *GetVariableVariables) (*GetVariableRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `query GetVariable($input: CustomerVariableNameInput!) {
+  variable(input: $input) {
+    name
+    hash
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &GetVariableRequest{req}, nil
+}
+
+func (req *GetVariableRequest) Execute(client *http.Client) (*GetVariableResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result GetVariableResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func GetVariable(url string, client *http.Client, vars *GetVariableVariables) (*GetVariableResponse, error) {
+	req, err := NewGetVariableRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) GetVariable(vars *GetVariableVariables) (*GetVariableResponse, error) {
+	return GetVariable(client.Url, client.Client, vars)
+}
+
+//
 // mutation CreateVariable($input: NewVariable!)
 //
 
@@ -2020,6 +2088,7 @@ type CreateVariableVariables struct {
 type CreateVariableResponse struct {
 	CreateVariable struct {
 		Name string `json:"name"`
+		Hash string `json:"hash"`
 	} `json:"createVariable"`
 }
 
@@ -2037,6 +2106,7 @@ func NewCreateVariableRequest(url string, vars *CreateVariableVariables) (*Creat
 		Query: `mutation CreateVariable($input: NewVariable!) {
   createVariable(input: $input) {
     name
+    hash
   }
 }`,
 	})
@@ -2422,6 +2492,11 @@ type AccountsFilters struct {
 	Filters *[]AccountsFilter `json:"filters,omitempty"`
 }
 
+type AuditLogCountInput struct {
+	TimeRangeEnd   *String `json:"timeRangeEnd,omitempty"`
+	TimeRangeStart *String `json:"timeRangeStart,omitempty"`
+}
+
 type AuditLogSearchFilters struct {
 	Identity     *String               `json:"identity,omitempty"`
 	IdentityType *AuditLogIdentityType `json:"identityType,omitempty"`
@@ -2505,12 +2580,13 @@ type ComponentsFilters struct {
 }
 
 type ComponentsInput struct {
-	Filters       *ComponentsFilters `json:"filters,omitempty"`
-	IncludeSystem *Boolean           `json:"includeSystem,omitempty"`
-	Limit         *Int               `json:"limit,omitempty"`
-	Page          *Int               `json:"page,omitempty"`
-	Search        *Search            `json:"search,omitempty"`
-	Sort          *ComponentsSort    `json:"sort,omitempty"`
+	DistributionId *String            `json:"distributionId,omitempty"`
+	Filters        *ComponentsFilters `json:"filters,omitempty"`
+	IncludeSystem  *Boolean           `json:"includeSystem,omitempty"`
+	Limit          *Int               `json:"limit,omitempty"`
+	Page           *Int               `json:"page,omitempty"`
+	Search         *Search            `json:"search,omitempty"`
+	Sort           *ComponentsSort    `json:"sort,omitempty"`
 }
 
 type ComponentsSort struct {
@@ -2603,11 +2679,12 @@ type CustomerTemplateIdInput struct {
 }
 
 type CustomerTemplatesInput struct {
-	Filters *TemplatesFilters `json:"filters,omitempty"`
-	Limit   *Int              `json:"limit,omitempty"`
-	Page    *Int              `json:"page,omitempty"`
-	Search  *Search           `json:"search,omitempty"`
-	Sort    *TemplatesSort    `json:"sort,omitempty"`
+	DistributionEol *Boolean          `json:"distributionEol,omitempty"`
+	Filters         *TemplatesFilters `json:"filters,omitempty"`
+	Limit           *Int              `json:"limit,omitempty"`
+	Page            *Int              `json:"page,omitempty"`
+	Search          *Search           `json:"search,omitempty"`
+	Sort            *TemplatesSort    `json:"sort,omitempty"`
 }
 
 type CustomerTemplatesResolverInput struct {
@@ -2909,6 +2986,15 @@ type AuditLog struct {
 	Version      String               `json:"version"`
 }
 
+type AuditLogCount struct {
+	Datehour String `json:"datehour"`
+	Total    String `json:"total"`
+}
+
+type AuditLogCountResults struct {
+	Results *[]AuditLogCount `json:"results,omitempty"`
+}
+
 type AuditLogReport struct {
 	Url String `json:"url"`
 }
@@ -2930,11 +3016,28 @@ type AuditLogTags struct {
 	UserAgent      *String                 `json:"userAgent,omitempty"`
 }
 
+type BuildStats struct {
+	EolDistributions *[]EOLDistribution `json:"eolDistributions,omitempty"`
+	Failed           Int                `json:"failed"`
+	OsFamily         OSFamily           `json:"osFamily"`
+	Successful       Int                `json:"successful"`
+}
+
 type ChangeDetails struct {
 	CreatedAt String `json:"createdAt"`
 	CreatedBy String `json:"createdBy"`
 	UpdatedAt String `json:"updatedAt"`
 	UpdatedBy String `json:"updatedBy"`
+}
+
+type CloudAccountStats struct {
+	Provider Provider           `json:"provider"`
+	Status   CloudAccountStatus `json:"status"`
+}
+
+type CloudAccountStatus struct {
+	Failed     Int `json:"failed"`
+	Successful Int `json:"successful"`
 }
 
 type Compliance struct {
@@ -2974,27 +3077,39 @@ type Contact struct {
 }
 
 type Contract struct {
-	Contact    Contact     `json:"contact"`
-	OsFamilies *[]OSFamily `json:"osFamilies,omitempty"`
-	Providers  *[]Provider `json:"providers,omitempty"`
-	Scopes     *[]Scope    `json:"scopes,omitempty"`
+	Contact    Contact             `json:"contact"`
+	OsFamilies *[]OSFamily         `json:"osFamilies,omitempty"`
+	Providers  *[]ContractProvider `json:"providers,omitempty"`
+}
+
+type ContractProvider struct {
+	Name   Provider `json:"name"`
+	Scopes *[]Scope `json:"scopes,omitempty"`
 }
 
 type Customer struct {
-	Accounts   *AccountResults   `json:"accounts,omitempty"`
-	Components *ComponentResults `json:"components,omitempty"`
-	Contract   *Contract         `json:"contract,omitempty"`
-	CreatedAt  String            `json:"createdAt"`
-	ID         String            `json:"id"`
-	Name       String            `json:"name"`
-	Templates  *TemplateResults  `json:"templates,omitempty"`
-	UpdatedAt  String            `json:"updatedAt"`
+	Accounts         *AccountResults   `json:"accounts,omitempty"`
+	Active           *Boolean          `json:"active,omitempty"`
+	Components       *ComponentResults `json:"components,omitempty"`
+	Contract         *Contract         `json:"contract,omitempty"`
+	CreatedAt        String            `json:"createdAt"`
+	ID               String            `json:"id"`
+	Name             String            `json:"name"`
+	OrganizationName String            `json:"organizationName"`
+	Templates        *TemplateResults  `json:"templates,omitempty"`
+	UpdatedAt        String            `json:"updatedAt"`
 }
 
 type CustomerResults struct {
 	Count   Int         `json:"count"`
 	Pages   Int         `json:"pages"`
 	Results *[]Customer `json:"results,omitempty"`
+}
+
+type CustomerStats struct {
+	Accounts  *[]CloudAccountStats `json:"accounts,omitempty"`
+	Providers *[]ProviderStats     `json:"providers,omitempty"`
+	TotalEol  Int                  `json:"totalEol"`
 }
 
 type Distribution struct {
@@ -3017,6 +3132,11 @@ type DistributionResults struct {
 	Count   Int             `json:"count"`
 	Pages   Int             `json:"pages"`
 	Results *[]Distribution `json:"results,omitempty"`
+}
+
+type EOLDistribution struct {
+	Date String `json:"date"`
+	Name String `json:"name"`
 }
 
 type Image struct {
@@ -3098,27 +3218,35 @@ type Notification struct {
 	Uri  String           `json:"uri"`
 }
 
+type ProviderStats struct {
+	BuildStats *[]BuildStats `json:"buildStats,omitempty"`
+	Name       Provider      `json:"name"`
+}
+
 type Query struct {
-	Account              Account             `json:"account"`
-	Accounts             AccountResults      `json:"accounts"`
-	ApiKey               ApiKey              `json:"apiKey"`
-	ApiKeys              ApiKeyResults       `json:"apiKeys"`
-	AuditLogSearch       AuditLogResults     `json:"auditLogSearch"`
-	AuditLogSearchReport AuditLogReport      `json:"auditLogSearchReport"`
-	Component            Component           `json:"component"`
-	Components           ComponentResults    `json:"components"`
-	Customer             Customer            `json:"customer"`
-	Customers            CustomerResults     `json:"customers"`
-	Distribution         Distribution        `json:"distribution"`
-	Distributions        DistributionResults `json:"distributions"`
-	Image                Image               `json:"image"`
-	Images               ImageResults        `json:"images"`
-	RoleBinding          RoleBinding         `json:"roleBinding"`
-	RoleBindings         RoleBindingResults  `json:"roleBindings"`
-	Settings             SettingsResult      `json:"settings"`
-	Template             Template            `json:"template"`
-	Templates            TemplateResults     `json:"templates"`
-	Variables            VariableResults     `json:"variables"`
+	Account              Account              `json:"account"`
+	Accounts             AccountResults       `json:"accounts"`
+	ApiKey               ApiKey               `json:"apiKey"`
+	ApiKeys              ApiKeyResults        `json:"apiKeys"`
+	AuditLogCount        AuditLogCountResults `json:"auditLogCount"`
+	AuditLogSearch       AuditLogResults      `json:"auditLogSearch"`
+	AuditLogSearchReport AuditLogReport       `json:"auditLogSearchReport"`
+	Component            Component            `json:"component"`
+	Components           ComponentResults     `json:"components"`
+	Customer             Customer             `json:"customer"`
+	Customers            CustomerResults      `json:"customers"`
+	CustomerStats        CustomerStats        `json:"customerStats"`
+	Distribution         Distribution         `json:"distribution"`
+	Distributions        DistributionResults  `json:"distributions"`
+	Image                Image                `json:"image"`
+	Images               ImageResults         `json:"images"`
+	RoleBinding          RoleBinding          `json:"roleBinding"`
+	RoleBindings         RoleBindingResults   `json:"roleBindings"`
+	Settings             SettingsResult       `json:"settings"`
+	Template             Template             `json:"template"`
+	Templates            TemplateResults      `json:"templates"`
+	Variable             Variable             `json:"variable"`
+	Variables            VariableResults      `json:"variables"`
 }
 
 type Rebuild struct {
@@ -3147,9 +3275,10 @@ type RoleBindingResults struct {
 }
 
 type SettingsResult struct {
-	AwsChinaRegions *[]String `json:"awsChinaRegions,omitempty"`
-	AwsRegions      *[]String `json:"awsRegions,omitempty"`
-	AzureRegions    *[]String `json:"azureRegions,omitempty"`
+	AwsChinaRegions   *[]String `json:"awsChinaRegions,omitempty"`
+	AwsRegions        *[]String `json:"awsRegions,omitempty"`
+	AzureChinaRegions *[]String `json:"azureChinaRegions,omitempty"`
+	AzureRegions      *[]String `json:"azureRegions,omitempty"`
 }
 
 type SourceDistribution struct {
@@ -3229,6 +3358,7 @@ type TemplateState struct {
 }
 
 type Variable struct {
+	Hash String `json:"hash"`
 	Name String `json:"name"`
 }
 

@@ -72,7 +72,7 @@ jobs:
 
   sign:
     needs:
-      - release 
+      - release
       - upload
     name: Sign provider and upload metadata files
     runs-on: ubuntu-latest
@@ -85,7 +85,7 @@ jobs:
         mv terraform-registry-manifest.json terraform-provider-imagefactory_${{ needs.release.outputs.version }}_manifest.json
         mv artifacts/*/*.zip ./
         shasum -a 256 *.zip *_manifest.json > terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS
-        
+
     - name: Upload metadata file
       uses: actions/upload-release-asset@v1
       env:
@@ -106,10 +106,10 @@ jobs:
         asset_content_type: application/binary
     - name: Import GPG key
       id: import_gpg
-      uses: hashicorp/ghaction-import-gpg@v2.1.0
-      env:
-        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-        PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      uses: crazy-max/ghaction-import-gpg@v5
+      with:
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+        passphrase: ${{ secrets.GPG_PASSPHRASE }}
     - run: |
         gpg --detach-sign terraform-provider-imagefactory_${{ needs.release.outputs.version }}_SHA256SUMS
     - name: Upload SHA256 sig file

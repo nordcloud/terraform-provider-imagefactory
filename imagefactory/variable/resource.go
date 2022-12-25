@@ -65,14 +65,22 @@ func read(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagn
 
 func update(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
 	c := m.(*config.Config)
-	variableName := d.Get("name").(string)
+	o, n := d.GetChange("name")
+	oldVariableName := o.(string)
+	newVariableName := n.(string)
 	variableValue := d.Get("value").(string)
 
-	variableMutexKV.Lock(ctx, variableName)
-	defer variableMutexKV.Unlock(ctx, variableName)
+	variableMutexKV.Lock(ctx, newVariableName)
+	defer variableMutexKV.Unlock(ctx, newVariableName)
+
+	if oldVariableName != newVariableName {
+		if err := c.APIClient.DeleteVariable(oldVariableName); err != nil {
+			return diag.FromErr(err)
+		}
+	}
 
 	input := sdk.NewVariable{
-		Name:  graphql.String(variableName),
+		Name:  graphql.String(newVariableName),
 		Value: graphql.String(variableValue),
 	}
 

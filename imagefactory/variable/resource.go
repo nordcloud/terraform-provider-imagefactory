@@ -7,10 +7,15 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
+	"github.com/nordcloud/terraform-provider-imagefactory/pkg/helper/mutexkv"
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/sdk"
 )
+
+// This is a global MutexKV for use within this plugin.
+var variableMutexKV = mutexkv.NewMutexKV("variable")
 
 func Resource() *schema.Resource {
 	return &schema.Resource{
@@ -26,14 +31,19 @@ func Resource() *schema.Resource {
 }
 
 func create(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	config := m.(*config.Config)
+	c := m.(*config.Config)
+	variableName := d.Get("name").(string)
+	variableValue := d.Get("value").(string)
+
+	variableMutexKV.Lock(ctx, variableName)
+	defer variableMutexKV.Unlock(ctx, variableName)
 
 	input := sdk.NewVariable{
-		Name:  graphql.String(d.Get("name").(string)),
-		Value: graphql.String(d.Get("value").(string)),
+		Name:  graphql.String(variableName),
+		Value: graphql.String(variableValue),
 	}
 
-	variable, err := config.APIClient.CreateVariable(input)
+	variable, err := c.APIClient.CreateVariable(input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -42,37 +52,55 @@ func create(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Dia
 }
 
 func read(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
-	config := m.(*config.Config)
+	c := m.(*config.Config)
+	variableName := d.Get("name").(string)
 
-	roleBinding, err := config.APIClient.GetVariable(d.Id())
+	variable, err := c.APIClient.GetVariable(variableName)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	return setProps(d, roleBinding)
+	return setProps(d, variable)
 }
 
 func update(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
-	config := m.(*config.Config)
+	c := m.(*config.Config)
+	o, n := d.GetChange("name")
+	oldVariableName := o.(string)
+	newVariableName := n.(string)
+	variableValue := d.Get("value").(string)
 
-	input := sdk.NewVariable{
-		Name:  graphql.String(d.Get("name").(string)),
-		Value: graphql.String(d.Get("value").(string)),
+	variableMutexKV.Lock(ctx, newVariableName)
+	defer variableMutexKV.Unlock(ctx, newVariableName)
+
+	if oldVariableName != newVariableName {
+		if err := c.APIClient.DeleteVariable(oldVariableName); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
-	roleBinding, err := config.APIClient.UpdateVariable(input)
+	input := sdk.NewVariable{
+		Name:  graphql.String(newVariableName),
+		Value: graphql.String(variableValue),
+	}
+
+	variable, err := c.APIClient.UpdateVariable(input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	return setProps(d, roleBinding)
+	return setProps(d, variable)
 }
 
 func delete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	config := m.(*config.Config)
+	c := m.(*config.Config)
+	variableName := d.Get("name").(string)
 
-	if err := config.APIClient.DeleteVariable(d.Get("name").(string)); err != nil {
+	variableMutexKV.Lock(ctx, variableName)
+	defer variableMutexKV.Unlock(ctx, variableName)
+
+	if err := c.APIClient.DeleteVariable(variableName); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -82,13 +110,9 @@ func delete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Dia
 func setProps(d *schema.ResourceData, v sdk.Variable) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	d.SetId(string(v.Name))
+	d.SetId(string(v.Hash))
 
 	if err := d.Set("name", v.Name); err != nil {
-		return diag.FromErr(err)
-	}
-
-	if err := d.Set("value", "***secret***"); err != nil {
 		return diag.FromErr(err)
 	}
 

@@ -1566,12 +1566,12 @@ type GetTemplateVariables struct {
 
 type GetTemplateResponse struct {
 	Template struct {
-		ID          string `json:"id"`
-		Name        string `json:"name"`
+		ID             string `json:"id"`
+		Name           string `json:"name"`
 		DistributionId string `json:"distribution_id"`
-		Description string `json:"description"`
-		Provider    string `json:"provider"`
-		State       struct {
+		Description    string `json:"description"`
+		Provider       string `json:"provider"`
+		State          struct {
 			Status string `json:"status"`
 			Error  string `json:"error"`
 		} `json:"state"`

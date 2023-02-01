@@ -1568,7 +1568,7 @@ type GetTemplateResponse struct {
 	Template struct {
 		ID             string `json:"id"`
 		Name           string `json:"name"`
-		DistributionId string `json:"distribution_id"`
+		DistributionId string `json:"distributionId"`
 		Description    string `json:"description"`
 		Provider       string `json:"provider"`
 		State          struct {

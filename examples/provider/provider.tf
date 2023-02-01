@@ -1,5 +1,5 @@
 /**
- * Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+ * Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
  */
 
 terraform {
@@ -7,12 +7,8 @@ terraform {
   required_providers {
     imagefactory = {
       source  = "nordcloud/imagefactory"
-      version = "1.4.1"
+      version = "1.4.2"
     }
   }
 }
 
-provider "imagefactory" {
-  api_key = "API_KEY_ID/API_KEY_SECRET"
-  api_url = "https://api.imagefactory.nordcloudapp.com/graphql"
-}

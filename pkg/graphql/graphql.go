@@ -1568,6 +1568,7 @@ type GetTemplateResponse struct {
 	Template struct {
 		ID          string `json:"id"`
 		Name        string `json:"name"`
+		DistributionId string `json:"distribution_id"`
 		Description string `json:"description"`
 		Provider    string `json:"provider"`
 		State       struct {
@@ -1592,6 +1593,7 @@ func NewGetTemplateRequest(url string, vars *GetTemplateVariables) (*GetTemplate
   template(input: $input) {
     id
     name
+    distributionId
     description
     provider
     state {

@@ -12,3 +12,7 @@ terraform {
   }
 }
 
+provider "imagefactory" {
+  api_key = "API_KEY_ID/API_KEY_SECRET"
+  api_url = "https://api.imagefactory.nordcloudapp.com/graphql"
+}

@@ -70,7 +70,7 @@ var awsAccountSchema = map[string]*schema.Schema{
 	},
 	"properties": {
 		Type:     schema.TypeList,
-		Required: true,
+		Optional: true,
 		Elem:     awsAccountProperties,
 	},
 	"state": {

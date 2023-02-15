@@ -38,11 +38,11 @@ output "aws_account" {
 - `access` (Block List, Min: 1) (see [below for nested schema](#nestedblock--access))
 - `account_id` (String)
 - `alias` (String)
-- `properties` (Block List, Min: 1) (see [below for nested schema](#nestedblock--properties))
 
 ### Optional
 
 - `description` (String)
+- `properties` (Block List) (see [below for nested schema](#nestedblock--properties))
 
 ### Read-Only
 

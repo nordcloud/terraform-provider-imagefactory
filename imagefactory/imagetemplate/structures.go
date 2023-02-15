@@ -121,7 +121,7 @@ func expandTemplateConfig(in []interface{}) (*graphql.NewTemplateConfig, error) 
 		return nil, err
 	}
 
-	return &graphql.NewTemplateConfig{
+	templateConfig := graphql.NewTemplateConfig{
 		Aws:             awsCfg,
 		Azure:           expandTemplateAzureConfig(m["azure"].([]interface{})),
 		BuildComponents: expandTemplateComponents(m["build_components"].([]interface{})),
@@ -129,7 +129,17 @@ func expandTemplateConfig(in []interface{}) (*graphql.NewTemplateConfig, error) 
 		Notifications:   expandTemplateNotifications(m["notifications"].([]interface{})),
 		Tags:            expandTemplateTags(m["tags"].([]interface{})),
 		Scope:           &scope,
-	}, nil
+	}
+
+	if m["cloud_account_ids"] != nil {
+		var cloudAccountIDs []graphql.String
+		for _, i := range m["cloud_account_ids"].([]interface{}) {
+			cloudAccountIDs = append(cloudAccountIDs, graphql.String(i.(string)))
+		}
+		templateConfig.CloudAccountIds = &cloudAccountIDs
+	}
+
+	return &templateConfig, nil
 }
 
 func flattenTemplateState(in graphql.TemplateState) map[string]string {

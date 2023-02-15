@@ -173,6 +173,7 @@ Optional:
 - `aws` (Block List) (see [below for nested schema](#nestedblock--config--aws))
 - `azure` (Block List) (see [below for nested schema](#nestedblock--config--azure))
 - `build_components` (Block List) (see [below for nested schema](#nestedblock--config--build_components))
+- `cloud_account_ids` (List of String)
 - `notifications` (Block List) (see [below for nested schema](#nestedblock--config--notifications))
 - `scope` (String)
 - `tags` (Block List) (see [below for nested schema](#nestedblock--config--tags))

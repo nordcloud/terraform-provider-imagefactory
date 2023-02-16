@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package account
 
@@ -159,12 +159,15 @@ func expandAwsAccountProperties(in interface{}) *graphql.AccountCloudPropertiesI
 	}
 
 	props := in.([]interface{})[0].(map[string]interface{})
-	s3Bucket := graphql.String(props["s3_bucket_name"].(string))
-	region := graphql.String(props["region"].(string))
 
-	awsAccountProps.AwsChinaRegionName = &region
-	awsAccountProps.AwsChinaS3BucketName = &s3Bucket
-
+	if props["s3_bucket_name"] != nil {
+		s3Bucket := graphql.String(props["s3_bucket_name"].(string))
+		awsAccountProps.AwsChinaS3BucketName = &s3Bucket
+	}
+	if props["region"] != nil {
+		region := graphql.String(props["region"].(string))
+		awsAccountProps.AwsChinaRegionName = &region
+	}
 	if props["aws_share_accounts"] != nil {
 		var shareAccounts []graphql.String
 		for _, acc := range props["aws_share_accounts"].([]interface{}) {

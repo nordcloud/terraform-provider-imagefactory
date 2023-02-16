@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package account
 
@@ -70,7 +70,7 @@ var awsAccountSchema = map[string]*schema.Schema{
 	},
 	"properties": {
 		Type:     schema.TypeList,
-		Required: true,
+		Optional: true,
 		Elem:     awsAccountProperties,
 	},
 	"state": {

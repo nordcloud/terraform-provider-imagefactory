@@ -2354,7 +2354,6 @@ const (
 	OSFamilyAMAZON      OSFamily = "AMAZON"
 	OSFamilyCENTOS      OSFamily = "CENTOS"
 	OSFamilyORACLELINUX OSFamily = "ORACLE_LINUX"
-	OSFamilyOTHER       OSFamily = "OTHER"
 	OSFamilyREDHAT      OSFamily = "REDHAT"
 	OSFamilySUSE        OSFamily = "SUSE"
 	OSFamilyUBUNTU      OSFamily = "UBUNTU"
@@ -2843,6 +2842,7 @@ type NewTemplateConfig struct {
 	Aws             *NewTemplateAWSConfig   `json:"aws,omitempty"`
 	Azure           *NewTemplateAZUREConfig `json:"azure,omitempty"`
 	BuildComponents *[]NewTemplateComponent `json:"buildComponents,omitempty"`
+	CloudAccountIds *[]String               `json:"cloudAccountIds,omitempty"`
 	Notifications   *[]NewNotification      `json:"notifications,omitempty"`
 	Scope           *Scope                  `json:"scope,omitempty"`
 	Tags            *[]NewTag               `json:"tags,omitempty"`
@@ -3209,6 +3209,7 @@ type Mutation struct {
 	DeleteTemplate         *Boolean    `json:"deleteTemplate,omitempty"`
 	DeleteVariable         *Boolean    `json:"deleteVariable,omitempty"`
 	RebuildTemplate        Template    `json:"rebuildTemplate"`
+	RecheckAccount         Account     `json:"recheckAccount"`
 	UpdateAccount          Account     `json:"updateAccount"`
 	UpdateComponent        Component   `json:"updateComponent"`
 	UpdateRoleBinding      RoleBinding `json:"updateRoleBinding"`
@@ -3340,6 +3341,7 @@ type TemplateConfig struct {
 	Aws             *TemplateAWSConfig   `json:"aws,omitempty"`
 	Azure           *TemplateAZUREConfig `json:"azure,omitempty"`
 	BuildComponents *[]TemplateComponent `json:"buildComponents,omitempty"`
+	CloudAccountIds *[]String            `json:"cloudAccountIds,omitempty"`
 	Notifications   *[]Notification      `json:"notifications,omitempty"`
 	Scope           *Scope               `json:"scope,omitempty"`
 	Tags            *[]Tag               `json:"tags,omitempty"`

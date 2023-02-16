@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package account
 
@@ -43,7 +43,10 @@ func accountCreate(d *schema.ResourceData, m interface{}, provider graphql.Provi
 	switch provider {
 	case graphql.ProviderAWS:
 		input.Credentials = expandAwsAccountAccess(d.Get("access").([]interface{}), scope)
-		input.Properties = expandAwsAccountProperties(d.Get("properties"))
+		properties, ok := d.GetOk("properties")
+		if ok {
+			input.Properties = expandAwsAccountProperties(properties.([]interface{}))
+		}
 	case graphql.ProviderAZURE:
 		input.Credentials = expandAzureSubscriptionAccess(d.Get("access").([]interface{}))
 	case graphql.ProviderGCP:

@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 resource "imagefactory_custom_component" "build_template" {
   name            = "Install nginx"
@@ -127,5 +127,38 @@ resource "imagefactory_template" "template" {
   distribution_id = data.imagefactory_distribution.ubuntu18.id
   config {
     scope = "CHINA"
+  }
+}
+
+# AWS template - copy image to selected account
+
+resource "imagefactory_aws_account" "aws_account" {
+  alias       = "IF AWS Account"
+  description = "Account to distribute AWS images"
+  account_id  = "123456789012"
+  access {
+    role_arn         = "arn:aws:iam::123456789012:role/ImageFactoryMasterRole"
+    role_external_id = "lieGhohY6ahv2aijieZ9"
+  }
+}
+
+data "imagefactory_distribution" "ubuntu18" {
+  name           = "Ubuntu Server 18.04 LTS"
+  cloud_provider = "AWS"
+}
+
+resource "imagefactory_template" "template" {
+  name            = "Ubuntu1804"
+  description     = "Ubuntu 18.04 on AWS"
+  cloud_provider  = "AWS"
+  distribution_id = data.imagefactory_distribution.ubuntu18.id
+  config {
+    aws {
+      region = "eu-west-1"
+    }
+    build_components {
+      id = data.imagefactory_system_component.hardening-level-1.id
+    }
+    cloud_account_ids = [imagefactory_aws_account.aws_account.id]
   }
 }

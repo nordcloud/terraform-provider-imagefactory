@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package imagetemplate
 
@@ -127,6 +127,13 @@ var templateTagsResource = &schema.Resource{
 
 var templateConfigResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
+		"cloud_account_ids": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+		},
 		"aws": {
 			Type:     schema.TypeList,
 			Optional: true,

@@ -1,4 +1,4 @@
-// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package rolebinding
 
@@ -27,15 +27,15 @@ func Resource() *schema.Resource {
 }
 
 func create(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	config := m.(*config.Config)
+	c := m.(*config.Config)
 
 	input := sdk.NewRoleBinding{
 		Kind:    graphql.Kind(d.Get("kind").(string)),
-		Role:    graphql.Role(d.Get("role").(string)),
+		RoleId:  graphql.String(d.Get("role_id").(string)),
 		Subject: graphql.String(d.Get("subject").(string)),
 	}
 
-	roleBinding, err := config.APIClient.CreateRoleBinding(input)
+	roleBinding, err := c.APIClient.CreateRoleBinding(input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -44,9 +44,9 @@ func create(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Dia
 }
 
 func read(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
-	config := m.(*config.Config)
+	c := m.(*config.Config)
 
-	roleBinding, err := config.APIClient.GetRoleBinding(d.Id())
+	roleBinding, err := c.APIClient.GetRoleBinding(d.Id())
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -55,15 +55,14 @@ func read(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagn
 }
 
 func update(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
-	config := m.(*config.Config)
+	c := m.(*config.Config)
 
-	role := graphql.Role(d.Get("role").(string))
 	input := sdk.RoleBindingChanges{
-		ID:   graphql.String(d.Id()),
-		Role: &role,
+		ID:     graphql.String(d.Id()),
+		RoleId: graphql.String(d.Get("role_id").(string)),
 	}
 
-	roleBinding, err := config.APIClient.UpdateRoleBinding(input)
+	roleBinding, err := c.APIClient.UpdateRoleBinding(input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -73,9 +72,10 @@ func update(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Dia
 
 func delete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	config := m.(*config.Config)
 
-	if err := config.APIClient.DeleteRoleBinding(d.Id()); err != nil {
+	c := m.(*config.Config)
+
+	if err := c.APIClient.DeleteRoleBinding(d.Id()); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -86,14 +86,16 @@ func setProps(d *schema.ResourceData, rb sdk.RoleBinding) diag.Diagnostics {
 	var diags diag.Diagnostics
 
 	d.SetId(string(rb.ID))
+
 	if err := d.Set("kind", rb.Kind); err != nil {
 		return diag.FromErr(err)
 	}
-	if err := d.Set("role", rb.Role); err != nil {
+	if err := d.Set("role_id", rb.RoleId); err != nil {
 		return diag.FromErr(err)
 	}
 	if err := d.Set("subject", rb.Subject); err != nil {
 		return diag.FromErr(err)
 	}
+
 	return diags
 }

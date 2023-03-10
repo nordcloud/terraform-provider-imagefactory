@@ -6,9 +6,3 @@ var validBindingKinds = []string{
 	"USER",
 	"API_KEY",
 }
-
-var validBindingRoles = []string{
-	"READ_ONLY",
-	"ADMIN",
-	"SUPER_ADMIN",
-}

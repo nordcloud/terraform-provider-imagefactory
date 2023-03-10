@@ -1,0 +1,56 @@
+# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+
+query GetRole($input: CustomerRoleIdInput!) {
+  role(input: $input) {
+      id
+      name
+      description
+      rules {
+        actions
+        resources
+      }
+  }
+}
+
+query GetRoles($input: CustomerRolesInput!) {
+  roles(input: $input) {
+    results {
+      id
+      name
+      description
+      rules {
+        actions
+        resources
+      }
+    }
+  }
+}
+
+mutation CreateRole($input: NewRole!) {
+  createRole(input: $input) {
+    id
+    name
+    description
+    rules {
+      actions
+      resources
+    }
+  }
+}
+
+mutation UpdateRole($input: RoleChanges!) {
+  updateRole(input: $input) {
+    id
+    name
+    description
+    rules {
+      actions
+      resources
+    }
+  }
+}
+
+mutation DeleteRole($input: CustomerRoleIdInput!) {
+  deleteRole(input: $input)
+}

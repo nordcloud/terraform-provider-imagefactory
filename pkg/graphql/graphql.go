@@ -1203,6 +1203,384 @@ func (client *Client) GetDistributions(vars *GetDistributionsVariables) (*GetDis
 }
 
 //
+// query GetRole($input: CustomerRoleIdInput!)
+//
+
+type GetRoleVariables struct {
+	Input CustomerRoleIdInput `json:"input"`
+}
+
+type GetRoleResponse struct {
+	Role struct {
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Rules       []struct {
+			Actions   string `json:"actions"`
+			Resources string `json:"resources"`
+		} `json:"rules"`
+	} `json:"role"`
+}
+
+type GetRoleRequest struct {
+	*http.Request
+}
+
+func NewGetRoleRequest(url string, vars *GetRoleVariables) (*GetRoleRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `query GetRole($input: CustomerRoleIdInput!) {
+  role(input: $input) {
+    id
+    name
+    description
+    rules {
+      actions
+      resources
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &GetRoleRequest{req}, nil
+}
+
+func (req *GetRoleRequest) Execute(client *http.Client) (*GetRoleResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result GetRoleResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func GetRole(url string, client *http.Client, vars *GetRoleVariables) (*GetRoleResponse, error) {
+	req, err := NewGetRoleRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) GetRole(vars *GetRoleVariables) (*GetRoleResponse, error) {
+	return GetRole(client.Url, client.Client, vars)
+}
+
+//
+// query GetRoles($input: CustomerRolesInput!)
+//
+
+type GetRolesVariables struct {
+	Input CustomerRolesInput `json:"input"`
+}
+
+type GetRolesResponse struct {
+	Roles struct {
+		Results *[]struct {
+			ID          string `json:"id"`
+			Name        string `json:"name"`
+			Description string `json:"description"`
+			Rules       []struct {
+				Actions   string `json:"actions"`
+				Resources string `json:"resources"`
+			} `json:"rules"`
+		} `json:"results"`
+	} `json:"roles"`
+}
+
+type GetRolesRequest struct {
+	*http.Request
+}
+
+func NewGetRolesRequest(url string, vars *GetRolesVariables) (*GetRolesRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `query GetRoles($input: CustomerRolesInput!) {
+  roles(input: $input) {
+    results {
+      id
+      name
+      description
+      rules {
+        actions
+        resources
+      }
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &GetRolesRequest{req}, nil
+}
+
+func (req *GetRolesRequest) Execute(client *http.Client) (*GetRolesResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result GetRolesResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func GetRoles(url string, client *http.Client, vars *GetRolesVariables) (*GetRolesResponse, error) {
+	req, err := NewGetRolesRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) GetRoles(vars *GetRolesVariables) (*GetRolesResponse, error) {
+	return GetRoles(client.Url, client.Client, vars)
+}
+
+//
+// mutation CreateRole($input: NewRole!)
+//
+
+type CreateRoleVariables struct {
+	Input NewRole `json:"input"`
+}
+
+type CreateRoleResponse struct {
+	CreateRole struct {
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Rules       []struct {
+			Actions   string `json:"actions"`
+			Resources string `json:"resources"`
+		} `json:"rules"`
+	} `json:"createRole"`
+}
+
+type CreateRoleRequest struct {
+	*http.Request
+}
+
+func NewCreateRoleRequest(url string, vars *CreateRoleVariables) (*CreateRoleRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation CreateRole($input: NewRole!) {
+  createRole(input: $input) {
+    id
+    name
+    description
+    rules {
+      actions
+      resources
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &CreateRoleRequest{req}, nil
+}
+
+func (req *CreateRoleRequest) Execute(client *http.Client) (*CreateRoleResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result CreateRoleResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func CreateRole(url string, client *http.Client, vars *CreateRoleVariables) (*CreateRoleResponse, error) {
+	req, err := NewCreateRoleRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) CreateRole(vars *CreateRoleVariables) (*CreateRoleResponse, error) {
+	return CreateRole(client.Url, client.Client, vars)
+}
+
+//
+// mutation UpdateRole($input: RoleChanges!)
+//
+
+type UpdateRoleVariables struct {
+	Input RoleChanges `json:"input"`
+}
+
+type UpdateRoleResponse struct {
+	UpdateRole struct {
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Rules       []struct {
+			Actions   string `json:"actions"`
+			Resources string `json:"resources"`
+		} `json:"rules"`
+	} `json:"updateRole"`
+}
+
+type UpdateRoleRequest struct {
+	*http.Request
+}
+
+func NewUpdateRoleRequest(url string, vars *UpdateRoleVariables) (*UpdateRoleRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation UpdateRole($input: RoleChanges!) {
+  updateRole(input: $input) {
+    id
+    name
+    description
+    rules {
+      actions
+      resources
+    }
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &UpdateRoleRequest{req}, nil
+}
+
+func (req *UpdateRoleRequest) Execute(client *http.Client) (*UpdateRoleResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result UpdateRoleResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func UpdateRole(url string, client *http.Client, vars *UpdateRoleVariables) (*UpdateRoleResponse, error) {
+	req, err := NewUpdateRoleRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) UpdateRole(vars *UpdateRoleVariables) (*UpdateRoleResponse, error) {
+	return UpdateRole(client.Url, client.Client, vars)
+}
+
+//
+// mutation DeleteRole($input: CustomerRoleIdInput!)
+//
+
+type DeleteRoleVariables struct {
+	Input CustomerRoleIdInput `json:"input"`
+}
+
+type DeleteRoleResponse struct {
+	DeleteRole string `json:"deleteRole"`
+}
+
+type DeleteRoleRequest struct {
+	*http.Request
+}
+
+func NewDeleteRoleRequest(url string, vars *DeleteRoleVariables) (*DeleteRoleRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation DeleteRole($input: CustomerRoleIdInput!) {
+  deleteRole(input: $input)
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &DeleteRoleRequest{req}, nil
+}
+
+func (req *DeleteRoleRequest) Execute(client *http.Client) (*DeleteRoleResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result DeleteRoleResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func DeleteRole(url string, client *http.Client, vars *DeleteRoleVariables) (*DeleteRoleResponse, error) {
+	req, err := NewDeleteRoleRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) DeleteRole(vars *DeleteRoleVariables) (*DeleteRoleResponse, error) {
+	return DeleteRole(client.Url, client.Client, vars)
+}
+
+//
 // query GetRoleBinding($input: CustomerRoleBindingIdInput!)
 //
 
@@ -1214,8 +1592,11 @@ type GetRoleBindingResponse struct {
 	RoleBinding struct {
 		ID      string `json:"id"`
 		Kind    string `json:"kind"`
-		Role    string `json:"role"`
+		RoleId  string `json:"roleId"`
 		Subject string `json:"subject"`
+		Role    struct {
+			Name string `json:"name"`
+		} `json:"role"`
 	} `json:"roleBinding"`
 }
 
@@ -1234,8 +1615,11 @@ func NewGetRoleBindingRequest(url string, vars *GetRoleBindingVariables) (*GetRo
   roleBinding(input: $input) {
     id
     kind
-    role
+    roleId
     subject
+    role {
+      name
+    }
   }
 }`,
 	})
@@ -1287,8 +1671,11 @@ type GetRoleBindingsResponse struct {
 		Results *[]struct {
 			ID      string `json:"id"`
 			Kind    string `json:"kind"`
-			Role    string `json:"role"`
+			RoleId  string `json:"roleId"`
 			Subject string `json:"subject"`
+			Role    struct {
+				Name string `json:"name"`
+			} `json:"role"`
 		} `json:"results"`
 	} `json:"roleBindings"`
 }
@@ -1309,8 +1696,11 @@ func NewGetRoleBindingsRequest(url string, vars *GetRoleBindingsVariables) (*Get
     results {
       id
       kind
-      role
+      roleId
       subject
+      role {
+        name
+      }
     }
   }
 }`,
@@ -1362,8 +1752,11 @@ type CreateRoleBindingResponse struct {
 	CreateRoleBinding struct {
 		ID      string `json:"id"`
 		Kind    string `json:"kind"`
-		Role    string `json:"role"`
+		RoleId  string `json:"roleId"`
 		Subject string `json:"subject"`
+		Role    struct {
+			Name string `json:"name"`
+		} `json:"role"`
 	} `json:"createRoleBinding"`
 }
 
@@ -1382,8 +1775,11 @@ func NewCreateRoleBindingRequest(url string, vars *CreateRoleBindingVariables) (
   createRoleBinding(input: $input) {
     id
     kind
-    role
+    roleId
     subject
+    role {
+      name
+    }
   }
 }`,
 	})
@@ -1434,8 +1830,11 @@ type UpdateRoleBindingResponse struct {
 	UpdateRoleBinding struct {
 		ID      string `json:"id"`
 		Kind    string `json:"kind"`
-		Role    string `json:"role"`
+		RoleId  string `json:"roleId"`
 		Subject string `json:"subject"`
+		Role    struct {
+			Name string `json:"name"`
+		} `json:"role"`
 	} `json:"updateRoleBinding"`
 }
 
@@ -1454,8 +1853,11 @@ func NewUpdateRoleBindingRequest(url string, vars *UpdateRoleBindingVariables) (
   updateRoleBinding(input: $input) {
     id
     kind
-    role
+    roleId
     subject
+    role {
+      name
+    }
   }
 }`,
 	})
@@ -2241,6 +2643,16 @@ const (
 	AccountStatusACCESSSUCCESS AccountStatus = "ACCESS_SUCCESS"
 )
 
+type Action string
+
+const (
+	ActionANY    Action = "ANY"
+	ActionCREATE Action = "CREATE"
+	ActionDELETE Action = "DELETE"
+	ActionUPDATE Action = "UPDATE"
+	ActionVIEW   Action = "VIEW"
+)
+
 type AuditLogIdentityType string
 
 const (
@@ -2300,9 +2712,16 @@ type CustomerRoleBindingsAttribute string
 const (
 	CustomerRoleBindingsAttributeCREATEDAT CustomerRoleBindingsAttribute = "CREATED_AT"
 	CustomerRoleBindingsAttributeKIND      CustomerRoleBindingsAttribute = "KIND"
-	CustomerRoleBindingsAttributeROLE      CustomerRoleBindingsAttribute = "ROLE"
 	CustomerRoleBindingsAttributeSUBJECT   CustomerRoleBindingsAttribute = "SUBJECT"
 	CustomerRoleBindingsAttributeUPDATEDAT CustomerRoleBindingsAttribute = "UPDATED_AT"
+)
+
+type CustomerRolesAttribute string
+
+const (
+	CustomerRolesAttributeCREATEDAT CustomerRolesAttribute = "CREATED_AT"
+	CustomerRolesAttributeNAME      CustomerRolesAttribute = "NAME"
+	CustomerRolesAttributeUPDATEDAT CustomerRolesAttribute = "UPDATED_AT"
 )
 
 type DistributionAttribute string
@@ -2398,12 +2817,19 @@ const (
 	RebuildReasonTypeWEEKLYUPDATES         RebuildReasonType = "WEEKLY_UPDATES"
 )
 
-type Role string
+type Resource string
 
 const (
-	RoleADMIN      Role = "ADMIN"
-	RoleREADONLY   Role = "READ_ONLY"
-	RoleSUPERADMIN Role = "SUPER_ADMIN"
+	ResourceACCOUNT           Resource = "ACCOUNT"
+	ResourceANY               Resource = "ANY"
+	ResourceAPIKEY            Resource = "API_KEY"
+	ResourceAUDITLOG          Resource = "AUDIT_LOG"
+	ResourceCOMPONENT         Resource = "COMPONENT"
+	ResourceNOTIFICATIONGROUP Resource = "NOTIFICATION_GROUP"
+	ResourceROLE              Resource = "ROLE"
+	ResourceROLEBINDING       Resource = "ROLE_BINDING"
+	ResourceTEMPLATE          Resource = "TEMPLATE"
+	ResourceVARIABLE          Resource = "VARIABLE"
 )
 
 type Scope string
@@ -2670,6 +3096,33 @@ type CustomerRoleBindingsSort struct {
 	Order SortOrder                     `json:"order"`
 }
 
+type CustomerRoleIdInput struct {
+	RoleId String `json:"roleId"`
+}
+
+type CustomerRolesFilter struct {
+	Exclusive *Boolean               `json:"exclusive,omitempty"`
+	Field     CustomerRolesAttribute `json:"field"`
+	Values    *[]String              `json:"values,omitempty"`
+}
+
+type CustomerRolesFilters struct {
+	Filters *[]CustomerRolesFilter `json:"filters,omitempty"`
+}
+
+type CustomerRolesInput struct {
+	Filters *CustomerRolesFilters `json:"filters,omitempty"`
+	Limit   *Int                  `json:"limit,omitempty"`
+	Page    *Int                  `json:"page,omitempty"`
+	Search  *Search               `json:"search,omitempty"`
+	Sort    *CustomerRolesSort    `json:"sort,omitempty"`
+}
+
+type CustomerRolesSort struct {
+	Field CustomerRolesAttribute `json:"field"`
+	Order SortOrder              `json:"order"`
+}
+
 type CustomersInput struct {
 	Limit *Int `json:"limit,omitempty"`
 	Page  *Int `json:"page,omitempty"`
@@ -2797,10 +3250,21 @@ type NewNotification struct {
 	Uri  String           `json:"uri"`
 }
 
+type NewRole struct {
+	Description *String    `json:"description,omitempty"`
+	Name        String     `json:"name"`
+	Rules       *[]NewRule `json:"rules,omitempty"`
+}
+
 type NewRoleBinding struct {
 	Kind    Kind   `json:"kind"`
-	Role    Role   `json:"role"`
+	RoleId  String `json:"roleId"`
 	Subject String `json:"subject"`
+}
+
+type NewRule struct {
+	Actions   *[]Action   `json:"actions,omitempty"`
+	Resources *[]Resource `json:"resources,omitempty"`
 }
 
 type NewTag struct {
@@ -2866,8 +3330,15 @@ type NewVMImageDefinition struct {
 }
 
 type RoleBindingChanges struct {
-	ID   String `json:"id"`
-	Role *Role  `json:"role,omitempty"`
+	ID     String `json:"id"`
+	RoleId String `json:"roleId"`
+}
+
+type RoleChanges struct {
+	Description *String    `json:"description,omitempty"`
+	ID          String     `json:"id"`
+	Name        *String    `json:"name,omitempty"`
+	Rules       *[]NewRule `json:"rules,omitempty"`
 }
 
 type Search struct {
@@ -3198,6 +3669,7 @@ type Mutation struct {
 	CreateApiKey           ApiKey      `json:"createApiKey"`
 	CreateComponent        Component   `json:"createComponent"`
 	CreateComponentVersion Component   `json:"createComponentVersion"`
+	CreateRole             Role        `json:"createRole"`
 	CreateRoleBinding      RoleBinding `json:"createRoleBinding"`
 	CreateTemplate         Template    `json:"createTemplate"`
 	CreateVariable         Variable    `json:"createVariable"`
@@ -3205,6 +3677,7 @@ type Mutation struct {
 	DeleteApiKey           *Boolean    `json:"deleteApiKey,omitempty"`
 	DeleteComponent        *Boolean    `json:"deleteComponent,omitempty"`
 	DeleteComponentVersion *Boolean    `json:"deleteComponentVersion,omitempty"`
+	DeleteRole             *Boolean    `json:"deleteRole,omitempty"`
 	DeleteRoleBinding      *Boolean    `json:"deleteRoleBinding,omitempty"`
 	DeleteTemplate         *Boolean    `json:"deleteTemplate,omitempty"`
 	DeleteVariable         *Boolean    `json:"deleteVariable,omitempty"`
@@ -3212,6 +3685,7 @@ type Mutation struct {
 	RecheckAccount         Account     `json:"recheckAccount"`
 	UpdateAccount          Account     `json:"updateAccount"`
 	UpdateComponent        Component   `json:"updateComponent"`
+	UpdateRole             Role        `json:"updateRole"`
 	UpdateRoleBinding      RoleBinding `json:"updateRoleBinding"`
 	UpdateTemplate         Template    `json:"updateTemplate"`
 }
@@ -3243,8 +3717,10 @@ type Query struct {
 	Distributions        DistributionResults  `json:"distributions"`
 	Image                Image                `json:"image"`
 	Images               ImageResults         `json:"images"`
+	Role                 Role                 `json:"role"`
 	RoleBinding          RoleBinding          `json:"roleBinding"`
 	RoleBindings         RoleBindingResults   `json:"roleBindings"`
+	Roles                RoleResults          `json:"roles"`
 	Settings             SettingsResult       `json:"settings"`
 	Template             Template             `json:"template"`
 	Templates            TemplateResults      `json:"templates"`
@@ -3261,12 +3737,23 @@ type RebuildReason struct {
 	Type        RebuildReasonType `json:"type"`
 }
 
+type Role struct {
+	ChangeDetails ChangeDetails `json:"changeDetails"`
+	CreatedAt     String        `json:"createdAt"`
+	Description   *String       `json:"description,omitempty"`
+	ID            String        `json:"id"`
+	Name          String        `json:"name"`
+	Rules         *[]Rule       `json:"rules,omitempty"`
+	UpdatedAt     String        `json:"updatedAt"`
+}
+
 type RoleBinding struct {
 	ChangeDetails ChangeDetails `json:"changeDetails"`
 	CreatedAt     String        `json:"createdAt"`
 	ID            String        `json:"id"`
 	Kind          Kind          `json:"kind"`
-	Role          Role          `json:"role"`
+	Role          *Role         `json:"role,omitempty"`
+	RoleId        String        `json:"roleId"`
 	Subject       String        `json:"subject"`
 	UpdatedAt     String        `json:"updatedAt"`
 }
@@ -3275,6 +3762,17 @@ type RoleBindingResults struct {
 	Count   Int            `json:"count"`
 	Pages   Int            `json:"pages"`
 	Results *[]RoleBinding `json:"results,omitempty"`
+}
+
+type RoleResults struct {
+	Count   Int     `json:"count"`
+	Pages   Int     `json:"pages"`
+	Results *[]Role `json:"results,omitempty"`
+}
+
+type Rule struct {
+	Actions   *[]Action   `json:"actions,omitempty"`
+	Resources *[]Resource `json:"resources,omitempty"`
 }
 
 type SettingsResult struct {

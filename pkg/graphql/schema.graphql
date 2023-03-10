@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum AccountStatus {
 	ACCESS_SUCCESS
@@ -739,24 +739,70 @@ type ImageResults {
 }
 
 
-# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
-enum Role {
-	"""
-	READ_ONLY role grants permissions to get and list all resources excluding RoleBinding and ApiKey.
-	"""
-	READ_ONLY
-
-	"""
-	ADMIN role grants full write permissions to all resources excluding RoleBinding and ApiKey.
-	"""
-	ADMIN
-
-	"""
-	SUPER_ADMIN grants full permissions including RBAC management. For security reason this role cannot be assigned to the ApiKey.
-	"""
-	SUPER_ADMIN
+enum Action {
+	VIEW
+	CREATE
+	UPDATE
+	DELETE
+	ANY
 }
+
+enum Resource {
+	ACCOUNT
+	API_KEY
+	AUDIT_LOG
+	COMPONENT
+	NOTIFICATION_GROUP
+	ROLE
+	ROLE_BINDING
+	TEMPLATE
+	VARIABLE
+	ANY
+}
+
+type Rule {
+	actions: [Action!]!
+	resources: [Resource!]!
+}
+
+type Role {
+	id: String!
+	name: String!
+	description: String
+	rules: [Rule!]!
+	changeDetails: ChangeDetails!
+	createdAt: String!
+	updatedAt: String!
+}
+
+type RoleResults {
+	results: [Role!]
+	pages: Int!
+	count: Int!
+}
+
+input NewRule {
+	actions: [Action!]!
+	resources: [Resource!]!
+}
+
+input NewRole {
+	name: String!
+	description: String
+	rules: [NewRule!]!
+}
+
+input RoleChanges {
+	id: String!
+	name: String
+	description: String
+	rules: [NewRule!]
+}
+
+
+# Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum Kind {
 	USER
@@ -766,7 +812,7 @@ enum Kind {
 type RoleBinding {
 	id: String!
 	kind: Kind!
-	role: Role!
+	roleId: String!
 	"""
 	subject defines the binding target - user email or the api key id.
 	"""
@@ -774,6 +820,12 @@ type RoleBinding {
 	changeDetails: ChangeDetails!
 	createdAt: String!
 	updatedAt: String!
+
+	"""
+	role contains role details resolved using roleId field
+	instead of this field resolver, query `role` can be used to get the same data
+	"""
+	role: Role
 }
 
 type RoleBindingResults {
@@ -784,8 +836,7 @@ type RoleBindingResults {
 
 input NewRoleBinding {
 	kind: Kind!
-	role: Role!
-
+	roleId: String!
 	"""
 	subject defines the role binding target.
 	If the kind is `USER`, the user email should be provided.
@@ -796,7 +847,7 @@ input NewRoleBinding {
 
 input RoleBindingChanges {
 	id: String!
-	role: Role
+	roleId: String!
 }
 
 
@@ -1442,11 +1493,75 @@ extend type Query {
 }
 
 
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+enum CustomerRolesAttribute {
+	NAME
+	CREATED_AT
+	UPDATED_AT
+}
+
+input CustomerRolesSort {
+	order: SortOrder!
+	field: CustomerRolesAttribute!
+}
+
+input CustomerRoleIdInput {
+	roleId: String!
+}
+
+input CustomerRolesFilter {
+	field: CustomerRolesAttribute!
+	values: [String!]!
+	exclusive: Boolean
+}
+
+input CustomerRolesFilters {
+	filters: [CustomerRolesFilter!]!
+}
+
+input CustomerRolesInput {
+	page: Int
+	limit: Int
+	sort: CustomerRolesSort
+	search: Search
+	filters: CustomerRolesFilters
+}
+
+extend type Mutation {
+	"""
+	createRole adds new role.
+	"""
+	createRole(input: NewRole!): Role!
+
+	"""
+	updateRole partially updates role.
+	"""
+	updateRole(input: RoleChanges!): Role!
+
+	"""
+	deleteRole removes the existing role.
+	"""
+	deleteRole(input: CustomerRoleIdInput!): Boolean
+}
+
+extend type Query {
+	"""
+	role gets single role.
+	"""
+	role(input: CustomerRoleIdInput!): Role!
+
+	"""
+	roles gets single page of roles.
+	"""
+	roles(input: CustomerRolesInput!): RoleResults!
+}
+
+
+# Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum CustomerRoleBindingsAttribute {
 	KIND
-	ROLE
 	SUBJECT
 	CREATED_AT
 	UPDATED_AT

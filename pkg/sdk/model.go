@@ -28,6 +28,12 @@ type NewTemplate graphql.NewTemplate
 
 type TemplateChanges graphql.TemplateChanges
 
+type Role graphql.Role
+
+type NewRole graphql.NewRole
+
+type RoleChanges graphql.RoleChanges
+
 type RoleBinding graphql.RoleBinding
 
 type NewRoleBinding graphql.NewRoleBinding

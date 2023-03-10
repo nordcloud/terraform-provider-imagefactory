@@ -17,10 +17,9 @@ var roleBindingSchema = map[string]*schema.Schema{
 		Required:     true,
 		ValidateFunc: validation.StringInSlice(validBindingKinds, false),
 	},
-	"role": {
-		Type:         schema.TypeString,
-		Required:     true,
-		ValidateFunc: validation.StringInSlice(validBindingRoles, false),
+	"role_id": {
+		Type:     schema.TypeString,
+		Required: true,
 	},
 	"subject": {
 		Type:     schema.TypeString,

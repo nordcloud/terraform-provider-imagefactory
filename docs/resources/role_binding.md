@@ -17,7 +17,7 @@ description: |-
 
 resource "imagefactory_role_binding" "user_binding" {
   kind = "USER"
-  role = "ADMIN"
+  role_id = "12345678-9012-3456-7890-123456789012"
   subject = "user@nordcloud.com"
 }
 
@@ -27,7 +27,7 @@ data "imagefactory_api_key" "api_key" {
 
 resource "imagefactory_role_binding" "key_binding" {
   kind = "API_KEY"
-  role = "READ_ONLY"
+  role_id = "12345678-9012-3456-7890-123456789012"
   subject = data.imagefactory_api_key.api_key.id
 }
 
@@ -42,7 +42,7 @@ output "user_binding" {
 ### Required
 
 - `kind` (String)
-- `role` (String)
+- `role_id` (String)
 - `subject` (String)
 
 ### Read-Only

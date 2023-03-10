@@ -5,7 +5,7 @@ query GetRoleBinding($input: CustomerRoleBindingIdInput!) {
   roleBinding(input: $input) {
       id
       kind
-      role
+      roleId
       subject
   }
 }
@@ -15,7 +15,7 @@ query GetRoleBindings($input: CustomerRoleBindingsInput!) {
     results {
       id
       kind
-      role
+      roleId
       subject
     }
   }
@@ -25,7 +25,7 @@ mutation CreateRoleBinding($input: NewRoleBinding!) {
   createRoleBinding(input: $input) {
     id
     kind
-    role
+    roleId
     subject
   }
 }
@@ -34,7 +34,7 @@ mutation UpdateRoleBinding($input: RoleBindingChanges!) {
   updateRoleBinding(input: $input) {
     id
     kind
-    role
+    roleId
     subject
   }
 }

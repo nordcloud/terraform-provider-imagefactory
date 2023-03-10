@@ -21,9 +21,9 @@ func DataSource() *schema.Resource {
 
 func read(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
-	config := m.(*config.Config)
+	c := m.(*config.Config)
 
-	apiKey, err := config.APIClient.GetApiKey(d.Get("name").(string))
+	apiKey, err := c.APIClient.GetApiKey(d.Get("name").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}

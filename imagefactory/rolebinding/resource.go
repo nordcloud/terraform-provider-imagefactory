@@ -57,6 +57,10 @@ func read(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagn
 func update(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
 	c := m.(*config.Config)
 
+	if d.HasChanges("subject") {
+		return diag.Errorf("If you want to change the subject you have to define new role binding.")
+	}
+
 	input := sdk.RoleBindingChanges{
 		ID:     graphql.String(d.Id()),
 		RoleId: graphql.String(d.Get("role_id").(string)),

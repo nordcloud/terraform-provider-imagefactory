@@ -30,6 +30,7 @@ type API interface {
 
 	// Role CRUD
 	GetRole(roleID string) (Role, error)
+	GetRoleByName(name string) (Role, error)
 	CreateRole(input NewRole) (Role, error)
 	UpdateRole(input RoleChanges) (Role, error)
 	DeleteRole(roleID string) error

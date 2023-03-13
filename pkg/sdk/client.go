@@ -316,6 +316,39 @@ func (c APIClient) GetRole(roleID string) (Role, error) { // nolint: dupl
 	return Role(r.Role), nil
 }
 
+func (c APIClient) GetRoleByName(name string) (Role, error) {
+	limit := graphql.Int(1)
+	req, err := graphql.NewGetRolesRequest(c.apiURL, &graphql.GetRolesVariables{
+		Input: graphql.CustomerRolesInput{
+			Filters: &graphql.CustomerRolesFilters{
+				Filters: &[]graphql.CustomerRolesFilter{
+					{
+						Field:  graphql.CustomerRolesAttributeNAME,
+						Values: &[]graphql.String{graphql.String(name)},
+					},
+				},
+			},
+			Limit: &limit,
+		},
+	})
+	if err != nil {
+		return Role{}, fmt.Errorf("getting role request %w", err)
+	}
+
+	r := &graphql.Query{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return Role{}, fmt.Errorf("getting role %w", err)
+	}
+
+	if r.Roles.Results == nil || len(*r.Roles.Results) == 0 {
+		return Role{}, fmt.Errorf("role '%s' not found", name)
+	}
+
+	result := *r.Roles.Results
+
+	return Role(result[0]), nil
+}
+
 func (c APIClient) CreateRole(input NewRole) (Role, error) {
 	req, err := graphql.NewCreateRoleRequest(c.apiURL, &graphql.CreateRoleVariables{
 		Input: graphql.NewRole(input),

@@ -1594,9 +1594,6 @@ type GetRoleBindingResponse struct {
 		Kind    string `json:"kind"`
 		RoleId  string `json:"roleId"`
 		Subject string `json:"subject"`
-		Role    struct {
-			Name string `json:"name"`
-		} `json:"role"`
 	} `json:"roleBinding"`
 }
 
@@ -1617,9 +1614,6 @@ func NewGetRoleBindingRequest(url string, vars *GetRoleBindingVariables) (*GetRo
     kind
     roleId
     subject
-    role {
-      name
-    }
   }
 }`,
 	})
@@ -1673,9 +1667,6 @@ type GetRoleBindingsResponse struct {
 			Kind    string `json:"kind"`
 			RoleId  string `json:"roleId"`
 			Subject string `json:"subject"`
-			Role    struct {
-				Name string `json:"name"`
-			} `json:"role"`
 		} `json:"results"`
 	} `json:"roleBindings"`
 }
@@ -1698,9 +1689,6 @@ func NewGetRoleBindingsRequest(url string, vars *GetRoleBindingsVariables) (*Get
       kind
       roleId
       subject
-      role {
-        name
-      }
     }
   }
 }`,
@@ -1754,9 +1742,6 @@ type CreateRoleBindingResponse struct {
 		Kind    string `json:"kind"`
 		RoleId  string `json:"roleId"`
 		Subject string `json:"subject"`
-		Role    struct {
-			Name string `json:"name"`
-		} `json:"role"`
 	} `json:"createRoleBinding"`
 }
 
@@ -1777,9 +1762,6 @@ func NewCreateRoleBindingRequest(url string, vars *CreateRoleBindingVariables) (
     kind
     roleId
     subject
-    role {
-      name
-    }
   }
 }`,
 	})
@@ -1832,9 +1814,6 @@ type UpdateRoleBindingResponse struct {
 		Kind    string `json:"kind"`
 		RoleId  string `json:"roleId"`
 		Subject string `json:"subject"`
-		Role    struct {
-			Name string `json:"name"`
-		} `json:"role"`
 	} `json:"updateRoleBinding"`
 }
 
@@ -1855,9 +1834,6 @@ func NewUpdateRoleBindingRequest(url string, vars *UpdateRoleBindingVariables) (
     kind
     roleId
     subject
-    role {
-      name
-    }
   }
 }`,
 	})

@@ -1,5 +1,12 @@
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
+
+query GetApiKey($input: CustomerApiKeyIdInput!) {
+  apiKey(input: $input) {
+    id
+    name
+  }
+}
 
 query GetApiKeys($input: CustomerApiKeysInput!) {
   apiKeys(input: $input) {
@@ -8,4 +15,16 @@ query GetApiKeys($input: CustomerApiKeysInput!) {
       name
     }
   }
+}
+
+mutation CreateApiKey($input: NewApiKey!) {
+  createApiKey(input: $input) {
+    id
+    name
+    secret
+  }
+}
+
+mutation DeleteApiKey($input: CustomerApiKeyIdInput!) {
+  deleteApiKey(input: $input)
 }

@@ -31,6 +31,7 @@ func Provider() *schema.Provider {
 			"imagefactory_role":             role.DataSource(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
+			"imagefactory_api_key":                  apikey.Resource(),
 			"imagefactory_aws_account":              account.ResourceAWS(),
 			"imagefactory_aws_china_account":        account.ResourceAWSChina(),
 			"imagefactory_azure_subscription":       account.ResourceAzure(graphql.ScopePUBLIC),

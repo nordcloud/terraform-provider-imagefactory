@@ -9,7 +9,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
-	"github.com/nordcloud/terraform-provider-imagefactory/pkg/sdk"
 )
 
 func DataSource() *schema.Resource {
@@ -20,23 +19,12 @@ func DataSource() *schema.Resource {
 }
 
 func read(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-
 	c := m.(*config.Config)
 
-	apiKey, err := c.APIClient.GetApiKey(d.Get("name").(string))
+	apiKey, err := c.APIClient.GetAPIKeyByName(d.Get("name").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	return setProps(d, apiKey)
-}
-
-func setProps(d *schema.ResourceData, key sdk.ApiKey) diag.Diagnostics {
-	var diags diag.Diagnostics
-
-	d.SetId(string(key.ID))
-	if err := d.Set("name", key.Name); err != nil {
-		return diag.FromErr(err)
-	}
-	return diags
 }

@@ -40,7 +40,9 @@ type NewRoleBinding graphql.NewRoleBinding
 
 type RoleBindingChanges graphql.RoleBindingChanges
 
-type ApiKey graphql.ApiKey
+type APIKey graphql.ApiKey
+
+type NewAPIKey graphql.NewApiKey
 
 type Variable graphql.Variable
 

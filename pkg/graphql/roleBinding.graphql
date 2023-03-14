@@ -1,11 +1,11 @@
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 
 query GetRoleBinding($input: CustomerRoleBindingIdInput!) {
   roleBinding(input: $input) {
       id
       kind
-      role
+      roleId
       subject
   }
 }
@@ -15,7 +15,7 @@ query GetRoleBindings($input: CustomerRoleBindingsInput!) {
     results {
       id
       kind
-      role
+      roleId
       subject
     }
   }
@@ -25,7 +25,7 @@ mutation CreateRoleBinding($input: NewRoleBinding!) {
   createRoleBinding(input: $input) {
     id
     kind
-    role
+    roleId
     subject
   }
 }
@@ -34,7 +34,7 @@ mutation UpdateRoleBinding($input: RoleBindingChanges!) {
   updateRoleBinding(input: $input) {
     id
     kind
-    role
+    roleId
     subject
   }
 }

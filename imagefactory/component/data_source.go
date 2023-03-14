@@ -1,4 +1,4 @@
-// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package component
 
@@ -46,9 +46,9 @@ func systemComponentRead(ctx context.Context, d *schema.ResourceData, m interfac
 func customComponentRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	config := m.(*config.Config)
+	c := m.(*config.Config)
 
-	component, err := config.APIClient.GetCustomComponent(d.Get("name").(string), d.Get("cloud_provider").(string), d.Get("stage").(string))
+	component, err := c.APIClient.GetCustomComponent(d.Get("name").(string), d.Get("cloud_provider").(string), d.Get("stage").(string))
 	if err != nil {
 		return diag.FromErr(err)
 	}

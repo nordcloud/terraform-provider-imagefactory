@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package sdk
 
@@ -293,6 +293,107 @@ func (c APIClient) DeleteTemplate(templateID string) error {
 	r := &graphql.Mutation{}
 	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
 		return fmt.Errorf("deleting template %w", err)
+	}
+
+	return nil
+}
+
+func (c APIClient) GetRole(roleID string) (Role, error) { // nolint: dupl
+	req, err := graphql.NewGetRoleRequest(c.apiURL, &graphql.GetRoleVariables{
+		Input: graphql.CustomerRoleIdInput{
+			RoleId: graphql.String(roleID),
+		},
+	})
+	if err != nil {
+		return Role{}, fmt.Errorf("getting role request %w", err)
+	}
+
+	r := &graphql.Query{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return Role{}, fmt.Errorf("getting role %w", err)
+	}
+
+	return Role(r.Role), nil
+}
+
+func (c APIClient) GetRoleByName(name string) (Role, error) {
+	limit := graphql.Int(1)
+	req, err := graphql.NewGetRolesRequest(c.apiURL, &graphql.GetRolesVariables{
+		Input: graphql.CustomerRolesInput{
+			Filters: &graphql.CustomerRolesFilters{
+				Filters: &[]graphql.CustomerRolesFilter{
+					{
+						Field:  graphql.CustomerRolesAttributeNAME,
+						Values: &[]graphql.String{graphql.String(name)},
+					},
+				},
+			},
+			Limit: &limit,
+		},
+	})
+	if err != nil {
+		return Role{}, fmt.Errorf("getting role request %w", err)
+	}
+
+	r := &graphql.Query{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return Role{}, fmt.Errorf("getting role %w", err)
+	}
+
+	if r.Roles.Results == nil || len(*r.Roles.Results) == 0 {
+		return Role{}, fmt.Errorf("role '%s' not found", name)
+	}
+
+	result := *r.Roles.Results
+
+	return Role(result[0]), nil
+}
+
+func (c APIClient) CreateRole(input NewRole) (Role, error) {
+	req, err := graphql.NewCreateRoleRequest(c.apiURL, &graphql.CreateRoleVariables{
+		Input: graphql.NewRole(input),
+	})
+	if err != nil {
+		return Role{}, fmt.Errorf("getting create role request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return Role{}, fmt.Errorf("creating role %w", err)
+	}
+
+	return Role(r.CreateRole), nil
+}
+
+func (c APIClient) UpdateRole(input RoleChanges) (Role, error) {
+	req, err := graphql.NewUpdateRoleRequest(c.apiURL, &graphql.UpdateRoleVariables{
+		Input: graphql.RoleChanges(input),
+	})
+	if err != nil {
+		return Role{}, fmt.Errorf("getting update role request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return Role{}, fmt.Errorf("updating role %w", err)
+	}
+
+	return Role(r.UpdateRole), nil
+}
+
+func (c APIClient) DeleteRole(roleID string) error {
+	req, err := graphql.NewDeleteRoleRequest(c.apiURL, &graphql.DeleteRoleVariables{
+		Input: graphql.CustomerRoleIdInput{
+			RoleId: graphql.String(roleID),
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("getting delete role request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return fmt.Errorf("deleting role %w", err)
 	}
 
 	return nil

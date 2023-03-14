@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package sdk
 
@@ -27,6 +27,12 @@ type NewComponentContent graphql.NewComponentContent
 type NewTemplate graphql.NewTemplate
 
 type TemplateChanges graphql.TemplateChanges
+
+type Role graphql.Role
+
+type NewRole graphql.NewRole
+
+type RoleChanges graphql.RoleChanges
 
 type RoleBinding graphql.RoleBinding
 

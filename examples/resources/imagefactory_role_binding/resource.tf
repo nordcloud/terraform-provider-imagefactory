@@ -1,8 +1,10 @@
-// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+# Create role binding using role ID
 
 resource "imagefactory_role_binding" "user_binding" {
   kind = "USER"
-  role = "ADMIN"
+  role_id = "12345678-9012-3456-7890-123456789012"
   subject = "user@nordcloud.com"
 }
 
@@ -12,10 +14,51 @@ data "imagefactory_api_key" "api_key" {
 
 resource "imagefactory_role_binding" "key_binding" {
   kind = "API_KEY"
-  role = "READ_ONLY"
+  role_id = "12345678-9012-3456-7890-123456789012"
   subject = data.imagefactory_api_key.api_key.id
 }
 
 output "user_binding" {
   value = imagefactory_role_binding.user_binding
+}
+
+# Create role binding using role name
+
+data "imagefactory_role" "admin_role" {
+  name = "Admin"
+}
+
+resource "imagefactory_role_binding" "user_binding" {
+  kind = "USER"
+  role_id = data.imagefactory_role.admin_role.id
+  subject = "user@nordcloud.com"
+}
+
+output "user_binding" {
+  value = imagefactory_role_binding.user_binding
+}
+
+# Create role and bind user to the role
+
+resource "imagefactory_role" "admin" {
+  name = "Template Admin Role"
+  description = "A role to administrate templates (create/update/delete)"
+  rules {
+    resources = ["TEMPLATE", "COMPONENT", "VARIABLE"]
+    actions   = ["ANY"]
+  }
+  rules {
+    resources = ["ACCOUNT"]
+    actions   = ["VIEW"]
+  }
+}
+
+resource "imagefactory_role_binding" "template_admin_binding" {
+  kind = "USER"
+  role_id = imagefactory_role.admin.id
+  subject = "user@nordcloud.com"
+}
+
+output "template_admin_binding" {
+  value = imagefactory_role_binding.template_admin_binding
 }

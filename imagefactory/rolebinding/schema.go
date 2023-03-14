@@ -1,4 +1,4 @@
-// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package rolebinding
 
@@ -17,10 +17,9 @@ var roleBindingSchema = map[string]*schema.Schema{
 		Required:     true,
 		ValidateFunc: validation.StringInSlice(validBindingKinds, false),
 	},
-	"role": {
-		Type:         schema.TypeString,
-		Required:     true,
-		ValidateFunc: validation.StringInSlice(validBindingRoles, false),
+	"role_id": {
+		Type:     schema.TypeString,
+		Required: true,
 	},
 	"subject": {
 		Type:     schema.TypeString,

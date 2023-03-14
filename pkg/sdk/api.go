@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package sdk
 
@@ -27,6 +27,13 @@ type API interface {
 	CreateTemplate(input NewTemplate) (Template, error)
 	UpdateTemplate(input TemplateChanges) (Template, error)
 	DeleteTemplate(templateID string) error
+
+	// Role CRUD
+	GetRole(roleID string) (Role, error)
+	GetRoleByName(name string) (Role, error)
+	CreateRole(input NewRole) (Role, error)
+	UpdateRole(input RoleChanges) (Role, error)
+	DeleteRole(roleID string) error
 
 	// RoleBinding CRUD
 	GetRoleBinding(roleBindingID string) (RoleBinding, error)

@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package imagefactory
 
@@ -13,6 +13,7 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/component"
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/distribution"
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/imagetemplate"
+	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/role"
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/rolebinding"
 	"github.com/nordcloud/terraform-provider-imagefactory/imagefactory/variable"
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/config"
@@ -27,6 +28,7 @@ func Provider() *schema.Provider {
 			"imagefactory_api_key":          apikey.DataSource(),
 			"imagefactory_system_component": component.DataSourceSystem(),
 			"imagefactory_custom_component": component.DataSourceCustom(),
+			"imagefactory_role":             role.DataSource(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"imagefactory_aws_account":              account.ResourceAWS(),
@@ -37,6 +39,7 @@ func Provider() *schema.Provider {
 			"imagefactory_ibmcloud_account":         account.ResourceIBMCloud(),
 			"imagefactory_custom_component":         component.Resource(),
 			"imagefactory_template":                 imagetemplate.Resource(),
+			"imagefactory_role":                     role.Resource(),
 			"imagefactory_role_binding":             rolebinding.Resource(),
 			"imagefactory_variable":                 variable.Resource(),
 		},

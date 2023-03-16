@@ -515,6 +515,74 @@ func (client *Client) DeleteAccount(vars *DeleteAccountVariables) (*DeleteAccoun
 }
 
 //
+// query GetApiKey($input: CustomerApiKeyIdInput!)
+//
+
+type GetApiKeyVariables struct {
+	Input CustomerApiKeyIdInput `json:"input"`
+}
+
+type GetApiKeyResponse struct {
+	ApiKey struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	} `json:"apiKey"`
+}
+
+type GetApiKeyRequest struct {
+	*http.Request
+}
+
+func NewGetApiKeyRequest(url string, vars *GetApiKeyVariables) (*GetApiKeyRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `query GetApiKey($input: CustomerApiKeyIdInput!) {
+  apiKey(input: $input) {
+    id
+    name
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &GetApiKeyRequest{req}, nil
+}
+
+func (req *GetApiKeyRequest) Execute(client *http.Client) (*GetApiKeyResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result GetApiKeyResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func GetApiKey(url string, client *http.Client, vars *GetApiKeyVariables) (*GetApiKeyResponse, error) {
+	req, err := NewGetApiKeyRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) GetApiKey(vars *GetApiKeyVariables) (*GetApiKeyResponse, error) {
+	return GetApiKey(client.Url, client.Client, vars)
+}
+
+//
 // query GetApiKeys($input: CustomerApiKeysInput!)
 //
 
@@ -584,6 +652,138 @@ func GetApiKeys(url string, client *http.Client, vars *GetApiKeysVariables) (*Ge
 
 func (client *Client) GetApiKeys(vars *GetApiKeysVariables) (*GetApiKeysResponse, error) {
 	return GetApiKeys(client.Url, client.Client, vars)
+}
+
+//
+// mutation CreateApiKey($input: NewApiKey!)
+//
+
+type CreateApiKeyVariables struct {
+	Input NewApiKey `json:"input"`
+}
+
+type CreateApiKeyResponse struct {
+	CreateApiKey struct {
+		ID     string `json:"id"`
+		Name   string `json:"name"`
+		Secret string `json:"secret"`
+	} `json:"createApiKey"`
+}
+
+type CreateApiKeyRequest struct {
+	*http.Request
+}
+
+func NewCreateApiKeyRequest(url string, vars *CreateApiKeyVariables) (*CreateApiKeyRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation CreateApiKey($input: NewApiKey!) {
+  createApiKey(input: $input) {
+    id
+    name
+    secret
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &CreateApiKeyRequest{req}, nil
+}
+
+func (req *CreateApiKeyRequest) Execute(client *http.Client) (*CreateApiKeyResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result CreateApiKeyResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func CreateApiKey(url string, client *http.Client, vars *CreateApiKeyVariables) (*CreateApiKeyResponse, error) {
+	req, err := NewCreateApiKeyRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) CreateApiKey(vars *CreateApiKeyVariables) (*CreateApiKeyResponse, error) {
+	return CreateApiKey(client.Url, client.Client, vars)
+}
+
+//
+// mutation DeleteApiKey($input: CustomerApiKeyIdInput!)
+//
+
+type DeleteApiKeyVariables struct {
+	Input CustomerApiKeyIdInput `json:"input"`
+}
+
+type DeleteApiKeyResponse struct {
+	DeleteApiKey string `json:"deleteApiKey"`
+}
+
+type DeleteApiKeyRequest struct {
+	*http.Request
+}
+
+func NewDeleteApiKeyRequest(url string, vars *DeleteApiKeyVariables) (*DeleteApiKeyRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation DeleteApiKey($input: CustomerApiKeyIdInput!) {
+  deleteApiKey(input: $input)
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &DeleteApiKeyRequest{req}, nil
+}
+
+func (req *DeleteApiKeyRequest) Execute(client *http.Client) (*DeleteApiKeyResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result DeleteApiKeyResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func DeleteApiKey(url string, client *http.Client, vars *DeleteApiKeyVariables) (*DeleteApiKeyResponse, error) {
+	req, err := NewDeleteApiKeyRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) DeleteApiKey(vars *DeleteApiKeyVariables) (*DeleteApiKeyResponse, error) {
+	return DeleteApiKey(client.Url, client.Client, vars)
 }
 
 //

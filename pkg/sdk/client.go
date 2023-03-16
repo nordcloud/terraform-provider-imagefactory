@@ -467,28 +467,80 @@ func (c APIClient) DeleteRoleBinding(roleBindingID string) error {
 	return nil
 }
 
-func (c APIClient) GetApiKey(name string) (ApiKey, error) {
-	req, err := graphql.NewGetApiKeysRequest(c.apiURL, &graphql.GetApiKeysVariables{
-		Input: graphql.CustomerApiKeysInput{},
+func (c APIClient) GetAPIKey(apiKeyID string) (APIKey, error) { // nolint: dupl
+	req, err := graphql.NewGetApiKeyRequest(c.apiURL, &graphql.GetApiKeyVariables{
+		Input: graphql.CustomerApiKeyIdInput{
+			ApiKeyId: graphql.String(apiKeyID),
+		},
 	})
 	if err != nil {
-		return ApiKey{}, fmt.Errorf("getting api_key request %w", err)
+		return APIKey{}, fmt.Errorf("getting role request %w", err)
 	}
 
 	r := &graphql.Query{}
 	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
-		return ApiKey{}, fmt.Errorf("getting api_key %w", err)
+		return APIKey{}, fmt.Errorf("getting role %w", err)
+	}
+
+	return APIKey(r.ApiKey), nil
+}
+
+func (c APIClient) GetAPIKeyByName(name string) (APIKey, error) {
+	req, err := graphql.NewGetApiKeysRequest(c.apiURL, &graphql.GetApiKeysVariables{
+		Input: graphql.CustomerApiKeysInput{},
+	})
+	if err != nil {
+		return APIKey{}, fmt.Errorf("getting api_key request %w", err)
+	}
+
+	r := &graphql.Query{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return APIKey{}, fmt.Errorf("getting api_key %w", err)
 	}
 
 	if r.ApiKeys.Results != nil {
 		for _, k := range *r.ApiKeys.Results {
 			if string(k.Name) == name {
-				return ApiKey(k), nil
+				return APIKey(k), nil
 			}
 		}
 	}
 
-	return ApiKey{}, fmt.Errorf("api_key '%s' not found", name)
+	return APIKey{}, fmt.Errorf("api_key '%s' not found", name)
+}
+
+func (c APIClient) CreateAPIKey(input NewAPIKey) (APIKey, error) {
+	req, err := graphql.NewCreateApiKeyRequest(c.apiURL, &graphql.CreateApiKeyVariables{
+		Input: graphql.NewApiKey(input),
+	})
+	if err != nil {
+		return APIKey{}, fmt.Errorf("getting create role request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return APIKey{}, fmt.Errorf("creating role %w", err)
+	}
+
+	return APIKey(r.CreateApiKey), nil
+}
+
+func (c APIClient) DeleteAPIKey(apiKeyID string) error {
+	req, err := graphql.NewDeleteApiKeyRequest(c.apiURL, &graphql.DeleteApiKeyVariables{
+		Input: graphql.CustomerApiKeyIdInput{
+			ApiKeyId: graphql.String(apiKeyID),
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("getting delete role request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return fmt.Errorf("deleting role %w", err)
+	}
+
+	return nil
 }
 
 func (c APIClient) GetSystemComponent(name string) (Component, error) {

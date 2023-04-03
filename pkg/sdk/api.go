@@ -41,10 +41,11 @@ type API interface {
 	UpdateRoleBinding(input RoleBindingChanges) (RoleBinding, error)
 	DeleteRoleBinding(roleBindingID string) error
 
-	// ApiKey CR-D
+	// ApiKey CRUD
 	GetAPIKey(apiKeyID string) (APIKey, error)
 	GetAPIKeyByName(name string) (APIKey, error)
 	CreateAPIKey(input NewAPIKey) (APIKey, error)
+	UpdateAPIKey(input APIKeyChanges) (APIKey, error)
 	DeleteAPIKey(apiKeyID string) error
 
 	// Component GET

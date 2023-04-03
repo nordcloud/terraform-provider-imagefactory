@@ -44,6 +44,8 @@ type APIKey graphql.ApiKey
 
 type NewAPIKey graphql.NewApiKey
 
+type APIKeyChanges graphql.ApiKeyChanges
+
 type Variable graphql.Variable
 
 type NewVariable graphql.NewVariable

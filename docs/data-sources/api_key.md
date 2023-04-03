@@ -33,6 +33,10 @@ resource "imagefactory_role_binding" "key_binding" {
 
 - `name` (String)
 
+### Optional
+
+- `expires_at` (String) API key expiration date in format: 2023-11-04
+
 ### Read-Only
 
 - `id` (String) The ID of this resource.

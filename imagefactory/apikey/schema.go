@@ -25,7 +25,7 @@ var apiKeySchema = map[string]*schema.Schema{
 	"expires_at": {
 		Type:         schema.TypeString,
 		Optional:     true,
-		Description:  "An example of a valid date format: 2023-11-04",
+		Description:  "API key expiration date in format: 2023-11-04",
 		ValidateFunc: validateExpiresAtDateFormat(),
 	},
 	"secret": {

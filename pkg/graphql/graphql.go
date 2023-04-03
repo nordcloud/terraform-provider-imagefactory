@@ -524,8 +524,9 @@ type GetApiKeyVariables struct {
 
 type GetApiKeyResponse struct {
 	ApiKey struct {
-		ID   string `json:"id"`
-		Name string `json:"name"`
+		ID        string `json:"id"`
+		Name      string `json:"name"`
+		ExpiresAt string `json:"expiresAt"`
 	} `json:"apiKey"`
 }
 
@@ -544,6 +545,7 @@ func NewGetApiKeyRequest(url string, vars *GetApiKeyVariables) (*GetApiKeyReques
   apiKey(input: $input) {
     id
     name
+    expiresAt
   }
 }`,
 	})
@@ -593,8 +595,9 @@ type GetApiKeysVariables struct {
 type GetApiKeysResponse struct {
 	ApiKeys struct {
 		Results *[]struct {
-			ID   string `json:"id"`
-			Name string `json:"name"`
+			ID        string `json:"id"`
+			Name      string `json:"name"`
+			ExpiresAt string `json:"expiresAt"`
 		} `json:"results"`
 	} `json:"apiKeys"`
 }
@@ -615,6 +618,7 @@ func NewGetApiKeysRequest(url string, vars *GetApiKeysVariables) (*GetApiKeysReq
     results {
       id
       name
+      expiresAt
     }
   }
 }`,
@@ -664,9 +668,10 @@ type CreateApiKeyVariables struct {
 
 type CreateApiKeyResponse struct {
 	CreateApiKey struct {
-		ID     string `json:"id"`
-		Name   string `json:"name"`
-		Secret string `json:"secret"`
+		ID        string `json:"id"`
+		Name      string `json:"name"`
+		ExpiresAt string `json:"expiresAt"`
+		Secret    string `json:"secret"`
 	} `json:"createApiKey"`
 }
 
@@ -685,6 +690,7 @@ func NewCreateApiKeyRequest(url string, vars *CreateApiKeyVariables) (*CreateApi
   createApiKey(input: $input) {
     id
     name
+    expiresAt
     secret
   }
 }`,
@@ -722,6 +728,76 @@ func CreateApiKey(url string, client *http.Client, vars *CreateApiKeyVariables) 
 
 func (client *Client) CreateApiKey(vars *CreateApiKeyVariables) (*CreateApiKeyResponse, error) {
 	return CreateApiKey(client.Url, client.Client, vars)
+}
+
+//
+// mutation UpdateApiKey($input: ApiKeyChanges!)
+//
+
+type UpdateApiKeyVariables struct {
+	Input ApiKeyChanges `json:"input"`
+}
+
+type UpdateApiKeyResponse struct {
+	UpdateApiKey struct {
+		ID        string `json:"id"`
+		Name      string `json:"name"`
+		ExpiresAt string `json:"expiresAt"`
+	} `json:"updateApiKey"`
+}
+
+type UpdateApiKeyRequest struct {
+	*http.Request
+}
+
+func NewUpdateApiKeyRequest(url string, vars *UpdateApiKeyVariables) (*UpdateApiKeyRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation UpdateApiKey($input: ApiKeyChanges!) {
+  updateApiKey(input: $input) {
+    id
+    name
+    expiresAt
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &UpdateApiKeyRequest{req}, nil
+}
+
+func (req *UpdateApiKeyRequest) Execute(client *http.Client) (*UpdateApiKeyResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result UpdateApiKeyResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func UpdateApiKey(url string, client *http.Client, vars *UpdateApiKeyVariables) (*UpdateApiKeyResponse, error) {
+	req, err := NewUpdateApiKeyRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) UpdateApiKey(vars *UpdateApiKeyVariables) (*UpdateApiKeyResponse, error) {
+	return UpdateApiKey(client.Url, client.Client, vars)
 }
 
 //
@@ -2829,6 +2905,15 @@ const (
 	ActionVIEW   Action = "VIEW"
 )
 
+type ApiKeyAttribute string
+
+const (
+	ApiKeyAttributeCREATEDAT ApiKeyAttribute = "CREATED_AT"
+	ApiKeyAttributeEXPIRESAT ApiKeyAttribute = "EXPIRES_AT"
+	ApiKeyAttributeNAME      ApiKeyAttribute = "NAME"
+	ApiKeyAttributeUPDATEDAT ApiKeyAttribute = "UPDATED_AT"
+)
+
 type AuditLogIdentityType string
 
 const (
@@ -3095,6 +3180,27 @@ type AccountsFilters struct {
 	Filters *[]AccountsFilter `json:"filters,omitempty"`
 }
 
+type ApiKeyChanges struct {
+	ExpiresAt *String `json:"expiresAt,omitempty"`
+	ID        String  `json:"id"`
+	Name      *String `json:"name,omitempty"`
+}
+
+type ApiKeyFilter struct {
+	Exclusive *Boolean        `json:"exclusive,omitempty"`
+	Field     ApiKeyAttribute `json:"field"`
+	Values    *[]String       `json:"values,omitempty"`
+}
+
+type ApiKeyFilters struct {
+	Filters *[]ApiKeyFilter `json:"filters,omitempty"`
+}
+
+type ApiKeySort struct {
+	Field ApiKeyAttribute `json:"field"`
+	Order SortOrder       `json:"order"`
+}
+
 type AuditLogCountInput struct {
 	TimeRangeEnd   *String `json:"timeRangeEnd,omitempty"`
 	TimeRangeStart *String `json:"timeRangeStart,omitempty"`
@@ -3232,8 +3338,12 @@ type CustomerApiKeyIdInput struct {
 }
 
 type CustomerApiKeysInput struct {
-	Limit *Int `json:"limit,omitempty"`
-	Page  *Int `json:"page,omitempty"`
+	Filters         *ApiKeyFilters `json:"filters,omitempty"`
+	HasRoleBindings *Boolean       `json:"hasRoleBindings,omitempty"`
+	Limit           *Int           `json:"limit,omitempty"`
+	Page            *Int           `json:"page,omitempty"`
+	Search          *Search        `json:"search,omitempty"`
+	Sort            *ApiKeySort    `json:"sort,omitempty"`
 }
 
 type CustomerComponentsResolverInput struct {
@@ -3403,7 +3513,8 @@ type NewAccount struct {
 }
 
 type NewApiKey struct {
-	Name String `json:"name"`
+	ExpiresAt *String `json:"expiresAt,omitempty"`
+	Name      String  `json:"name"`
 }
 
 type NewComponent struct {
@@ -3610,12 +3721,15 @@ type AccountState struct {
 }
 
 type ApiKey struct {
-	ChangeDetails ChangeDetails `json:"changeDetails"`
-	CreatedAt     String        `json:"createdAt"`
-	ID            String        `json:"id"`
-	Name          String        `json:"name"`
-	Secret        String        `json:"secret"`
-	UpdatedAt     String        `json:"updatedAt"`
+	ChangeDetails ChangeDetails       `json:"changeDetails"`
+	CreatedAt     String              `json:"createdAt"`
+	ExpiresAt     *String             `json:"expiresAt,omitempty"`
+	ID            String              `json:"id"`
+	LastUsedAt    *String             `json:"lastUsedAt,omitempty"`
+	Name          String              `json:"name"`
+	RoleBindings  *RoleBindingResults `json:"roleBindings,omitempty"`
+	Secret        String              `json:"secret"`
+	UpdatedAt     String              `json:"updatedAt"`
 }
 
 type ApiKeyResults struct {
@@ -3687,6 +3801,18 @@ type CloudAccountStats struct {
 type CloudAccountStatus struct {
 	Failed     Int `json:"failed"`
 	Successful Int `json:"successful"`
+}
+
+type CloudRegion struct {
+	ID   String `json:"id"`
+	Name String `json:"name"`
+}
+
+type CloudRegions struct {
+	AwsChina    *[]CloudRegion `json:"awsChina,omitempty"`
+	AwsPublic   *[]CloudRegion `json:"awsPublic,omitempty"`
+	AzureChina  *[]CloudRegion `json:"azureChina,omitempty"`
+	AzurePublic *[]CloudRegion `json:"azurePublic,omitempty"`
 }
 
 type Compliance struct {
@@ -3860,6 +3986,7 @@ type Mutation struct {
 	RebuildTemplate        Template    `json:"rebuildTemplate"`
 	RecheckAccount         Account     `json:"recheckAccount"`
 	UpdateAccount          Account     `json:"updateAccount"`
+	UpdateApiKey           ApiKey      `json:"updateApiKey"`
 	UpdateComponent        Component   `json:"updateComponent"`
 	UpdateRole             Role        `json:"updateRole"`
 	UpdateRoleBinding      RoleBinding `json:"updateRoleBinding"`
@@ -3877,31 +4004,32 @@ type ProviderStats struct {
 }
 
 type Query struct {
-	Account              Account              `json:"account"`
-	Accounts             AccountResults       `json:"accounts"`
-	ApiKey               ApiKey               `json:"apiKey"`
-	ApiKeys              ApiKeyResults        `json:"apiKeys"`
-	AuditLogCount        AuditLogCountResults `json:"auditLogCount"`
-	AuditLogSearch       AuditLogResults      `json:"auditLogSearch"`
-	AuditLogSearchReport AuditLogReport       `json:"auditLogSearchReport"`
-	Component            Component            `json:"component"`
-	Components           ComponentResults     `json:"components"`
-	Customer             Customer             `json:"customer"`
-	Customers            CustomerResults      `json:"customers"`
-	CustomerStats        CustomerStats        `json:"customerStats"`
-	Distribution         Distribution         `json:"distribution"`
-	Distributions        DistributionResults  `json:"distributions"`
-	Image                Image                `json:"image"`
-	Images               ImageResults         `json:"images"`
-	Role                 Role                 `json:"role"`
-	RoleBinding          RoleBinding          `json:"roleBinding"`
-	RoleBindings         RoleBindingResults   `json:"roleBindings"`
-	Roles                RoleResults          `json:"roles"`
-	Settings             SettingsResult       `json:"settings"`
-	Template             Template             `json:"template"`
-	Templates            TemplateResults      `json:"templates"`
-	Variable             Variable             `json:"variable"`
-	Variables            VariableResults      `json:"variables"`
+	Account              Account                    `json:"account"`
+	Accounts             AccountResults             `json:"accounts"`
+	ApiKey               ApiKey                     `json:"apiKey"`
+	ApiKeys              ApiKeyResults              `json:"apiKeys"`
+	AuditLogCount        AuditLogCountResults       `json:"auditLogCount"`
+	AuditLogSearch       AuditLogResults            `json:"auditLogSearch"`
+	AuditLogSearchReport AuditLogReport             `json:"auditLogSearchReport"`
+	Component            Component                  `json:"component"`
+	Components           ComponentResults           `json:"components"`
+	Customer             Customer                   `json:"customer"`
+	Customers            CustomerResults            `json:"customers"`
+	CustomerStats        CustomerStats              `json:"customerStats"`
+	Distribution         Distribution               `json:"distribution"`
+	Distributions        DistributionResults        `json:"distributions"`
+	Image                Image                      `json:"image"`
+	Images               ImageResults               `json:"images"`
+	Role                 Role                       `json:"role"`
+	RoleBinding          RoleBinding                `json:"roleBinding"`
+	RoleBindings         RoleBindingResults         `json:"roleBindings"`
+	RoleBindingsByUsers  RoleBindingsByUsersResults `json:"roleBindingsByUsers"`
+	Roles                RoleResults                `json:"roles"`
+	Settings             SettingsResult             `json:"settings"`
+	Template             Template                   `json:"template"`
+	Templates            TemplateResults            `json:"templates"`
+	Variable             Variable                   `json:"variable"`
+	Variables            VariableResults            `json:"variables"`
 }
 
 type Rebuild struct {
@@ -3934,10 +4062,22 @@ type RoleBinding struct {
 	UpdatedAt     String        `json:"updatedAt"`
 }
 
+type RoleBindingByUser struct {
+	Kind         Kind           `json:"kind"`
+	RoleBindings *[]RoleBinding `json:"roleBindings,omitempty"`
+	Subject      String         `json:"subject"`
+}
+
 type RoleBindingResults struct {
 	Count   Int            `json:"count"`
 	Pages   Int            `json:"pages"`
 	Results *[]RoleBinding `json:"results,omitempty"`
+}
+
+type RoleBindingsByUsersResults struct {
+	Count   Int                  `json:"count"`
+	Pages   Int                  `json:"pages"`
+	Results *[]RoleBindingByUser `json:"results,omitempty"`
 }
 
 type RoleResults struct {
@@ -3952,10 +4092,11 @@ type Rule struct {
 }
 
 type SettingsResult struct {
-	AwsChinaRegions   *[]String `json:"awsChinaRegions,omitempty"`
-	AwsRegions        *[]String `json:"awsRegions,omitempty"`
-	AzureChinaRegions *[]String `json:"azureChinaRegions,omitempty"`
-	AzureRegions      *[]String `json:"azureRegions,omitempty"`
+	AwsChinaRegions   *[]String    `json:"awsChinaRegions,omitempty"`
+	AwsRegions        *[]String    `json:"awsRegions,omitempty"`
+	AzureChinaRegions *[]String    `json:"azureChinaRegions,omitempty"`
+	AzureRegions      *[]String    `json:"azureRegions,omitempty"`
+	CloudRegions      CloudRegions `json:"cloudRegions"`
 }
 
 type SourceDistribution struct {

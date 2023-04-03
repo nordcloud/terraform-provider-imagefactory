@@ -5,6 +5,7 @@ query GetApiKey($input: CustomerApiKeyIdInput!) {
   apiKey(input: $input) {
     id
     name
+    expiresAt
   }
 }
 
@@ -13,6 +14,7 @@ query GetApiKeys($input: CustomerApiKeysInput!) {
     results {
       id
       name
+      expiresAt
     }
   }
 }
@@ -21,7 +23,16 @@ mutation CreateApiKey($input: NewApiKey!) {
   createApiKey(input: $input) {
     id
     name
+    expiresAt
     secret
+  }
+}
+
+mutation UpdateApiKey($input: ApiKeyChanges!) {
+  updateApiKey(input: $input) {
+    id
+    name
+    expiresAt
   }
 }
 

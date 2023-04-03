@@ -514,15 +514,31 @@ func (c APIClient) CreateAPIKey(input NewAPIKey) (APIKey, error) {
 		Input: graphql.NewApiKey(input),
 	})
 	if err != nil {
-		return APIKey{}, fmt.Errorf("getting create role request %w", err)
+		return APIKey{}, fmt.Errorf("getting create api key request %w", err)
 	}
 
 	r := &graphql.Mutation{}
 	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
-		return APIKey{}, fmt.Errorf("creating role %w", err)
+		return APIKey{}, fmt.Errorf("creating api key %w", err)
 	}
 
 	return APIKey(r.CreateApiKey), nil
+}
+
+func (c APIClient) UpdateAPIKey(input APIKeyChanges) (APIKey, error) {
+	req, err := graphql.NewUpdateApiKeyRequest(c.apiURL, &graphql.UpdateApiKeyVariables{
+		Input: graphql.ApiKeyChanges(input),
+	})
+	if err != nil {
+		return APIKey{}, fmt.Errorf("getting update api key request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return APIKey{}, fmt.Errorf("updating api key %w", err)
+	}
+
+	return APIKey(r.UpdateApiKey), nil
 }
 
 func (c APIClient) DeleteAPIKey(apiKeyID string) error {

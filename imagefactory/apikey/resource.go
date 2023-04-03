@@ -4,6 +4,7 @@ package apikey
 
 import (
 	"context"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -17,7 +18,7 @@ func Resource() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceAPIKeyCreate,
 		ReadContext:   resourceAPIKeyRead,
-		UpdateContext: schema.NoopContext,
+		UpdateContext: resourceAPIKeyUpdate,
 		DeleteContext: resourceAPIKeyDelete,
 		Schema:        apiKeySchema,
 		Importer: &schema.ResourceImporter{
@@ -33,6 +34,12 @@ func resourceAPIKeyCreate(ctx context.Context, d *schema.ResourceData, m interfa
 		Name: graphql.String(d.Get("name").(string)),
 	}
 
+	if len(d.Get("expires_at").(string)) > 0 {
+		expiresAtDate, _ := time.Parse(expiresAtDateFormat, d.Get("expires_at").(string))
+		expiresAt := graphql.String(expiresAtDate.Format(time.RFC3339))
+		input.ExpiresAt = &expiresAt
+	}
+
 	apiKey, err := c.APIClient.CreateAPIKey(input)
 	if err != nil {
 		return diag.FromErr(err)
@@ -45,6 +52,31 @@ func resourceAPIKeyRead(ctx context.Context, d *schema.ResourceData, m interface
 	c := m.(*config.Config)
 
 	apiKey, err := c.APIClient.GetAPIKey(d.Id())
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	return setProps(d, apiKey)
+}
+
+func resourceAPIKeyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*config.Config)
+
+	apiKeyID := d.Id()
+	name := graphql.String(d.Get("name").(string))
+
+	input := sdk.APIKeyChanges{
+		ID:   graphql.String(apiKeyID),
+		Name: &name,
+	}
+
+	if len(d.Get("expires_at").(string)) > 0 {
+		expiresAtDate, _ := time.Parse(expiresAtDateFormat, d.Get("expires_at").(string))
+		expiresAt := graphql.String(expiresAtDate.Format(time.RFC3339))
+		input.ExpiresAt = &expiresAt
+	}
+
+	apiKey, err := c.APIClient.UpdateAPIKey(input)
 	if err != nil {
 		return diag.FromErr(err)
 	}

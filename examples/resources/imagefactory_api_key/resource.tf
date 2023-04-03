@@ -7,3 +7,14 @@ resource "imagefactory_api_key" "api_key" {
 output "api_key" {
   value = imagefactory_api_key.api_key
 }
+
+# Create API key with expiration date
+
+resource "imagefactory_api_key" "api_key_with_expiration" {
+  name       = "IF API Key"
+  expires_at = "2023-04-27"
+}
+
+output "api_key_with_expiration" {
+  value = imagefactory_api_key.api_key_with_expiration
+}

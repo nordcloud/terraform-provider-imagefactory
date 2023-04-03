@@ -156,15 +156,18 @@ input AccountChanges {
 }
 
 
-# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 type ApiKey {
 	id: String!
 	name: String!
 	secret: String!
+	expiresAt: String
+	lastUsedAt: String
 	changeDetails: ChangeDetails!
 	createdAt: String!
 	updatedAt: String!
+	roleBindings(input: CustomerRoleBindingsInput!): RoleBindingResults
 }
 
 type ApiKeyResults {
@@ -175,7 +178,21 @@ type ApiKeyResults {
 
 input NewApiKey {
 	name: String!
+	"""
+	Valid format - ISO 8601, example: 2023-11-04T00:00:00
+	"""
+	expiresAt: String
 }
+
+input ApiKeyChanges {
+	id: String!
+	name: String
+	"""
+	Valid format - ISO 8601, example: 2023-11-04T00:00:00
+	"""
+	expiresAt: String
+}
+
 
 # Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
 
@@ -850,10 +867,42 @@ input RoleBindingChanges {
 	roleId: String!
 }
 
+type RoleBindingByUser {
+	kind: Kind!
+	"""
+	subject defines the binding target - user email or the api key id.
+	"""
+	subject: String!
+	roleBindings: [RoleBinding!]!
+}
 
-# Copyright 2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+type RoleBindingsByUsersResults {
+	results: [RoleBindingByUser!]
+	pages: Int!
+	count: Int!
+}
+
+
+# Copyright 2022-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+type CloudRegion {
+	id: String!
+	name: String!
+}
+
+type CloudRegions {
+	awsPublic: [CloudRegion!]
+	awsChina: [CloudRegion!]
+	azurePublic: [CloudRegion!]
+	azureChina: [CloudRegion!]
+}
 
 type SettingsResult {
+	cloudRegions: CloudRegions!
+
+	"""
+	deprecated, please use cloudRegions
+	"""
 	awsRegions: [String!]
 	awsChinaRegions: [String!]
 	azureRegions: [String!]
@@ -1191,7 +1240,29 @@ type Query {
 }
 
 
-# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+
+enum ApiKeyAttribute {
+	NAME
+	CREATED_AT
+	UPDATED_AT
+	EXPIRES_AT
+}
+
+input ApiKeySort {
+	order: SortOrder!
+	field: ApiKeyAttribute!
+}
+
+input ApiKeyFilter {
+	field: ApiKeyAttribute!
+	values: [String!]!
+	exclusive: Boolean
+}
+
+input ApiKeyFilters {
+	filters: [ApiKeyFilter!]!
+}
 
 input CustomerApiKeyIdInput {
 	apiKeyId: String!
@@ -1200,6 +1271,10 @@ input CustomerApiKeyIdInput {
 input CustomerApiKeysInput {
 	page: Int
 	limit: Int
+	sort: ApiKeySort
+	search: Search
+	filters: ApiKeyFilters
+	hasRoleBindings: Boolean
 }
 
 extend type Mutation {
@@ -1218,6 +1293,11 @@ extend type Mutation {
 	role to it to make it working. Please check `createRoleBinding` mutation.
 	"""
 	createApiKey(input: NewApiKey!): ApiKey!
+
+	"""
+	updateApiKey partially updates apiKey.
+	"""
+	updateApiKey(input: ApiKeyChanges!): ApiKey!
 
 	"""
 	deleteApiKey removes existing apiKey.
@@ -1628,6 +1708,11 @@ extend type Query {
 	roleBindings gets single page of role bindings.
 	"""
 	roleBindings(input: CustomerRoleBindingsInput!): RoleBindingResults!
+
+	"""
+	roleBindingsByUsers gets single page of role bindings grouped by Users.
+	"""
+	roleBindingsByUsers(input: CustomerRoleBindingsInput!): RoleBindingsByUsersResults!
 }
 
 

@@ -94,6 +94,8 @@ func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig
 
 	e := graphql.Boolean(m["exclude_from_latest"].(bool))
 
+	eol := graphql.Boolean(m["eol_date_option"].(bool))
+
 	rr := []graphql.String{}
 	for _, v := range m["replica_regions"].([]interface{}) {
 		rr = append(rr, graphql.String(v.(string)))
@@ -101,6 +103,7 @@ func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig
 
 	out := &graphql.NewTemplateAZUREConfig{
 		ExcludeFromLatest: &e,
+		EolDateOption:     &eol,
 		ReplicaRegions:    &rr,
 		VmImageDefinition: expandVMImageDefinitionTemplateAzureConfig(m["vm_image_definition"].([]interface{})),
 	}

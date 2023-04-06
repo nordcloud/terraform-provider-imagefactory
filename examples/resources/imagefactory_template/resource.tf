@@ -92,6 +92,7 @@ resource "imagefactory_template" "template" {
   config {
     azure {
       exclude_from_latest = true
+      eol_date_option = true
       replica_regions     = ["westeurope"]
       vm_image_definition {
         name  = "Ubuntu1804"

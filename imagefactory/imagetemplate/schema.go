@@ -76,6 +76,7 @@ var azureTemplateConfigResource = &schema.Resource{
 		"eol_date_option": {
 			Type:        schema.TypeBool,
 			Optional:    true,
+			Default:     true,
 			Description: "Default value is set to true",
 		},
 		"replica_regions": {

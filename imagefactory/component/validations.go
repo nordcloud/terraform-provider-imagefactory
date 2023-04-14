@@ -23,4 +23,5 @@ var validOSTypes = []string{
 var validProvisioners = []string{
 	"POWERSHELL",
 	"SHELL",
+	"ANSIBLE",
 }

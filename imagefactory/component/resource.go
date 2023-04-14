@@ -97,7 +97,7 @@ func resourceComponentUpdate(ctx context.Context, d *schema.ResourceData, m inte
 		input := sdk.NewComponentContent{
 			ID:                graphql.String(componentID),
 			Script:            graphql.String(m["script"].(string)),
-			ScriptProvisioner: graphql.ShellScriptProvisioner(m["provisioner"].(string)),
+			ScriptProvisioner: graphql.ScriptProvisioner(m["provisioner"].(string)),
 		}
 
 		component, err = c.APIClient.CreateComponentVersion(input)

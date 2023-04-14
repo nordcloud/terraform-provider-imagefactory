@@ -3117,13 +3117,6 @@ const (
 	SearchAlgorithmSUBSTRINGMATCH SearchAlgorithm = "SUBSTRING_MATCH"
 )
 
-type ShellScriptProvisioner string
-
-const (
-	ShellScriptProvisionerPOWERSHELL ShellScriptProvisioner = "POWERSHELL"
-	ShellScriptProvisionerSHELL      ShellScriptProvisioner = "SHELL"
-)
-
 type SortOrder string
 
 const (
@@ -3527,9 +3520,9 @@ type NewComponent struct {
 }
 
 type NewComponentContent struct {
-	ID                String                 `json:"id"`
-	Script            String                 `json:"script"`
-	ScriptProvisioner ShellScriptProvisioner `json:"scriptProvisioner"`
+	ID                String            `json:"id"`
+	Script            String            `json:"script"`
+	ScriptProvisioner ScriptProvisioner `json:"scriptProvisioner"`
 }
 
 type NewNotification struct {
@@ -3573,8 +3566,8 @@ type NewTemplateAWSConfig struct {
 }
 
 type NewTemplateAZUREConfig struct {
-	ExcludeFromLatest *Boolean              `json:"excludeFromLatest,omitempty"`
 	EolDateOption     *Boolean              `json:"eolDateOption,omitempty"`
+	ExcludeFromLatest *Boolean              `json:"excludeFromLatest,omitempty"`
 	ReplicaRegions    *[]String             `json:"replicaRegions,omitempty"`
 	VmImageDefinition *NewVMImageDefinition `json:"vmImageDefinition,omitempty"`
 }
@@ -3607,8 +3600,8 @@ type NewVariable struct {
 }
 
 type NewVersionedContent struct {
-	Script            String                 `json:"script"`
-	ScriptProvisioner ShellScriptProvisioner `json:"scriptProvisioner"`
+	Script            String            `json:"script"`
+	ScriptProvisioner ScriptProvisioner `json:"scriptProvisioner"`
 }
 
 type NewVMImageDefinition struct {
@@ -4136,8 +4129,8 @@ type TemplateAWSConfig struct {
 }
 
 type TemplateAZUREConfig struct {
-	ExcludeFromLatest *Boolean           `json:"excludeFromLatest,omitempty"`
 	EolDateOption     *Boolean           `json:"eolDateOption,omitempty"`
+	ExcludeFromLatest *Boolean           `json:"excludeFromLatest,omitempty"`
 	ReplicaRegions    *[]String          `json:"replicaRegions,omitempty"`
 	VmImageDefinition *VMImageDefinition `json:"vmImageDefinition,omitempty"`
 }

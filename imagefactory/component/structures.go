@@ -32,7 +32,7 @@ func expandContent(in []interface{}) graphql.NewVersionedContent {
 	m := in[0].(map[string]interface{})
 	return graphql.NewVersionedContent{
 		Script:            graphql.String(m["script"].(string)),
-		ScriptProvisioner: graphql.ShellScriptProvisioner(m["provisioner"].(string)),
+		ScriptProvisioner: graphql.ScriptProvisioner(m["provisioner"].(string)),
 	}
 }
 

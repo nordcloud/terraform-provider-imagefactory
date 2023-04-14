@@ -994,6 +994,7 @@ type VMImageDefinition {
 type TemplateAZUREConfig {
 	replicaRegions: [String]
 	excludeFromLatest: Boolean
+	eolDateOption: Boolean
 	vmImageDefinition: VMImageDefinition
 }
 
@@ -1089,6 +1090,7 @@ input NewVMImageDefinition {
 input NewTemplateAZUREConfig {
 	replicaRegions: [String]
 	excludeFromLatest: Boolean
+	eolDateOption: Boolean = true
 	vmImageDefinition: NewVMImageDefinition
 }
 

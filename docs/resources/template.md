@@ -107,6 +107,7 @@ resource "imagefactory_template" "template" {
   config {
     azure {
       exclude_from_latest = true
+      eol_date_option = true
       replica_regions     = ["westeurope"]
       vm_image_definition {
         name  = "Ubuntu1804"
@@ -226,6 +227,7 @@ Optional:
 
 Optional:
 
+- `eol_date_option` (Boolean) Default value is set to true
 - `exclude_from_latest` (Boolean)
 - `replica_regions` (List of String)
 - `vm_image_definition` (Block List) (see [below for nested schema](#nestedblock--config--azure--vm_image_definition))

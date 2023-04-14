@@ -3574,6 +3574,7 @@ type NewTemplateAWSConfig struct {
 
 type NewTemplateAZUREConfig struct {
 	ExcludeFromLatest *Boolean              `json:"excludeFromLatest,omitempty"`
+	EolDateOption     *Boolean              `json:"eolDateOption,omitempty"`
 	ReplicaRegions    *[]String             `json:"replicaRegions,omitempty"`
 	VmImageDefinition *NewVMImageDefinition `json:"vmImageDefinition,omitempty"`
 }
@@ -4136,6 +4137,7 @@ type TemplateAWSConfig struct {
 
 type TemplateAZUREConfig struct {
 	ExcludeFromLatest *Boolean           `json:"excludeFromLatest,omitempty"`
+	EolDateOption     *Boolean           `json:"eolDateOption,omitempty"`
 	ReplicaRegions    *[]String          `json:"replicaRegions,omitempty"`
 	VmImageDefinition *VMImageDefinition `json:"vmImageDefinition,omitempty"`
 }

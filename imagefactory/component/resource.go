@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package component
 
@@ -97,7 +97,7 @@ func resourceComponentUpdate(ctx context.Context, d *schema.ResourceData, m inte
 		input := sdk.NewComponentContent{
 			ID:                graphql.String(componentID),
 			Script:            graphql.String(m["script"].(string)),
-			ScriptProvisioner: graphql.ShellScriptProvisioner(m["provisioner"].(string)),
+			ScriptProvisioner: graphql.ScriptProvisioner(m["provisioner"].(string)),
 		}
 
 		component, err = c.APIClient.CreateComponentVersion(input)

@@ -1,4 +1,4 @@
-// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package component
 
@@ -32,7 +32,7 @@ func expandContent(in []interface{}) graphql.NewVersionedContent {
 	m := in[0].(map[string]interface{})
 	return graphql.NewVersionedContent{
 		Script:            graphql.String(m["script"].(string)),
-		ScriptProvisioner: graphql.ShellScriptProvisioner(m["provisioner"].(string)),
+		ScriptProvisioner: graphql.ScriptProvisioner(m["provisioner"].(string)),
 	}
 }
 

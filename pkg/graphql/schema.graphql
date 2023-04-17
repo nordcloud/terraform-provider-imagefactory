@@ -389,7 +389,7 @@ type ChangeDetails {
 }
 
 
-# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum ComponentType {
 	SYSTEM
@@ -448,19 +448,13 @@ type ComponentResults {
 	count: Int!
 }
 
-
-enum ShellScriptProvisioner {
-	POWERSHELL
-	SHELL
-}
-
 """
 NewVersionedContent contains the script that will be executed by the component.
 
 Script provided as a plain text is saved in the ImageFactory S3. You can access it later using the presigned URL.
 """
 input NewVersionedContent {
-	scriptProvisioner: ShellScriptProvisioner!
+	scriptProvisioner: ScriptProvisioner!
 	script: String!
 }
 
@@ -484,7 +478,7 @@ input ComponentChanges {
 
 input NewComponentContent {
 	id: String!
-	scriptProvisioner: ShellScriptProvisioner!
+	scriptProvisioner: ScriptProvisioner!
 	script: String!
 }
 
@@ -994,8 +988,8 @@ type VMImageDefinition {
 type TemplateAZUREConfig {
 	replicaRegions: [String]
 	excludeFromLatest: Boolean
-	eolDateOption: Boolean
 	vmImageDefinition: VMImageDefinition
+	eolDateOption: Boolean
 }
 
 type TemplateConfig {
@@ -1090,8 +1084,8 @@ input NewVMImageDefinition {
 input NewTemplateAZUREConfig {
 	replicaRegions: [String]
 	excludeFromLatest: Boolean
-	eolDateOption: Boolean = true
 	vmImageDefinition: NewVMImageDefinition
+	eolDateOption: Boolean
 }
 
 """

@@ -82,10 +82,6 @@ var azureTemplateConfigResource = &schema.Resource{
 		"replica_regions": {
 			Type:     schema.TypeList,
 			Optional: true,
-			Elem: &schema.Schema{
-				Type:         schema.TypeString,
-				ValidateFunc: validation.StringInSlice(validAzureRegions, false),
-			},
 		},
 		"vm_image_definition": {
 			Type:     schema.TypeList,

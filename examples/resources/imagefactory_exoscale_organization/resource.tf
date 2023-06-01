@@ -1,4 +1,4 @@
-// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 resource "imagefactory_exoscale_organization" "exoscale_organization" {
   alias             = "IF Exoscale Organization"

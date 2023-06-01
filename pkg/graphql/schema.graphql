@@ -68,6 +68,21 @@ input AWSCredentials {
 	roles: [AWSCredentialsRole]
 }
 
+input AzureCredentials {
+	password: String!
+	appId: String!
+	tenantId: String!
+	storageAccountKey: String!
+	storageAccount: String!
+	sharedImageGallery: String!
+	resourceGroupName: String!
+}
+
+input ExoscaleCredentials {
+	apiKey: String!
+	apiSecret: String!
+}
+
 input GCPCredentials {
 	type: String!
 	privateKey: String!
@@ -81,16 +96,6 @@ input GCPCredentials {
 	privateKeyId: String!
 }
 
-input AzureCredentials {
-	password: String!
-	appId: String!
-	tenantId: String!
-	storageAccountKey: String!
-	storageAccount: String!
-	sharedImageGallery: String!
-	resourceGroupName: String!
-}
-
 input IBMCloudCredentials {
 	apikey: String!
 	region: String!
@@ -100,10 +105,10 @@ input IBMCloudCredentials {
 }
 
 """
-AccountCredentials defines the credentials used to access AWS account, GCP project or Azure subscription where
-the result image created by ImageFactory should be distributed.
+AccountCredentials defines the credentials used to access AWS account, Azure subscription, Exoscale organization, GCP project
+or IBM Cloud account where the result image created by ImageFactory should be distributed.
 
-Please note that only one of the AWS, GCP or Azure credentials can be provided and it has match the provider
+Please note that only one of the AWS, Azure, Exoscale, GCP or IBMCloud credentials can be provided and it has match the provider
 defined in account model.
 
 To get the account credentials, please check the onboarding section in ImageFactory documentation:
@@ -111,8 +116,13 @@ https://docs.imagefactory.nordcloudapp.com/onboarding
 """
 input AccountCredentials {
 	aws: AWSCredentials
+	aws: AWSCredentials
+	gcp: GCPCredentials
+	aws: AWSCredentials
 	gcp: GCPCredentials
 	azure: AzureCredentials
+	exoscale: ExoscaleCredentials
+	gcp: GCPCredentials
 	ibmcloud: IBMCloudCredentials
 }
 
@@ -330,6 +340,7 @@ input AuditLogCountInput {
 enum Provider {
 	AWS
 	AZURE
+	EXOSCALE
 	GCP
 	IBMCLOUD
 	VMWARE
@@ -889,6 +900,7 @@ type CloudRegions {
 	awsChina: [CloudRegion!]
 	azurePublic: [CloudRegion!]
 	azureChina: [CloudRegion!]
+	exoscalePublic: [CloudRegion!]
 }
 
 type SettingsResult {
@@ -992,6 +1004,10 @@ type TemplateAZUREConfig {
 	eolDateOption: Boolean
 }
 
+type TemplateExoscaleConfig {
+	zone: String
+}
+
 type TemplateConfig {
 	buildComponents: [TemplateComponent!]
 	testComponents: [TemplateComponent!]
@@ -1000,6 +1016,7 @@ type TemplateConfig {
 	scope: Scope
 	aws: TemplateAWSConfig
 	azure: TemplateAZUREConfig
+	exoscale: TemplateExoscaleConfig
 
 	"""
 	cloudAccountIds contains a list of Cloud Account IDs to which we will distribute the image
@@ -1088,6 +1105,10 @@ input NewTemplateAZUREConfig {
 	eolDateOption: Boolean
 }
 
+input NewTemplateExoscaleConfig {
+	zone: String
+}
+
 """
 NewTemplateConfig defines the image customization.
 
@@ -1121,6 +1142,11 @@ input NewTemplateConfig {
 	azure defines additional configuration for the Azure provider. This is optional and can be used only for AZURE template.
 	"""
 	azure: NewTemplateAZUREConfig
+
+	"""
+	exoscale defines additional configuration for the Exoscale provider. This is required for the Exoscale image templates.
+	"""
+	exoscale: NewTemplateExoscaleConfig
 
 	"""
 	cloudAccountIds defines a list of Cloud Account IDs to which we will distribute the image.

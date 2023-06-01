@@ -20,6 +20,8 @@ func getCloudProviderKeyName(provider graphql.Provider) string {
 		cloudProviderKey = "account_id"
 	case graphql.ProviderAZURE:
 		cloudProviderKey = "subscription_id"
+	case graphql.ProviderEXOSCALE:
+		cloudProviderKey = "organization_name"
 	case graphql.ProviderGCP:
 		cloudProviderKey = "project_id"
 	default:
@@ -49,6 +51,8 @@ func accountCreate(d *schema.ResourceData, m interface{}, provider graphql.Provi
 		}
 	case graphql.ProviderAZURE:
 		input.Credentials = expandAzureSubscriptionAccess(d.Get("access").([]interface{}))
+	case graphql.ProviderEXOSCALE:
+		input.Credentials = expandExoscaleOrganizationAccess(d.Get("access").([]interface{}))
 	case graphql.ProviderGCP:
 		input.Credentials = expandGcpOrganizationAccess(d.Get("access").([]interface{}))
 	case graphql.ProviderIBMCLOUD:
@@ -81,7 +85,7 @@ func resourceAccountRead(ctx context.Context, d *schema.ResourceData, m interfac
 	return setProps(d, account)
 }
 
-func resourceAccountUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { // nolint: dupl
+func accountUpdate(d *schema.ResourceData, m interface{}, provider graphql.Provider, scope graphql.Scope) diag.Diagnostics { // nolint: dupl
 	c := m.(*config.Config)
 
 	accountID := d.Id()
@@ -91,6 +95,31 @@ func resourceAccountUpdate(ctx context.Context, d *schema.ResourceData, m interf
 		ID:    graphql.String(accountID),
 		Alias: &alias,
 	}
+
+	if d.HasChange("access") {
+		var creds graphql.AccountCredentials
+
+		switch provider {
+		case graphql.ProviderAWS:
+			creds = expandAwsAccountAccess(d.Get("access").([]interface{}), scope)
+			properties, ok := d.GetOk("properties")
+			if ok {
+				input.Properties = expandAwsAccountProperties(properties.([]interface{}))
+			}
+		case graphql.ProviderAZURE:
+			creds = expandAzureSubscriptionAccess(d.Get("access").([]interface{}))
+		case graphql.ProviderEXOSCALE:
+			creds = expandExoscaleOrganizationAccess(d.Get("access").([]interface{}))
+		case graphql.ProviderGCP:
+			creds = expandGcpOrganizationAccess(d.Get("access").([]interface{}))
+		case graphql.ProviderIBMCLOUD:
+			creds = expandIMBCloudAccountAccess(d.Get("access").([]interface{}))
+		default:
+		}
+
+		input.Credentials = &creds
+	}
+
 	account, err := c.APIClient.UpdateAccount(input)
 	if err != nil {
 		return diag.FromErr(err)

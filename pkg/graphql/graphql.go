@@ -3063,6 +3063,7 @@ type Provider string
 const (
 	ProviderAWS      Provider = "AWS"
 	ProviderAZURE    Provider = "AZURE"
+	ProviderEXOSCALE Provider = "EXOSCALE"
 	ProviderGCP      Provider = "GCP"
 	ProviderIBMCLOUD Provider = "IBMCLOUD"
 	ProviderVMWARE   Provider = "VMWARE"
@@ -3159,6 +3160,7 @@ type AccountCloudPropertiesInput struct {
 type AccountCredentials struct {
 	Aws      *AWSCredentials      `json:"aws,omitempty"`
 	Azure    *AzureCredentials    `json:"azure,omitempty"`
+	Exoscale *ExoscaleCredentials `json:"exoscale,omitempty"`
 	Gcp      *GCPCredentials      `json:"gcp,omitempty"`
 	Ibmcloud *IBMCloudCredentials `json:"ibmcloud,omitempty"`
 }
@@ -3459,6 +3461,11 @@ type DistributionsSort struct {
 	Order SortOrder             `json:"order"`
 }
 
+type ExoscaleCredentials struct {
+	ApiKey    String `json:"apiKey"`
+	ApiSecret String `json:"apiSecret"`
+}
+
 type GCPCredentials struct {
 	AuthProviderX509CertUrl String `json:"authProviderX509CertUrl"`
 	AuthUri                 String `json:"authUri"`
@@ -3584,14 +3591,19 @@ type NewTemplateComponentProperty struct {
 }
 
 type NewTemplateConfig struct {
-	Aws             *NewTemplateAWSConfig   `json:"aws,omitempty"`
-	Azure           *NewTemplateAZUREConfig `json:"azure,omitempty"`
-	BuildComponents *[]NewTemplateComponent `json:"buildComponents,omitempty"`
-	CloudAccountIds *[]String               `json:"cloudAccountIds,omitempty"`
-	Notifications   *[]NewNotification      `json:"notifications,omitempty"`
-	Scope           *Scope                  `json:"scope,omitempty"`
-	Tags            *[]NewTag               `json:"tags,omitempty"`
-	TestComponents  *[]NewTemplateComponent `json:"testComponents,omitempty"`
+	Aws             *NewTemplateAWSConfig      `json:"aws,omitempty"`
+	Azure           *NewTemplateAZUREConfig    `json:"azure,omitempty"`
+	BuildComponents *[]NewTemplateComponent    `json:"buildComponents,omitempty"`
+	CloudAccountIds *[]String                  `json:"cloudAccountIds,omitempty"`
+	Exoscale        *NewTemplateExoscaleConfig `json:"exoscale,omitempty"`
+	Notifications   *[]NewNotification         `json:"notifications,omitempty"`
+	Scope           *Scope                     `json:"scope,omitempty"`
+	Tags            *[]NewTag                  `json:"tags,omitempty"`
+	TestComponents  *[]NewTemplateComponent    `json:"testComponents,omitempty"`
+}
+
+type NewTemplateExoscaleConfig struct {
+	Zone *String `json:"zone,omitempty"`
 }
 
 type NewVariable struct {
@@ -3803,10 +3815,11 @@ type CloudRegion struct {
 }
 
 type CloudRegions struct {
-	AwsChina    *[]CloudRegion `json:"awsChina,omitempty"`
-	AwsPublic   *[]CloudRegion `json:"awsPublic,omitempty"`
-	AzureChina  *[]CloudRegion `json:"azureChina,omitempty"`
-	AzurePublic *[]CloudRegion `json:"azurePublic,omitempty"`
+	AwsChina       *[]CloudRegion `json:"awsChina,omitempty"`
+	AwsPublic      *[]CloudRegion `json:"awsPublic,omitempty"`
+	AzureChina     *[]CloudRegion `json:"azureChina,omitempty"`
+	AzurePublic    *[]CloudRegion `json:"azurePublic,omitempty"`
+	ExoscalePublic *[]CloudRegion `json:"exoscalePublic,omitempty"`
 }
 
 type Compliance struct {
@@ -4148,14 +4161,19 @@ type TemplateComponentProperty struct {
 }
 
 type TemplateConfig struct {
-	Aws             *TemplateAWSConfig   `json:"aws,omitempty"`
-	Azure           *TemplateAZUREConfig `json:"azure,omitempty"`
-	BuildComponents *[]TemplateComponent `json:"buildComponents,omitempty"`
-	CloudAccountIds *[]String            `json:"cloudAccountIds,omitempty"`
-	Notifications   *[]Notification      `json:"notifications,omitempty"`
-	Scope           *Scope               `json:"scope,omitempty"`
-	Tags            *[]Tag               `json:"tags,omitempty"`
-	TestComponents  *[]TemplateComponent `json:"testComponents,omitempty"`
+	Aws             *TemplateAWSConfig      `json:"aws,omitempty"`
+	Azure           *TemplateAZUREConfig    `json:"azure,omitempty"`
+	BuildComponents *[]TemplateComponent    `json:"buildComponents,omitempty"`
+	CloudAccountIds *[]String               `json:"cloudAccountIds,omitempty"`
+	Exoscale        *TemplateExoscaleConfig `json:"exoscale,omitempty"`
+	Notifications   *[]Notification         `json:"notifications,omitempty"`
+	Scope           *Scope                  `json:"scope,omitempty"`
+	Tags            *[]Tag                  `json:"tags,omitempty"`
+	TestComponents  *[]TemplateComponent    `json:"testComponents,omitempty"`
+}
+
+type TemplateExoscaleConfig struct {
+	Zone *String `json:"zone,omitempty"`
 }
 
 type TemplateResults struct {

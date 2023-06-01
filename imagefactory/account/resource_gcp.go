@@ -86,8 +86,10 @@ func ResourceGCP() *schema.Resource { // nolint: dupl
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 			return accountCreate(d, m, graphql.ProviderGCP, graphql.ScopePUBLIC)
 		},
-		ReadContext:   resourceAccountRead,
-		UpdateContext: resourceAccountUpdate,
+		ReadContext: resourceAccountRead,
+		UpdateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+			return accountUpdate(d, m, graphql.ProviderGCP, graphql.ScopePUBLIC)
+		},
 		DeleteContext: resourceAccountDelete,
 		Schema:        gcpProjectSchema,
 		Importer: &schema.ResourceImporter{

@@ -1,0 +1,1 @@
+terraform import imagefactory_exoscale_organization.tf_name RESOURCE_ID

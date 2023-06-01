@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package account
 
@@ -11,40 +11,20 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
-var azureSubscriptionAccessResource = &schema.Resource{
+var exoscaleOrganizationAccessResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
-		"resource_group_name": {
+		"api_key": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
-		"tenant_id": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"app_id": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"password": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"storage_account": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"storage_account_key": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"shared_image_gallery": {
+		"api_secret": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
 	},
 }
 
-var azureSubscriptionSchema = map[string]*schema.Schema{
+var exoscaleOrganizationSchema = map[string]*schema.Schema{
 	"alias": {
 		Type:     schema.TypeString,
 		Required: true,
@@ -53,14 +33,14 @@ var azureSubscriptionSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
 	},
-	"subscription_id": {
+	"organization_name": {
 		Type:     schema.TypeString,
 		Required: true,
 	},
 	"access": {
 		Type:     schema.TypeList,
 		Optional: true,
-		Elem:     azureSubscriptionAccessResource,
+		Elem:     exoscaleOrganizationAccessResource,
 	},
 	"state": {
 		Type:     schema.TypeMap,
@@ -69,17 +49,17 @@ var azureSubscriptionSchema = map[string]*schema.Schema{
 	},
 }
 
-func ResourceAzure(scope graphql.Scope) *schema.Resource { // nolint: dupl
+func ResourceExoscale() *schema.Resource { // nolint: dupl
 	return &schema.Resource{
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-			return accountCreate(d, m, graphql.ProviderAZURE, scope)
+			return accountCreate(d, m, graphql.ProviderEXOSCALE, graphql.ScopePUBLIC)
 		},
 		ReadContext: resourceAccountRead,
 		UpdateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-			return accountUpdate(d, m, graphql.ProviderAZURE, scope)
+			return accountUpdate(d, m, graphql.ProviderEXOSCALE, graphql.ScopePUBLIC)
 		},
 		DeleteContext: resourceAccountDelete,
-		Schema:        azureSubscriptionSchema,
+		Schema:        exoscaleOrganizationSchema,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},

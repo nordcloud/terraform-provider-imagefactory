@@ -79,8 +79,10 @@ func ResourceAWSChina() *schema.Resource { // nolint: dupl
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 			return accountCreate(d, m, graphql.ProviderAWS, graphql.ScopeCHINA)
 		},
-		ReadContext:   resourceAccountRead,
-		UpdateContext: resourceAccountUpdate,
+		ReadContext: resourceAccountRead,
+		UpdateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+			return accountUpdate(d, m, graphql.ProviderAWS, graphql.ScopeCHINA)
+		},
 		DeleteContext: resourceAccountDelete,
 		Schema:        awsChinaAccountSchema,
 		Importer: &schema.ResourceImporter{

@@ -10,6 +10,7 @@ var validStages = []string{
 var validCloudProviders = []string{
 	"AWS",
 	"AZURE",
+	"EXOSCALE",
 	"GCP",
 	"IBMCLOUD",
 	"VMWARE",

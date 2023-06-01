@@ -48,6 +48,7 @@ var validNotificationTypes = []string{
 var validCloudProviders = []string{
 	string(graphql.ProviderAWS),
 	string(graphql.ProviderAZURE),
+	string(graphql.ProviderEXOSCALE),
 	string(graphql.ProviderGCP),
 	string(graphql.ProviderIBMCLOUD),
 	string(graphql.ProviderVMWARE),

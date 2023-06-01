@@ -95,6 +95,15 @@ var azureTemplateConfigResource = &schema.Resource{
 	},
 }
 
+var exoscaleTemplateConfigResource = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"zone": {
+			Type:     schema.TypeString,
+			Required: true,
+		},
+	},
+}
+
 var templateComponentResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"id": {
@@ -149,6 +158,11 @@ var templateConfigResource = &schema.Resource{
 			Type:     schema.TypeList,
 			Optional: true,
 			Elem:     azureTemplateConfigResource,
+		},
+		"exoscale": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem:     exoscaleTemplateConfigResource,
 		},
 		"build_components": {
 			Type:     schema.TypeList,

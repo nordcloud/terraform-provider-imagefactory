@@ -85,8 +85,10 @@ func ResourceAWS() *schema.Resource { // nolint: dupl
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 			return accountCreate(d, m, graphql.ProviderAWS, graphql.ScopePUBLIC)
 		},
-		ReadContext:   resourceAccountRead,
-		UpdateContext: resourceAccountUpdate,
+		ReadContext: resourceAccountRead,
+		UpdateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+			return accountUpdate(d, m, graphql.ProviderAWS, graphql.ScopePUBLIC)
+		},
 		DeleteContext: resourceAccountDelete,
 		Schema:        awsAccountSchema,
 		Importer: &schema.ResourceImporter{

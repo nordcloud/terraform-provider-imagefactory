@@ -59,6 +59,22 @@ func expandAzureSubscriptionAccess(in []interface{}) graphql.AccountCredentials 
 	return accountCredentials
 }
 
+func expandExoscaleOrganizationAccess(in []interface{}) graphql.AccountCredentials {
+	accountCredentials := graphql.AccountCredentials{}
+
+	if len(in) == 0 {
+		return accountCredentials
+	}
+
+	access := in[0].(map[string]interface{})
+	accountCredentials.Exoscale = &graphql.ExoscaleCredentials{
+		ApiKey:    graphql.String(access["api_key"].(string)),
+		ApiSecret: graphql.String(access["api_secret"].(string)),
+	}
+
+	return accountCredentials
+}
+
 func expandGcpOrganizationAccess(in []interface{}) graphql.AccountCredentials {
 	accountCredentials := graphql.AccountCredentials{}
 

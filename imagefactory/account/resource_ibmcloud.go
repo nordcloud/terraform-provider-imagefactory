@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package account
 
@@ -66,8 +66,10 @@ func ResourceIBMCloud() *schema.Resource { // nolint: dupl
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 			return accountCreate(d, m, graphql.ProviderIBMCLOUD, graphql.ScopePUBLIC)
 		},
-		ReadContext:   resourceAccountRead,
-		UpdateContext: resourceAccountUpdate,
+		ReadContext: resourceAccountRead,
+		UpdateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+			return accountUpdate(d, m, graphql.ProviderIBMCLOUD, graphql.ScopePUBLIC)
+		},
 		DeleteContext: resourceAccountDelete,
 		Schema:        ibmCloudAccountSchema,
 		Importer: &schema.ResourceImporter{

@@ -11,40 +11,20 @@ import (
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
 
-var awsChinaAccountAccessResource = &schema.Resource{
+var exoscaleOrganizationAccessResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
-		"aws_access_key_id": {
+		"api_key": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
-		"aws_secret_access_key": {
+		"api_secret": {
 			Type:     schema.TypeString,
 			Required: true,
 		},
 	},
 }
 
-var awsChinaAccountProperties = &schema.Resource{
-	Schema: map[string]*schema.Schema{
-		"s3_bucket_name": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"region": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-		"aws_share_accounts": {
-			Type:     schema.TypeList,
-			Optional: true,
-			Elem: &schema.Schema{
-				Type: schema.TypeString,
-			},
-		},
-	},
-}
-
-var awsChinaAccountSchema = map[string]*schema.Schema{
+var exoscaleOrganizationSchema = map[string]*schema.Schema{
 	"alias": {
 		Type:     schema.TypeString,
 		Required: true,
@@ -53,19 +33,14 @@ var awsChinaAccountSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
 	},
-	"account_id": {
+	"organization_name": {
 		Type:     schema.TypeString,
 		Required: true,
 	},
 	"access": {
 		Type:     schema.TypeList,
-		Elem:     awsChinaAccountAccessResource,
-		Required: true,
-	},
-	"properties": {
-		Type:     schema.TypeList,
-		Required: true,
-		Elem:     awsChinaAccountProperties,
+		Optional: true,
+		Elem:     exoscaleOrganizationAccessResource,
 	},
 	"state": {
 		Type:     schema.TypeMap,
@@ -74,17 +49,17 @@ var awsChinaAccountSchema = map[string]*schema.Schema{
 	},
 }
 
-func ResourceAWSChina() *schema.Resource { // nolint: dupl
+func ResourceExoscale() *schema.Resource { // nolint: dupl
 	return &schema.Resource{
 		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-			return accountCreate(d, m, graphql.ProviderAWS, graphql.ScopeCHINA)
+			return accountCreate(d, m, graphql.ProviderEXOSCALE, graphql.ScopePUBLIC)
 		},
 		ReadContext: resourceAccountRead,
 		UpdateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-			return accountUpdate(d, m, graphql.ProviderAWS, graphql.ScopeCHINA)
+			return accountUpdate(d, m, graphql.ProviderEXOSCALE, graphql.ScopePUBLIC)
 		},
 		DeleteContext: resourceAccountDelete,
-		Schema:        awsChinaAccountSchema,
+		Schema:        exoscaleOrganizationSchema,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},

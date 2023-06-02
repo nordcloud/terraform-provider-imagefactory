@@ -7,7 +7,7 @@ resource "imagefactory_custom_component" "build_template" {
   cloud_providers = ["AWS", "AZURE"]
   os_types        = ["LINUX"]
   content {
-    script             = <<-EOT
+    script      = <<-EOT
       apt-get update && apt-get install nginx -y
     EOT
     provisioner = "SHELL"
@@ -21,7 +21,7 @@ resource "imagefactory_custom_component" "test_component" {
   cloud_providers = ["AWS", "AZURE"]
   os_types        = ["LINUX"]
   content {
-    script             = <<-EOT
+    script      = <<-EOT
       ps aux | grep nginx
       systemctl is-active --quiet nginx || echo "nginx is not running"; exit 1
     EOT
@@ -30,9 +30,9 @@ resource "imagefactory_custom_component" "test_component" {
 }
 
 data "imagefactory_system_component" "hardening-level-1" {
-  name = "Hardening level 1"
+  name           = "Hardening level 1"
   cloud_provider = "AWS"
-  stage = "BUILD"
+  stage          = "BUILD"
 }
 
 data "imagefactory_distribution" "ubuntu18" {
@@ -84,7 +84,7 @@ data "imagefactory_distribution" "ubuntu18" {
   cloud_provider = "AZURE"
 }
 
-resource "imagefactory_template" "template" {
+resource "imagefactory_template" "azure_template" {
   name            = "Ubuntu1804"
   description     = "Ubuntu 18.04 on Azure"
   cloud_provider  = "AZURE"
@@ -92,7 +92,7 @@ resource "imagefactory_template" "template" {
   config {
     azure {
       exclude_from_latest = true
-      eol_date_option = true
+      eol_date_option     = true
       replica_regions     = ["westeurope"]
       vm_image_definition {
         name  = "Ubuntu1804"
@@ -115,13 +115,13 @@ resource "imagefactory_template" "template" {
   }
 }
 
-output "template" {
-  value = imagefactory_template.template
+output "azure_template" {
+  value = imagefactory_template.azure_template
 }
 
 # AWS CHINA template
 
-resource "imagefactory_template" "template" {
+resource "imagefactory_template" "aws_china_template" {
   name            = "Ubuntu1804"
   description     = "Ubuntu 18.04 on AWS"
   cloud_provider  = "AWS"
@@ -148,7 +148,7 @@ data "imagefactory_distribution" "ubuntu18" {
   cloud_provider = "AWS"
 }
 
-resource "imagefactory_template" "template" {
+resource "imagefactory_template" "aws_template" {
   name            = "Ubuntu1804"
   description     = "Ubuntu 18.04 on AWS"
   cloud_provider  = "AWS"
@@ -162,4 +162,31 @@ resource "imagefactory_template" "template" {
     }
     cloud_account_ids = [imagefactory_aws_account.aws_account.id]
   }
+}
+
+# EXOSCALE Template
+
+data "imagefactory_distribution" "ubuntu22" {
+  name           = "Ubuntu Server 22.04 LTS"
+  cloud_provider = "EXOSCALE"
+}
+
+resource "imagefactory_template" "exoscale_template" {
+  name            = "Ubuntu2204"
+  description     = "Ubuntu Server 22.04 on Exoscale"
+  cloud_provider  = "EXOSCALE"
+  distribution_id = data.imagefactory_distribution.ubuntu22.id
+  config {
+    exoscale {
+      zone = "de-fra-1"
+    }
+    notifications {
+      type = "WEB_HOOK"
+      uri  = "https://webhook.call.api.address"
+    }
+  }
+}
+
+output "template" {
+  value = imagefactory_template.exoscale_template
 }

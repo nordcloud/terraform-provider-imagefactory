@@ -83,14 +83,22 @@ var azureTemplateConfigResource = &schema.Resource{
 			Type:     schema.TypeList,
 			Optional: true,
 			Elem: &schema.Schema{
-				Type:         schema.TypeString,
-				ValidateFunc: validation.StringInSlice(validAzureRegions, false),
+				Type: schema.TypeString,
 			},
 		},
 		"vm_image_definition": {
 			Type:     schema.TypeList,
 			Optional: true,
 			Elem:     vmImageDefinitionAzureTemplateConfigResource,
+		},
+	},
+}
+
+var exoscaleTemplateConfigResource = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"zone": {
+			Type:     schema.TypeString,
+			Required: true,
 		},
 	},
 }
@@ -149,6 +157,11 @@ var templateConfigResource = &schema.Resource{
 			Type:     schema.TypeList,
 			Optional: true,
 			Elem:     azureTemplateConfigResource,
+		},
+		"exoscale": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem:     exoscaleTemplateConfigResource,
 		},
 		"build_components": {
 			Type:     schema.TypeList,

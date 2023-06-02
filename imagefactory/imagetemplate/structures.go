@@ -111,6 +111,19 @@ func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig
 	return out
 }
 
+func expandTemplateExoscaleConfig(in []interface{}) *graphql.NewTemplateExoscaleConfig {
+	if len(in) == 0 {
+		return nil
+	}
+
+	m := in[0].(map[string]interface{})
+	zone := graphql.String(m["zone"].(string))
+
+	return &graphql.NewTemplateExoscaleConfig{
+		Zone: &zone,
+	}
+}
+
 func expandTemplateConfig(in []interface{}) (*graphql.NewTemplateConfig, error) {
 	if len(in) == 0 {
 		return &graphql.NewTemplateConfig{}, nil
@@ -127,6 +140,7 @@ func expandTemplateConfig(in []interface{}) (*graphql.NewTemplateConfig, error) 
 	templateConfig := graphql.NewTemplateConfig{
 		Aws:             awsCfg,
 		Azure:           expandTemplateAzureConfig(m["azure"].([]interface{})),
+		Exoscale:        expandTemplateExoscaleConfig(m["exoscale"].([]interface{})),
 		BuildComponents: expandTemplateComponents(m["build_components"].([]interface{})),
 		TestComponents:  expandTemplateComponents(m["test_components"].([]interface{})),
 		Notifications:   expandTemplateNotifications(m["notifications"].([]interface{})),

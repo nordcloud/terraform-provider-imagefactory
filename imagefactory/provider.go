@@ -36,6 +36,7 @@ func Provider() *schema.Provider {
 			"imagefactory_aws_china_account":        account.ResourceAWSChina(),
 			"imagefactory_azure_subscription":       account.ResourceAzure(graphql.ScopePUBLIC),
 			"imagefactory_azure_china_subscription": account.ResourceAzure(graphql.ScopeCHINA),
+			"imagefactory_exoscale_organization":    account.ResourceExoscale(),
 			"imagefactory_gcp_project":              account.ResourceGCP(),
 			"imagefactory_ibmcloud_account":         account.ResourceIBMCloud(),
 			"imagefactory_custom_component":         component.Resource(),

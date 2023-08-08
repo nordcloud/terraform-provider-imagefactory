@@ -179,6 +179,32 @@ resource "imagefactory_template" "aws_template" {
   }
 }
 
+# AWS template - additional EBS volumes
+
+data "imagefactory_distribution" "ubuntu18" {
+  name           = "Ubuntu Server 18.04 LTS"
+  cloud_provider = "AWS"
+}
+
+resource "imagefactory_template" "aws_template" {
+  name            = "Ubuntu1804"
+  description     = "Ubuntu 18.04 on AWS"
+  cloud_provider  = "AWS"
+  distribution_id = data.imagefactory_distribution.ubuntu18.id
+  config {
+    aws {
+      region = "eu-west-1"
+      additional_ebs_volumes {
+        size        = 1
+        device_name = "/dev/sdb"
+      }
+    }
+    build_components {
+      id = data.imagefactory_system_component.hardening-level-1.id
+    }
+  }
+}
+
 # EXOSCALE Template
 
 data "imagefactory_distribution" "ubuntu22" {
@@ -246,8 +272,18 @@ Optional:
 
 Optional:
 
+- `additional_ebs_volumes` (Block List) (see [below for nested schema](#nestedblock--config--aws--additional_ebs_volumes))
 - `custom_image_name` (String)
 - `region` (String)
+
+<a id="nestedblock--config--aws--additional_ebs_volumes"></a>
+### Nested Schema for `config.aws.additional_ebs_volumes`
+
+Required:
+
+- `device_name` (String) Device name for the EBS volume. Available names for Linux are `/dev/sd[b-z]`, for Windows `xvd[b-z]`
+- `size` (Number) EBS volume size between 1 and 10 GB.
+
 
 
 <a id="nestedblock--config--azure"></a>

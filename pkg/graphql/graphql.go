@@ -3141,6 +3141,21 @@ const (
 // Inputs
 //
 
+type AWSCredentials struct {
+	Credentials *AWSCredentialsAccessKey `json:"credentials,omitempty"`
+	Roles       *[]AWSCredentialsRole    `json:"roles,omitempty"`
+}
+
+type AWSCredentialsAccessKey struct {
+	AWSACCESSKEYID     String `json:"AWS_ACCESS_KEY_ID"`
+	AWSSECRETACCESSKEY String `json:"AWS_SECRET_ACCESS_KEY"`
+}
+
+type AWSCredentialsRole struct {
+	Arn        String  `json:"arn"`
+	ExternalId *String `json:"externalId,omitempty"`
+}
+
 type AccountChanges struct {
 	Alias       *String                      `json:"alias,omitempty"`
 	Credentials *AccountCredentials          `json:"credentials,omitempty"`
@@ -3235,21 +3250,6 @@ type AuditLogTagsInput struct {
 	UserAgent      *String                 `json:"userAgent,omitempty"`
 }
 
-type AWSCredentials struct {
-	Credentials *AWSCredentialsAccessKey `json:"credentials,omitempty"`
-	Roles       *[]AWSCredentialsRole    `json:"roles,omitempty"`
-}
-
-type AWSCredentialsAccessKey struct {
-	AWSACCESSKEYID     String `json:"AWS_ACCESS_KEY_ID"`
-	AWSSECRETACCESSKEY String `json:"AWS_SECRET_ACCESS_KEY"`
-}
-
-type AWSCredentialsRole struct {
-	Arn        String  `json:"arn"`
-	ExternalId *String `json:"externalId,omitempty"`
-}
-
 type AzureCredentials struct {
 	AppId              String `json:"appId"`
 	Password           String `json:"password"`
@@ -3271,6 +3271,11 @@ type ComponentChanges struct {
 
 type ComponentIdInput struct {
 	ComponentId String `json:"componentId"`
+}
+
+type ComponentVersionIdInput struct {
+	ComponentId String `json:"componentId"`
+	Version     String `json:"version"`
 }
 
 type ComponentsFilter struct {
@@ -3296,11 +3301,6 @@ type ComponentsInput struct {
 type ComponentsSort struct {
 	Field ComponentAttribute `json:"field"`
 	Order SortOrder          `json:"order"`
-}
-
-type ComponentVersionIdInput struct {
-	ComponentId String `json:"componentId"`
-	Version     String `json:"version"`
 }
 
 type CustomerAccountIdInput struct {
@@ -3404,11 +3404,6 @@ type CustomerRolesSort struct {
 	Order SortOrder              `json:"order"`
 }
 
-type CustomersInput struct {
-	Limit *Int `json:"limit,omitempty"`
-	Page  *Int `json:"page,omitempty"`
-}
-
 type CustomerTemplateIdInput struct {
 	TemplateId String `json:"templateId"`
 }
@@ -3432,6 +3427,11 @@ type CustomerTemplatesResolverInput struct {
 
 type CustomerVariableNameInput struct {
 	VariableName String `json:"variableName"`
+}
+
+type CustomersInput struct {
+	Limit *Int `json:"limit,omitempty"`
+	Page  *Int `json:"page,omitempty"`
 }
 
 type DistributionIdInput struct {
@@ -3512,6 +3512,11 @@ type NewAccount struct {
 	Scope           *Scope                       `json:"scope,omitempty"`
 }
 
+type NewAdditionalEBSVolumes struct {
+	DeviceName String `json:"deviceName"`
+	Size       Int    `json:"size"`
+}
+
 type NewApiKey struct {
 	ExpiresAt *String `json:"expiresAt,omitempty"`
 	Name      String  `json:"name"`
@@ -3568,8 +3573,9 @@ type NewTemplate struct {
 }
 
 type NewTemplateAWSConfig struct {
-	CustomImageName *String `json:"customImageName,omitempty"`
-	Region          *String `json:"region,omitempty"`
+	AdditionalEbsVolumes *[]NewAdditionalEBSVolumes `json:"additionalEbsVolumes,omitempty"`
+	CustomImageName      *String                    `json:"customImageName,omitempty"`
+	Region               *String                    `json:"region,omitempty"`
 }
 
 type NewTemplateAZUREConfig struct {
@@ -3606,6 +3612,12 @@ type NewTemplateExoscaleConfig struct {
 	Zone *String `json:"zone,omitempty"`
 }
 
+type NewVMImageDefinition struct {
+	Name  String `json:"name"`
+	Offer String `json:"offer"`
+	Sku   String `json:"sku"`
+}
+
 type NewVariable struct {
 	Name  String `json:"name"`
 	Value String `json:"value"`
@@ -3614,12 +3626,6 @@ type NewVariable struct {
 type NewVersionedContent struct {
 	Script            String            `json:"script"`
 	ScriptProvisioner ScriptProvisioner `json:"scriptProvisioner"`
-}
-
-type NewVMImageDefinition struct {
-	Name  String `json:"name"`
-	Offer String `json:"offer"`
-	Sku   String `json:"sku"`
 }
 
 type RoleBindingChanges struct {
@@ -3724,6 +3730,11 @@ type AccountResults struct {
 type AccountState struct {
 	Error  *String       `json:"error,omitempty"`
 	Status AccountStatus `json:"status"`
+}
+
+type AdditionalEBSVolumes struct {
+	DeviceName String `json:"deviceName"`
+	Size       Int    `json:"size"`
 }
 
 type ApiKey struct {
@@ -3941,6 +3952,7 @@ type ImageBuildDetails struct {
 	ChangeLog          *String                   `json:"changeLog,omitempty"`
 	CloudDistributions *[]ImageCloudDistribution `json:"cloudDistributions,omitempty"`
 	Compliance         *Compliance               `json:"compliance,omitempty"`
+	PackageInventory   *String                   `json:"packageInventory,omitempty"`
 	ResultImageId      *String                   `json:"resultImageId,omitempty"`
 	ResultImageUri     *String                   `json:"resultImageUri,omitempty"`
 	SourceDistribution *SourceDistribution       `json:"sourceDistribution,omitempty"`
@@ -4021,8 +4033,8 @@ type Query struct {
 	Component            Component                  `json:"component"`
 	Components           ComponentResults           `json:"components"`
 	Customer             Customer                   `json:"customer"`
-	Customers            CustomerResults            `json:"customers"`
 	CustomerStats        CustomerStats              `json:"customerStats"`
+	Customers            CustomerResults            `json:"customers"`
 	Distribution         Distribution               `json:"distribution"`
 	Distributions        DistributionResults        `json:"distributions"`
 	Image                Image                      `json:"image"`
@@ -4137,8 +4149,9 @@ type Template struct {
 }
 
 type TemplateAWSConfig struct {
-	CustomImageName *String `json:"customImageName,omitempty"`
-	Region          *String `json:"region,omitempty"`
+	AdditionalEbsVolumes *[]AdditionalEBSVolumes `json:"additionalEbsVolumes,omitempty"`
+	CustomImageName      *String                 `json:"customImageName,omitempty"`
+	Region               *String                 `json:"region,omitempty"`
 }
 
 type TemplateAZUREConfig struct {
@@ -4189,6 +4202,12 @@ type TemplateState struct {
 	Status           BuildStatus `json:"status"`
 }
 
+type VMImageDefinition struct {
+	Name  String `json:"name"`
+	Offer String `json:"offer"`
+	Sku   String `json:"sku"`
+}
+
 type Variable struct {
 	Hash String `json:"hash"`
 	Name String `json:"name"`
@@ -4205,10 +4224,4 @@ type VersionedContent struct {
 	ScriptProvisioner ScriptProvisioner `json:"scriptProvisioner"`
 	ScriptUrl         *String           `json:"scriptUrl,omitempty"`
 	Version           String            `json:"version"`
-}
-
-type VMImageDefinition struct {
-	Name  String `json:"name"`
-	Offer String `json:"offer"`
-	Sku   String `json:"sku"`
 }

@@ -3,9 +3,9 @@
 package apikey
 
 import (
-	"fmt"
 	"time"
 
+	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/sdk"
@@ -23,10 +23,10 @@ var apiKeySchema = map[string]*schema.Schema{
 		Required: true,
 	},
 	"expires_at": {
-		Type:         schema.TypeString,
-		Optional:     true,
-		Description:  "API key expiration date in format: 2023-11-04",
-		ValidateFunc: validateExpiresAtDateFormat(),
+		Type:             schema.TypeString,
+		Optional:         true,
+		Description:      "API key expiration date in format: 2023-11-04",
+		ValidateDiagFunc: validateExpiresAtDateFormat(),
 	},
 	"secret": {
 		Type:     schema.TypeString,
@@ -76,20 +76,30 @@ func formatExpiresAtDate(expiresAt *string) string {
 	return d.Format(expiresAtDateFormat)
 }
 
-func validateExpiresAtDateFormat() schema.SchemaValidateFunc { // nolint: staticcheck
-	return func(i interface{}, k string) (warnings []string, errors []error) {
-		v, ok := i.(string)
+func validateExpiresAtDateFormat() schema.SchemaValidateDiagFunc {
+	return func(val interface{}, path cty.Path) diag.Diagnostics {
+		var diags diag.Diagnostics
+
+		v, ok := val.(string)
 		if !ok {
-			errors = append(errors, fmt.Errorf("expected type of %s to be string", k))
-			return warnings, errors
+			diags = append(diags, diag.Diagnostic{
+				Severity:      diag.Error,
+				Summary:       "Invalid value type",
+				Detail:        "Field value must be of type string",
+				AttributePath: path,
+			})
 		}
 
 		_, err := time.Parse(expiresAtDateFormat, v)
 		if err != nil {
-			message := "Invalid date format, an example of a valid date format: 2023-11-04"
-			errors = append(errors, fmt.Errorf("invalid value for %s (%s)", k, message))
+			diags = append(diags, diag.Diagnostic{
+				Severity:      diag.Error,
+				Summary:       "Invalid value",
+				Detail:        "Invalid date format, an example of a valid date format: 2023-11-04",
+				AttributePath: path,
+			})
 		}
 
-		return warnings, errors
+		return diags
 	}
 }

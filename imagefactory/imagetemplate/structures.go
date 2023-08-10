@@ -46,6 +46,19 @@ func expandTemplateTags(in []interface{}) *[]graphql.NewTag {
 	return &out
 }
 
+func expandAdditionalEBSVolumes(in []interface{}) *[]graphql.NewAdditionalEBSVolumes {
+	out := []graphql.NewAdditionalEBSVolumes{}
+	for i := range in {
+		m := in[i].(map[string]interface{})
+		out = append(out, graphql.NewAdditionalEBSVolumes{
+			Size:       graphql.Int(m["size"].(int)),
+			DeviceName: graphql.String(m["device_name"].(string)),
+		})
+	}
+
+	return &out
+}
+
 func expandTemplateAwsConfig(in []interface{}, scope graphql.Scope) (*graphql.NewTemplateAWSConfig, error) {
 	if len(in) == 0 || scope == graphql.ScopeCHINA {
 		return nil, nil
@@ -66,6 +79,10 @@ func expandTemplateAwsConfig(in []interface{}, scope graphql.Scope) (*graphql.Ne
 		if imageName != "" {
 			tplConfig.CustomImageName = &imageName
 		}
+	}
+
+	if m["additional_ebs_volumes"] != nil {
+		tplConfig.AdditionalEbsVolumes = expandAdditionalEBSVolumes(m["additional_ebs_volumes"].([]interface{}))
 	}
 
 	return tplConfig, nil

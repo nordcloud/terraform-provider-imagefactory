@@ -6,11 +6,33 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/hashicorp/go-cty/cty"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
 	"github.com/nordcloud/terraform-provider-imagefactory/pkg/graphql"
 )
+
+var additionalEbsVolumesResource = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"size": {
+			Type:         schema.TypeInt,
+			Required:     true,
+			Description:  "EBS volume size between 1 and 10 GB.",
+			ValidateFunc: validation.IntBetween(1, 10), // nolint: gomnd
+		},
+		"device_name": {
+			Type:        schema.TypeString,
+			Required:    true,
+			Description: "Device name for the EBS volume. Available names for Linux are `/dev/sd[b-z]`, for Windows `xvd[b-z]`",
+			ValidateFunc: validation.StringMatch(
+				regexp.MustCompile("^(/dev/sd[b-z]|xvd[b-z])$"),
+				"Must be a valid device name. For Linux it should be /dev/sd[b-z], for Windows xvd[b-z]",
+			),
+		},
+	},
+}
 
 var awsTemplateConfigResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
@@ -22,47 +44,68 @@ var awsTemplateConfigResource = &schema.Resource{
 			Type:     schema.TypeString,
 			Optional: true,
 		},
+		"additional_ebs_volumes": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem:     additionalEbsVolumesResource,
+			MaxItems: 10,
+		},
 	},
 }
 
-func validateVMImageDefinitionParameter(min, max int) schema.SchemaValidateFunc { // nolint: staticcheck
-	return func(i interface{}, k string) (warnings []string, errors []error) {
-		v, ok := i.(string)
+func validateVMImageDefinitionParameter(min, max int) schema.SchemaValidateDiagFunc {
+	return func(val interface{}, path cty.Path) diag.Diagnostics {
+		var diags diag.Diagnostics
+
+		v, ok := val.(string)
 		if !ok {
-			errors = append(errors, fmt.Errorf("expected type of %s to be string", k))
-			return warnings, errors
+			diags = append(diags, diag.Diagnostic{
+				Severity:      diag.Error,
+				Summary:       "Invalid value type",
+				Detail:        "Field value must be of type string",
+				AttributePath: path,
+			})
 		}
 
 		if len(v) < min || len(v) > max {
-			errors = append(errors, fmt.Errorf("expected length of %s to be in the range (%d - %d), got %s", k, min, max, v))
+			diags = append(diags, diag.Diagnostic{
+				Severity:      diag.Error,
+				Summary:       "Allowed values",
+				Detail:        fmt.Sprintf("Expected length of the value to be in the range (%d - %d), got %s", min, max, v),
+				AttributePath: path,
+			})
 		}
 
 		if ok := regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9_-]*[a-zA-Z0-9]$`).MatchString(v); !ok {
-			message := "The value must contain only English letters, numbers, underscores and hyphens. " +
-				"The value cannot begin or end with underscores or hyphens."
-			errors = append(errors, fmt.Errorf("invalid value for %s (%s)", k, message))
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Invalid value",
+				Detail: "The value must contain only English letters, numbers, underscores and hyphens. " +
+					"The value cannot begin or end with underscores or hyphens.",
+				AttributePath: path,
+			})
 		}
 
-		return warnings, errors
+		return diags
 	}
 }
 
 var vmImageDefinitionAzureTemplateConfigResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"name": {
-			Type:         schema.TypeString,
-			Required:     true,
-			ValidateFunc: validateVMImageDefinitionParameter(2, 80), // nolint: gomnd
+			Type:             schema.TypeString,
+			Required:         true,
+			ValidateDiagFunc: validateVMImageDefinitionParameter(2, 80), // nolint: gomnd
 		},
 		"offer": {
-			Type:         schema.TypeString,
-			Required:     true,
-			ValidateFunc: validateVMImageDefinitionParameter(2, 64), // nolint: gomnd
+			Type:             schema.TypeString,
+			Required:         true,
+			ValidateDiagFunc: validateVMImageDefinitionParameter(2, 64), // nolint: gomnd
 		},
 		"sku": {
-			Type:         schema.TypeString,
-			Required:     true,
-			ValidateFunc: validateVMImageDefinitionParameter(2, 64), // nolint: gomnd
+			Type:             schema.TypeString,
+			Required:         true,
+			ValidateDiagFunc: validateVMImageDefinitionParameter(2, 64), // nolint: gomnd
 		},
 	},
 }

@@ -646,7 +646,7 @@ type DistributionResults {
 }
 
 
-# Copyright 2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2022-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 type ImageComponent {
 	id: String!
@@ -715,6 +715,7 @@ type ImageBuildDetails {
 	tags: [Tag!]
 	changeLog: String
 	compliance: Compliance
+	packageInventory: String
 	resultImageId: String
 	resultImageUri: String
 	buildTimeSec: Int
@@ -986,9 +987,15 @@ type Notification {
 	uri: String!
 }
 
+type AdditionalEBSVolumes {
+	size: Int!
+	deviceName: String!
+}
+
 type TemplateAWSConfig {
 	region: String
 	customImageName: String
+	additionalEbsVolumes: [AdditionalEBSVolumes!]
 }
 
 type VMImageDefinition {
@@ -1087,9 +1094,31 @@ input NewNotification {
 	uri: String!
 }
 
+input NewAdditionalEBSVolumes {
+	"""
+	size is in GB, from 1G to 10G.
+	"""
+	size: Int!
+
+	"""
+	deviceName for the volume. Available names for Linux are `/dev/sd[b-z]`, for Windows `xvd[b-z]`.
+
+	More information:
+	* Linux - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html
+	* Windows - https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/device_naming.html
+	"""
+	deviceName: String!
+}
+
 input NewTemplateAWSConfig {
 	region: String
 	customImageName: String
+
+	"""
+	additionalEbsVolumes defines extra EBS volumes attached to the AMI image.
+
+	"""
+	additionalEbsVolumes: [NewAdditionalEBSVolumes!]
 }
 
 input NewVMImageDefinition {

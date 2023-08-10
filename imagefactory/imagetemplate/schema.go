@@ -48,6 +48,7 @@ var awsTemplateConfigResource = &schema.Resource{
 			Type:     schema.TypeList,
 			Optional: true,
 			Elem:     additionalEbsVolumesResource,
+			MaxItems: 10,
 		},
 	},
 }

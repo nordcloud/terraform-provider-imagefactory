@@ -261,6 +261,7 @@ Optional:
 - `azure` (Block List) (see [below for nested schema](#nestedblock--config--azure))
 - `build_components` (Block List) (see [below for nested schema](#nestedblock--config--build_components))
 - `cloud_account_ids` (List of String)
+- `disable_cyclical_rebuilds` (Boolean) Disable cyclical rebuilds. Cyclical rebuilds are rebuilds that are triggered automatically by ImageFactory when the source image is updated or when there are security updates available for the packages installed in the image. If cyclical rebuilds are disabled, the template will not be rebuilt automatically and the user will have to trigger the rebuild manually. Default value is set to false.
 - `exoscale` (Block List) (see [below for nested schema](#nestedblock--config--exoscale))
 - `notifications` (Block List) (see [below for nested schema](#nestedblock--config--notifications))
 - `scope` (String)
@@ -272,7 +273,7 @@ Optional:
 
 Optional:
 
-- `additional_ebs_volumes` (Block List) (see [below for nested schema](#nestedblock--config--aws--additional_ebs_volumes))
+- `additional_ebs_volumes` (Block List, Max: 10) (see [below for nested schema](#nestedblock--config--aws--additional_ebs_volumes))
 - `custom_image_name` (String)
 - `region` (String)
 

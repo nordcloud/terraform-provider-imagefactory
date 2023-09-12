@@ -232,6 +232,16 @@ var templateConfigResource = &schema.Resource{
 			ValidateFunc: validation.StringInSlice(validScopes, false),
 			Default:      graphql.ScopePUBLIC,
 		},
+		"disable_cyclical_rebuilds": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Default:  false,
+			Description: "Disable cyclical rebuilds. " +
+				"Cyclical rebuilds are rebuilds that are triggered automatically by ImageFactory when the source image is updated or " +
+				"when there are security updates available for the packages installed in the image. If cyclical rebuilds are disabled, " +
+				"the template will not be rebuilt automatically and the user will have to trigger the rebuild manually. " +
+				"Default value is set to false.",
+		},
 	},
 }
 

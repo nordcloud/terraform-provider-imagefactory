@@ -173,6 +173,11 @@ func expandTemplateConfig(in []interface{}) (*graphql.NewTemplateConfig, error) 
 		templateConfig.CloudAccountIds = &cloudAccountIDs
 	}
 
+	if m["disable_cyclical_rebuilds"] != nil {
+		disableCyclicalRebuilds := graphql.Boolean(m["disable_cyclical_rebuilds"].(bool))
+		templateConfig.DisableCyclicalRebuilds = &disableCyclicalRebuilds
+	}
+
 	return &templateConfig, nil
 }
 

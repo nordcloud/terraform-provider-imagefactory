@@ -3597,15 +3597,16 @@ type NewTemplateComponentProperty struct {
 }
 
 type NewTemplateConfig struct {
-	Aws             *NewTemplateAWSConfig      `json:"aws,omitempty"`
-	Azure           *NewTemplateAZUREConfig    `json:"azure,omitempty"`
-	BuildComponents *[]NewTemplateComponent    `json:"buildComponents,omitempty"`
-	CloudAccountIds *[]String                  `json:"cloudAccountIds,omitempty"`
-	Exoscale        *NewTemplateExoscaleConfig `json:"exoscale,omitempty"`
-	Notifications   *[]NewNotification         `json:"notifications,omitempty"`
-	Scope           *Scope                     `json:"scope,omitempty"`
-	Tags            *[]NewTag                  `json:"tags,omitempty"`
-	TestComponents  *[]NewTemplateComponent    `json:"testComponents,omitempty"`
+	Aws                     *NewTemplateAWSConfig      `json:"aws,omitempty"`
+	Azure                   *NewTemplateAZUREConfig    `json:"azure,omitempty"`
+	BuildComponents         *[]NewTemplateComponent    `json:"buildComponents,omitempty"`
+	CloudAccountIds         *[]String                  `json:"cloudAccountIds,omitempty"`
+	DisableCyclicalRebuilds *Boolean                   `json:"disableCyclicalRebuilds,omitempty"`
+	Exoscale                *NewTemplateExoscaleConfig `json:"exoscale,omitempty"`
+	Notifications           *[]NewNotification         `json:"notifications,omitempty"`
+	Scope                   *Scope                     `json:"scope,omitempty"`
+	Tags                    *[]NewTag                  `json:"tags,omitempty"`
+	TestComponents          *[]NewTemplateComponent    `json:"testComponents,omitempty"`
 }
 
 type NewTemplateExoscaleConfig struct {
@@ -3908,6 +3909,7 @@ type CustomerStats struct {
 type Distribution struct {
 	ComplianceScore *ComplianceScore `json:"complianceScore,omitempty"`
 	CreatedAt       String           `json:"createdAt"`
+	Deprecated      *Boolean         `json:"deprecated,omitempty"`
 	Description     *String          `json:"description,omitempty"`
 	ID              String           `json:"id"`
 	Name            String           `json:"name"`
@@ -4174,15 +4176,16 @@ type TemplateComponentProperty struct {
 }
 
 type TemplateConfig struct {
-	Aws             *TemplateAWSConfig      `json:"aws,omitempty"`
-	Azure           *TemplateAZUREConfig    `json:"azure,omitempty"`
-	BuildComponents *[]TemplateComponent    `json:"buildComponents,omitempty"`
-	CloudAccountIds *[]String               `json:"cloudAccountIds,omitempty"`
-	Exoscale        *TemplateExoscaleConfig `json:"exoscale,omitempty"`
-	Notifications   *[]Notification         `json:"notifications,omitempty"`
-	Scope           *Scope                  `json:"scope,omitempty"`
-	Tags            *[]Tag                  `json:"tags,omitempty"`
-	TestComponents  *[]TemplateComponent    `json:"testComponents,omitempty"`
+	Aws                     *TemplateAWSConfig      `json:"aws,omitempty"`
+	Azure                   *TemplateAZUREConfig    `json:"azure,omitempty"`
+	BuildComponents         *[]TemplateComponent    `json:"buildComponents,omitempty"`
+	CloudAccountIds         *[]String               `json:"cloudAccountIds,omitempty"`
+	DisableCyclicalRebuilds *Boolean                `json:"disableCyclicalRebuilds,omitempty"`
+	Exoscale                *TemplateExoscaleConfig `json:"exoscale,omitempty"`
+	Notifications           *[]Notification         `json:"notifications,omitempty"`
+	Scope                   *Scope                  `json:"scope,omitempty"`
+	Tags                    *[]Tag                  `json:"tags,omitempty"`
+	TestComponents          *[]TemplateComponent    `json:"testComponents,omitempty"`
 }
 
 type TemplateExoscaleConfig struct {

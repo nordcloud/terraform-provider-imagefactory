@@ -116,10 +116,6 @@ https://docs.imagefactory.nordcloudapp.com/onboarding
 """
 input AccountCredentials {
 	aws: AWSCredentials
-	aws: AWSCredentials
-	gcp: GCPCredentials
-	aws: AWSCredentials
-	gcp: GCPCredentials
 	azure: AzureCredentials
 	exoscale: ExoscaleCredentials
 	gcp: GCPCredentials
@@ -608,7 +604,7 @@ type CustomerStats {
 }
 
 
-# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 """
 Distribution defines the cloud image that can be created by the ImageFactory.
@@ -632,6 +628,7 @@ type Distribution {
 	osLatest: Boolean
 	osEolDate: String
 	complianceScore: ComplianceScore
+	deprecated: Boolean
 }
 
 type ComplianceScore {
@@ -1021,6 +1018,7 @@ type TemplateConfig {
 	tags: [Tag!]
 	notifications: [Notification!]
 	scope: Scope
+	disableCyclicalRebuilds: Boolean
 	aws: TemplateAWSConfig
 	azure: TemplateAZUREConfig
 	exoscale: TemplateExoscaleConfig
@@ -1115,7 +1113,7 @@ input NewTemplateAWSConfig {
 	customImageName: String
 
 	"""
-	additionalEbsVolumes defines extra EBS volumes attached to the AMI image.
+	`additionalEbsVolumes` defines extra EBS volumes attached to the AMI image with a limit of 10.
 
 	"""
 	additionalEbsVolumes: [NewAdditionalEBSVolumes!]
@@ -1181,6 +1179,15 @@ input NewTemplateConfig {
 	cloudAccountIds defines a list of Cloud Account IDs to which we will distribute the image.
 	"""
 	cloudAccountIds: [String]
+
+	"""
+	disableCyclicalRebuilds defines if cyclical rebuilds are disabled for the template
+
+	Cyclical rebuilds are rebuilds that are triggered automatically by ImageFactory when the source image is updated or
+	when there are security updates available for the packages installed in the image. If cyclical rebuilds are disabled,
+	the template will not be rebuilt automatically and the user will have to trigger the rebuild manually.
+	"""
+	disableCyclicalRebuilds: Boolean
 }
 
 input NewTemplate {

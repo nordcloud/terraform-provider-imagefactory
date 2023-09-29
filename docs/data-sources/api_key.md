@@ -41,5 +41,3 @@ resource "imagefactory_role_binding" "key_binding" {
 
 - `id` (String) The ID of this resource.
 - `secret` (String) The secret value will only be returned when creating the API key. Please save this value because it won't be possible to get it later. If you lost apiKey secret you have to create new ApiKey. apikey can be used to access ImageFactory API by providing the `x-api-key` header in format: `{API_KEY_ID}/{API_KEY_SECRET}` apiKey does not grant any permissions to access API itself. You have to create the `imagefactory_role_binding` and assign the access role to it to make it working.
-
-

@@ -50,6 +50,13 @@ var awsTemplateConfigResource = &schema.Resource{
 			Elem:     additionalEbsVolumesResource,
 			MaxItems: 10,
 		},
+		"kms_key_id": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Description: "The ID of the AWS KMS key that is used to encrypt the destination snapshot of the copied image. " +
+				"To allow use of this key, onboarded master role `ImageFactoryMasterRole` must have permission to use the key. " +
+				"You can use key ID, key ARN, alias name, or alias ARN.",
+		},
 	},
 }
 

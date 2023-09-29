@@ -993,6 +993,7 @@ type TemplateAWSConfig {
 	region: String
 	customImageName: String
 	additionalEbsVolumes: [AdditionalEBSVolumes!]
+	kmsKeyId: String
 }
 
 type VMImageDefinition {
@@ -1117,6 +1118,19 @@ input NewTemplateAWSConfig {
 
 	"""
 	additionalEbsVolumes: [NewAdditionalEBSVolumes!]
+
+	"""
+	`kmsKeyId` defines the ID of the AWS KMS key that is used to encrypt the destination snapshot of the copied image.
+
+	To allow use of this key, onboarded master role `ImageFactoryMasterRole` must have permission to use the key.
+
+	You can specify a KMS key using any of the following:
+	* Key ID. For example, 1234abcd-12ab-34cd-56ef-1234567890ab.
+	* Key alias. For example, alias/ExampleAlias.
+	* Key ARN. For example, arn:aws:kms:us-east-1:012345678910:key/1234abcd-12ab-34cd-56ef-1234567890ab
+	* Alias ARN. For example, arn:aws:kms:us-east-1:012345678910:alias/ExampleAlias
+	"""
+	kmsKeyId: String
 }
 
 input NewVMImageDefinition {

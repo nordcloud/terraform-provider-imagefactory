@@ -3575,6 +3575,7 @@ type NewTemplate struct {
 type NewTemplateAWSConfig struct {
 	AdditionalEbsVolumes *[]NewAdditionalEBSVolumes `json:"additionalEbsVolumes,omitempty"`
 	CustomImageName      *String                    `json:"customImageName,omitempty"`
+	KmsKeyId             *String                    `json:"kmsKeyId,omitempty"`
 	Region               *String                    `json:"region,omitempty"`
 }
 
@@ -4153,6 +4154,7 @@ type Template struct {
 type TemplateAWSConfig struct {
 	AdditionalEbsVolumes *[]AdditionalEBSVolumes `json:"additionalEbsVolumes,omitempty"`
 	CustomImageName      *String                 `json:"customImageName,omitempty"`
+	KmsKeyId             *String                 `json:"kmsKeyId,omitempty"`
 	Region               *String                 `json:"region,omitempty"`
 }
 

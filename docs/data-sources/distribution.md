@@ -36,5 +36,3 @@ output "distro" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-
-

@@ -85,6 +85,13 @@ func expandTemplateAwsConfig(in []interface{}, scope graphql.Scope) (*graphql.Ne
 		tplConfig.AdditionalEbsVolumes = expandAdditionalEBSVolumes(m["additional_ebs_volumes"].([]interface{}))
 	}
 
+	if m["kms_key_id"] != nil {
+		kmsKeyID := graphql.String(m["kms_key_id"].(string))
+		if kmsKeyID != "" {
+			tplConfig.KmsKeyId = &kmsKeyID
+		}
+	}
+
 	return tplConfig, nil
 }
 

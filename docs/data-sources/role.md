@@ -47,5 +47,3 @@ Required:
 
 - `actions` (List of String)
 - `resources` (List of String)
-
-

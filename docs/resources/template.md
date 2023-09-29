@@ -275,6 +275,7 @@ Optional:
 
 - `additional_ebs_volumes` (Block List, Max: 10) (see [below for nested schema](#nestedblock--config--aws--additional_ebs_volumes))
 - `custom_image_name` (String)
+- `kms_key_id` (String) The ID of the AWS KMS key that is used to encrypt the destination snapshot of the copied image. To allow use of this key, onboarded master role `ImageFactoryMasterRole` must have permission to use the key. You can use key ID, key ARN, alias name, or alias ARN.
 - `region` (String)
 
 <a id="nestedblock--config--aws--additional_ebs_volumes"></a>

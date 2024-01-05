@@ -15,7 +15,7 @@ default: install
 .ONESHELL:
 build:
 	$(eval V := $(shell echo ${VERSION} | tr -d 'v'))
-	GOOS=${GOOS} GOARCH=${GOARCH} go build -ldflags '$(LDFLAGS)' -o ./bin/${BINARY}_${VERSION}
+	CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build -ldflags '$(LDFLAGS)' -o ./bin/${BINARY}_${VERSION}
 	echo "mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/$(V)/${GOOS}_${GOARCH}" > ./bin/install.sh
 	echo "cp ${BINARY}_${VERSION} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/$(V)/${GOOS}_${GOARCH}/${BINARY}" >> ./bin/install.sh
 	chmod +x ./bin/install.sh

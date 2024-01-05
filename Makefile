@@ -8,13 +8,14 @@ BINARY=terraform-provider-${NAME}
 VERSION=v1.0.0
 GOOS=darwin
 GOARCH=amd64
+LDFLAGS ?= -s -w -extldflags "-static"
 
 default: install
 
 .ONESHELL:
 build:
 	$(eval V := $(shell echo ${VERSION} | tr -d 'v'))
-	GOOS=${GOOS} GOARCH=${GOARCH} go build -o ./bin/${BINARY}_${VERSION}
+	GOOS=${GOOS} GOARCH=${GOARCH} go build -ldflags '$(LDFLAGS)' -o ./bin/${BINARY}_${VERSION}
 	echo "mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/$(V)/${GOOS}_${GOARCH}" > ./bin/install.sh
 	echo "cp ${BINARY}_${VERSION} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/$(V)/${GOOS}_${GOARCH}/${BINARY}" >> ./bin/install.sh
 	chmod +x ./bin/install.sh
@@ -25,7 +26,7 @@ install: build
 
 generateDoc:
 	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
-	
+
 test:
 	go test -i $(TEST) || exit 1
 	echo $(TEST) | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4

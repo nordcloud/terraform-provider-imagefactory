@@ -1,4 +1,4 @@
-// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package component
 
@@ -37,7 +37,7 @@ func resourceComponentCreate(ctx context.Context, d *schema.ResourceData, m inte
 		Providers: expandProviders(d.Get("cloud_providers").([]interface{})),
 		Content:   expandContent(d.Get("content").([]interface{})),
 	}
-	if len(d.Get("description").(string)) > 0 {
+	if d.Get("description").(string) != "" {
 		description := graphql.String(d.Get("description").(string))
 		input.Description = &description
 	}
@@ -79,7 +79,7 @@ func resourceComponentUpdate(ctx context.Context, d *schema.ResourceData, m inte
 			OsTypes:   expandOSTypes(d.Get("os_types").([]interface{})),
 			Providers: expandProviders(d.Get("cloud_providers").([]interface{})),
 		}
-		if len(d.Get("description").(string)) > 0 {
+		if d.Get("description").(string) != "" {
 			description := graphql.String(d.Get("description").(string))
 			input.Description = &description
 		}
@@ -103,6 +103,12 @@ func resourceComponentUpdate(ctx context.Context, d *schema.ResourceData, m inte
 		component, err = c.APIClient.CreateComponentVersion(input)
 		if err != nil {
 			return diag.FromErr(err)
+		}
+
+		if d.Get("rebuild_templates").(bool) {
+			if err := c.APIClient.RebuildTemplatesUsingComponent(componentID); err != nil {
+				return diag.FromErr(err)
+			}
 		}
 	}
 

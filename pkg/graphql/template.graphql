@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 query GetTemplate($input: CustomerTemplateIdInput!) {
   template(input: $input) {
@@ -28,6 +28,16 @@ query GetTemplates($input: CustomerTemplatesInput!) {
         results {
           id
           name
+        }
+      }
+      config {
+        buildComponents {
+          id
+          version
+        }
+        testComponents {
+          id
+          version
         }
       }
     }
@@ -62,4 +72,10 @@ mutation UpdateTemplate($input: TemplateChanges!) {
 
 mutation DeleteTemplate($input: CustomerTemplateIdInput!) {
   deleteTemplate(input: $input)
+}
+
+mutation RebuildTemplate($input: CustomerTemplateIdInput!) {
+  rebuildTemplate(input: $input) {
+    id
+  }
 }

@@ -57,4 +57,7 @@ type API interface {
 	CreateVariable(input NewVariable) (Variable, error)
 	UpdateVariable(input NewVariable) (Variable, error)
 	DeleteVariable(name string) error
+
+	// Actions
+	RebuildTemplatesUsingComponent(componentID string) error
 }

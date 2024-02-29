@@ -1,4 +1,4 @@
-// Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package component
 
@@ -87,5 +87,11 @@ var componentSchema = map[string]*schema.Schema{
 		Type:     schema.TypeList,
 		Required: true,
 		Elem:     contentComponentResource,
+	},
+	"rebuild_templates": {
+		Type:     schema.TypeBool,
+		Optional: true,
+		Description: "Trigger rebuild of templates using this component. " +
+			"Only applicable when content is updated. Default is false.",
 	},
 }

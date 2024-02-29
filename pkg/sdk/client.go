@@ -499,9 +499,10 @@ func (c APIClient) GetAPIKeyByName(name string) (APIKey, error) {
 	}
 
 	if r.ApiKeys.Results != nil {
-		for _, k := range *r.ApiKeys.Results {
-			if string(k.Name) == name {
-				return APIKey(k), nil
+		for i := range *r.ApiKeys.Results {
+			apiKey := (*r.ApiKeys.Results)[i]
+			if string(apiKey.Name) == name {
+				return APIKey(apiKey), nil
 			}
 		}
 	}
@@ -685,4 +686,71 @@ func (c APIClient) DeleteVariable(name string) error {
 	}
 
 	return nil
+}
+
+func (c APIClient) RebuildTemplatesUsingComponent(componentID string) error {
+	req, err := graphql.NewGetTemplatesRequest(c.apiURL, &graphql.GetTemplatesVariables{
+		Input: graphql.CustomerTemplatesInput{
+			Search: &graphql.Search{
+				SearchValue: graphql.String(componentID),
+				Algorithm:   graphql.SearchAlgorithmSUBSTRINGMATCH,
+			},
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("getting templates request %w", err)
+	}
+
+	r := &graphql.Query{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return fmt.Errorf("getting templates %w", err)
+	}
+	if r.Templates.Results == nil {
+		return nil
+	}
+
+	for i := range *r.Templates.Results {
+		template := (*r.Templates.Results)[i]
+
+		// ignore templates that have the component pinned to a specific version
+		if isNotLatestComponent(componentID, template.Config) {
+			continue
+		}
+
+		req, err := graphql.NewRebuildTemplateRequest(c.apiURL, &graphql.RebuildTemplateVariables{
+			Input: graphql.CustomerTemplateIdInput{
+				TemplateId: template.ID,
+			},
+		})
+		if err != nil {
+			return fmt.Errorf("getting rebuild template request %w", err)
+		}
+
+		r := &graphql.Mutation{}
+		if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+			return fmt.Errorf("rebuilding template ID: %s err: %w", template.ID, err)
+		}
+	}
+
+	return nil
+}
+
+func isNotLatestComponent(componentID string, config *graphql.TemplateConfig) bool {
+	const latest = "latest"
+
+	if config == nil {
+		return false
+	}
+
+	for _, components := range []*[]graphql.TemplateComponent{config.BuildComponents, config.TestComponents} {
+		if components != nil {
+			for _, bc := range *components {
+				if bc.ID == graphql.String(componentID) && bc.Version != nil && *bc.Version != latest {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
 }

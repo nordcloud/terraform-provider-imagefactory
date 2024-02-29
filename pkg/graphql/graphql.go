@@ -2316,6 +2316,16 @@ type GetTemplatesResponse struct {
 					Name string `json:"name"`
 				} `json:"results"`
 			} `json:"images"`
+			Config struct {
+				BuildComponents *[]struct {
+					ID      string `json:"id"`
+					Version string `json:"version"`
+				} `json:"buildComponents"`
+				TestComponents *[]struct {
+					ID      string `json:"id"`
+					Version string `json:"version"`
+				} `json:"testComponents"`
+			} `json:"config"`
 		} `json:"results"`
 	} `json:"templates"`
 }
@@ -2345,6 +2355,16 @@ func NewGetTemplatesRequest(url string, vars *GetTemplatesVariables) (*GetTempla
         results {
           id
           name
+        }
+      }
+      config {
+        buildComponents {
+          id
+          version
+        }
+        testComponents {
+          id
+          version
         }
       }
     }
@@ -2606,6 +2626,72 @@ func DeleteTemplate(url string, client *http.Client, vars *DeleteTemplateVariabl
 
 func (client *Client) DeleteTemplate(vars *DeleteTemplateVariables) (*DeleteTemplateResponse, error) {
 	return DeleteTemplate(client.Url, client.Client, vars)
+}
+
+//
+// mutation RebuildTemplate($input: CustomerTemplateIdInput!)
+//
+
+type RebuildTemplateVariables struct {
+	Input CustomerTemplateIdInput `json:"input"`
+}
+
+type RebuildTemplateResponse struct {
+	RebuildTemplate struct {
+		ID string `json:"id"`
+	} `json:"rebuildTemplate"`
+}
+
+type RebuildTemplateRequest struct {
+	*http.Request
+}
+
+func NewRebuildTemplateRequest(url string, vars *RebuildTemplateVariables) (*RebuildTemplateRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation RebuildTemplate($input: CustomerTemplateIdInput!) {
+  rebuildTemplate(input: $input) {
+    id
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &RebuildTemplateRequest{req}, nil
+}
+
+func (req *RebuildTemplateRequest) Execute(client *http.Client) (*RebuildTemplateResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result RebuildTemplateResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func RebuildTemplate(url string, client *http.Client, vars *RebuildTemplateVariables) (*RebuildTemplateResponse, error) {
+	req, err := NewRebuildTemplateRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) RebuildTemplate(vars *RebuildTemplateVariables) (*RebuildTemplateResponse, error) {
+	return RebuildTemplate(client.Url, client.Client, vars)
 }
 
 //

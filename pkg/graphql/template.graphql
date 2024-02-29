@@ -30,6 +30,16 @@ query GetTemplates($input: CustomerTemplatesInput!) {
           name
         }
       }
+      config {
+        buildComponents {
+          id
+          version
+        }
+        testComponents {
+          id
+          version
+        }
+      }
     }
   }
 }
@@ -62,4 +72,10 @@ mutation UpdateTemplate($input: TemplateChanges!) {
 
 mutation DeleteTemplate($input: CustomerTemplateIdInput!) {
   deleteTemplate(input: $input)
+}
+
+mutation RebuildTemplate($input: CustomerTemplateIdInput!) {
+  rebuildTemplate(input: $input) {
+    id
+  }
 }

@@ -3,11 +3,11 @@
 run:
   concurrency: 4
   timeout: 6m
-  issues-exit-code: 0 
-  # Put here project specific 
+  issues-exit-code: 0
+  # Put here project specific
   skip-dirs:
     - ui
-    - api 
+    - api
     - gql
     - build
     - artifacts
@@ -73,7 +73,6 @@ linters:
   enable:
     - bodyclose
     - deadcode
-    - depguard
     - dogsled
     - dupl
     - errcheck

@@ -1,4 +1,4 @@
-// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 resource "imagefactory_custom_component" "build_template" {
   name            = "Install nginx"

@@ -30,9 +30,7 @@ resource "imagefactory_custom_component" "test_component" {
 }
 
 data "imagefactory_system_component" "hardening-level-1" {
-  name           = "Hardening level 1"
-  cloud_provider = "AWS"
-  stage          = "BUILD"
+  name = "Hardening level 1"
 }
 
 data "imagefactory_distribution" "ubuntu18" {
@@ -111,6 +109,22 @@ resource "imagefactory_template" "azure_template" {
     tags {
       key   = "KEY_TWO"
       value = "VALUE_B"
+    }
+  }
+}
+
+# AZURE Template - additional data disks
+
+resource "imagefactory_template" "azure_template" {
+  name            = "Ubuntu1804"
+  description     = "Ubuntu 18.04 on Azure"
+  cloud_provider  = "AZURE"
+  distribution_id = data.imagefactory_distribution.ubuntu18.id
+  config {
+    azure {
+      additional_data_disks {
+        size = 1
+      }
     }
   }
 }

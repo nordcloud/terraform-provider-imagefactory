@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum AccountStatus {
 	ACCESS_SUCCESS
@@ -359,6 +359,7 @@ enum OSSubtype {
 	REDHAT
 	SUSE
 	ORACLE_LINUX
+	ROCKY
 }
 
 enum OSFamily {
@@ -369,6 +370,7 @@ enum OSFamily {
 	REDHAT
 	SUSE
 	ORACLE_LINUX
+	ROCKY
 }
 
 enum SortOrder {
@@ -643,7 +645,7 @@ type DistributionResults {
 }
 
 
-# Copyright 2022-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2022-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 type ImageComponent {
 	id: String!
@@ -684,8 +686,10 @@ type ImageCloudDistribution {
 enum ImageStatus {
 	PENDING
 	CREATED
+	DELETED
 	ERROR
 	SHARE_ERROR
+	DELETE_ERROR
 }
 
 type ImageState {
@@ -914,7 +918,7 @@ type SettingsResult {
 }
 
 
-# Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum RebuildReasonType {
 	SECURITY_CHECK
@@ -1002,11 +1006,16 @@ type VMImageDefinition {
 	sku: String!
 }
 
+type AdditionalDataDisks {
+	size: Int!
+}
+
 type TemplateAZUREConfig {
 	replicaRegions: [String]
 	excludeFromLatest: Boolean
 	vmImageDefinition: VMImageDefinition
 	eolDateOption: Boolean
+	additionalDataDisks: [AdditionalDataDisks!]
 }
 
 type TemplateExoscaleConfig {
@@ -1139,11 +1148,24 @@ input NewVMImageDefinition {
 	sku: String!
 }
 
+input NewAdditionalDataDisks {
+	"""
+	size is in GB, from 1G to 10G.
+	"""
+	size: Int!
+}
+
 input NewTemplateAZUREConfig {
 	replicaRegions: [String]
 	excludeFromLatest: Boolean
 	vmImageDefinition: NewVMImageDefinition
 	eolDateOption: Boolean
+
+	"""
+	`additionalDataDisks` defines extra data disks attached to the image with a limit of 10.
+
+	"""
+	additionalDataDisks: [NewAdditionalDataDisks!]
 }
 
 input NewTemplateExoscaleConfig {
@@ -1195,7 +1217,7 @@ input NewTemplateConfig {
 	cloudAccountIds: [String]
 
 	"""
-	disableCyclicalRebuilds defines if cyclical rebuilds are disabled for the template
+	disableCyclicalRebuilds defines if cyclical rebuilds are disabled for the template.
 
 	Cyclical rebuilds are rebuilds that are triggered automatically by ImageFactory when the source image is updated or
 	when there are security updates available for the packages installed in the image. If cyclical rebuilds are disabled,

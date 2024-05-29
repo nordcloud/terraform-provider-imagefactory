@@ -109,6 +109,18 @@ func expandVMImageDefinitionTemplateAzureConfig(in []interface{}) *graphql.NewVM
 	}
 }
 
+func expandAdditionalDataDisks(in []interface{}) *[]graphql.NewAdditionalDataDisks {
+	out := []graphql.NewAdditionalDataDisks{}
+	for i := range in {
+		m := in[i].(map[string]interface{})
+		out = append(out, graphql.NewAdditionalDataDisks{
+			Size: graphql.Int(m["size"].(int)),
+		})
+	}
+
+	return &out
+}
+
 func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig {
 	if len(in) == 0 {
 		return nil
@@ -130,6 +142,10 @@ func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig
 		EolDateOption:     &eol,
 		ReplicaRegions:    &rr,
 		VmImageDefinition: expandVMImageDefinitionTemplateAzureConfig(m["vm_image_definition"].([]interface{})),
+	}
+
+	if m["additional_data_disks"] != nil {
+		out.AdditionalDataDisks = expandAdditionalDataDisks(m["additional_data_disks"].([]interface{}))
 	}
 
 	return out

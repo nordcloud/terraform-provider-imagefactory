@@ -13,7 +13,7 @@ description: |-
 ## Example Usage
 
 ```terraform
-// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 # An example of a SHELL component
 

@@ -1,4 +1,4 @@
-// Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package imagetemplate
 
@@ -40,7 +40,7 @@ func resourceTemplateCreate(ctx context.Context, d *schema.ResourceData, m inter
 		Provider:       graphql.Provider(d.Get("cloud_provider").(string)),
 		Config:         *tplCfg,
 	}
-	if len(d.Get("description").(string)) > 0 {
+	if d.Get("description").(string) != "" {
 		description := graphql.String(d.Get("description").(string))
 		input.Description = &description
 	}
@@ -81,7 +81,7 @@ func resourceTemplateUpdate(ctx context.Context, d *schema.ResourceData, m inter
 		Name:   &name,
 		Config: tplCfg,
 	}
-	if len(d.Get("description").(string)) > 0 {
+	if d.Get("description").(string) != "" {
 		description := graphql.String(d.Get("description").(string))
 		input.Description = &description
 	}

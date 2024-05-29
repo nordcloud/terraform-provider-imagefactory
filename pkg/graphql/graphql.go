@@ -3093,10 +3093,12 @@ const (
 type ImageStatus string
 
 const (
-	ImageStatusCREATED    ImageStatus = "CREATED"
-	ImageStatusERROR      ImageStatus = "ERROR"
-	ImageStatusPENDING    ImageStatus = "PENDING"
-	ImageStatusSHAREERROR ImageStatus = "SHARE_ERROR"
+	ImageStatusCREATED     ImageStatus = "CREATED"
+	ImageStatusDELETED     ImageStatus = "DELETED"
+	ImageStatusDELETEERROR ImageStatus = "DELETE_ERROR"
+	ImageStatusERROR       ImageStatus = "ERROR"
+	ImageStatusPENDING     ImageStatus = "PENDING"
+	ImageStatusSHAREERROR  ImageStatus = "SHARE_ERROR"
 )
 
 type Kind string
@@ -3121,6 +3123,7 @@ const (
 	OSFamilyCENTOS      OSFamily = "CENTOS"
 	OSFamilyORACLELINUX OSFamily = "ORACLE_LINUX"
 	OSFamilyREDHAT      OSFamily = "REDHAT"
+	OSFamilyROCKY       OSFamily = "ROCKY"
 	OSFamilySUSE        OSFamily = "SUSE"
 	OSFamilyUBUNTU      OSFamily = "UBUNTU"
 	OSFamilyWINDOWS     OSFamily = "WINDOWS"
@@ -3133,6 +3136,7 @@ const (
 	OSSubtypeCENTOS      OSSubtype = "CENTOS"
 	OSSubtypeORACLELINUX OSSubtype = "ORACLE_LINUX"
 	OSSubtypeREDHAT      OSSubtype = "REDHAT"
+	OSSubtypeROCKY       OSSubtype = "ROCKY"
 	OSSubtypeSUSE        OSSubtype = "SUSE"
 	OSSubtypeUBUNTU      OSSubtype = "UBUNTU"
 )
@@ -3598,6 +3602,10 @@ type NewAccount struct {
 	Scope           *Scope                       `json:"scope,omitempty"`
 }
 
+type NewAdditionalDataDisks struct {
+	Size Int `json:"size"`
+}
+
 type NewAdditionalEBSVolumes struct {
 	DeviceName String `json:"deviceName"`
 	Size       Int    `json:"size"`
@@ -3666,10 +3674,11 @@ type NewTemplateAWSConfig struct {
 }
 
 type NewTemplateAZUREConfig struct {
-	EolDateOption     *Boolean              `json:"eolDateOption,omitempty"`
-	ExcludeFromLatest *Boolean              `json:"excludeFromLatest,omitempty"`
-	ReplicaRegions    *[]String             `json:"replicaRegions,omitempty"`
-	VmImageDefinition *NewVMImageDefinition `json:"vmImageDefinition,omitempty"`
+	AdditionalDataDisks *[]NewAdditionalDataDisks `json:"additionalDataDisks,omitempty"`
+	EolDateOption       *Boolean                  `json:"eolDateOption,omitempty"`
+	ExcludeFromLatest   *Boolean                  `json:"excludeFromLatest,omitempty"`
+	ReplicaRegions      *[]String                 `json:"replicaRegions,omitempty"`
+	VmImageDefinition   *NewVMImageDefinition     `json:"vmImageDefinition,omitempty"`
 }
 
 type NewTemplateComponent struct {
@@ -3818,6 +3827,10 @@ type AccountResults struct {
 type AccountState struct {
 	Error  *String       `json:"error,omitempty"`
 	Status AccountStatus `json:"status"`
+}
+
+type AdditionalDataDisks struct {
+	Size Int `json:"size"`
 }
 
 type AdditionalEBSVolumes struct {
@@ -4245,10 +4258,11 @@ type TemplateAWSConfig struct {
 }
 
 type TemplateAZUREConfig struct {
-	EolDateOption     *Boolean           `json:"eolDateOption,omitempty"`
-	ExcludeFromLatest *Boolean           `json:"excludeFromLatest,omitempty"`
-	ReplicaRegions    *[]String          `json:"replicaRegions,omitempty"`
-	VmImageDefinition *VMImageDefinition `json:"vmImageDefinition,omitempty"`
+	AdditionalDataDisks *[]AdditionalDataDisks `json:"additionalDataDisks,omitempty"`
+	EolDateOption       *Boolean               `json:"eolDateOption,omitempty"`
+	ExcludeFromLatest   *Boolean               `json:"excludeFromLatest,omitempty"`
+	ReplicaRegions      *[]String              `json:"replicaRegions,omitempty"`
+	VmImageDefinition   *VMImageDefinition     `json:"vmImageDefinition,omitempty"`
 }
 
 type TemplateComponent struct {

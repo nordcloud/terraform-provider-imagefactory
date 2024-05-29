@@ -13,7 +13,7 @@ description: |-
 ## Example Usage
 
 ```terraform
-// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 resource "imagefactory_custom_component" "build_template" {
   name            = "Install nginx"
@@ -45,9 +45,7 @@ resource "imagefactory_custom_component" "test_component" {
 }
 
 data "imagefactory_system_component" "hardening-level-1" {
-  name           = "Hardening level 1"
-  cloud_provider = "AWS"
-  stage          = "BUILD"
+  name = "Hardening level 1"
 }
 
 data "imagefactory_distribution" "ubuntu18" {
@@ -126,6 +124,22 @@ resource "imagefactory_template" "azure_template" {
     tags {
       key   = "KEY_TWO"
       value = "VALUE_B"
+    }
+  }
+}
+
+# AZURE Template - additional data disks
+
+resource "imagefactory_template" "azure_template" {
+  name            = "Ubuntu1804"
+  description     = "Ubuntu 18.04 on Azure"
+  cloud_provider  = "AZURE"
+  distribution_id = data.imagefactory_distribution.ubuntu18.id
+  config {
+    azure {
+      additional_data_disks {
+        size = 1
+      }
     }
   }
 }
@@ -293,10 +307,19 @@ Required:
 
 Optional:
 
+- `additional_data_disks` (Block List, Max: 10) (see [below for nested schema](#nestedblock--config--azure--additional_data_disks))
 - `eol_date_option` (Boolean) Default value is set to true
 - `exclude_from_latest` (Boolean)
 - `replica_regions` (List of String)
 - `vm_image_definition` (Block List) (see [below for nested schema](#nestedblock--config--azure--vm_image_definition))
+
+<a id="nestedblock--config--azure--additional_data_disks"></a>
+### Nested Schema for `config.azure.additional_data_disks`
+
+Required:
+
+- `size` (Number) Data disk size between 1 and 10 GB.
+
 
 <a id="nestedblock--config--azure--vm_image_definition"></a>
 ### Nested Schema for `config.azure.vm_image_definition`

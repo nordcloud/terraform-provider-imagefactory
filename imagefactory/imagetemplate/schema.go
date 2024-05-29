@@ -1,4 +1,4 @@
-// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package imagetemplate
 
@@ -117,6 +117,17 @@ var vmImageDefinitionAzureTemplateConfigResource = &schema.Resource{
 	},
 }
 
+var additionalDataDisksResource = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"size": {
+			Type:         schema.TypeInt,
+			Required:     true,
+			Description:  "Data disk size between 1 and 10 GB.",
+			ValidateFunc: validation.IntBetween(1, 10), // nolint: gomnd
+		},
+	},
+}
+
 var azureTemplateConfigResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"exclude_from_latest": {
@@ -140,6 +151,12 @@ var azureTemplateConfigResource = &schema.Resource{
 			Type:     schema.TypeList,
 			Optional: true,
 			Elem:     vmImageDefinitionAzureTemplateConfigResource,
+		},
+		"additional_data_disks": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem:     additionalDataDisksResource,
+			MaxItems: 10,
 		},
 	},
 }

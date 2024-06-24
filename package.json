@@ -3,7 +3,7 @@
         "generate": "graphql-codegen"
     },
     "devDependencies": {
-        "@graphql-codegen/cli": "^2.16.5",
+        "@graphql-codegen/cli": "^5.0.2",
         "graphql-codegen-golang": "^0.4.0"
     }
 }

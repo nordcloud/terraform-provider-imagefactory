@@ -1016,6 +1016,7 @@ type TemplateAZUREConfig {
 	vmImageDefinition: VMImageDefinition
 	eolDateOption: Boolean
 	additionalDataDisks: [AdditionalDataDisks!]
+	trustedLaunch: Boolean
 }
 
 type TemplateExoscaleConfig {
@@ -1029,6 +1030,7 @@ type TemplateConfig {
 	notifications: [Notification!]
 	scope: Scope
 	disableCyclicalRebuilds: Boolean
+	imageRetainCount: Int
 	aws: TemplateAWSConfig
 	azure: TemplateAZUREConfig
 	exoscale: TemplateExoscaleConfig
@@ -1162,6 +1164,15 @@ input NewTemplateAZUREConfig {
 	eolDateOption: Boolean
 
 	"""
+	`trustedLaunch` defines if the image is trusted launch enabled.
+
+	Trusted launch is a feature that helps protect virtual machines from threats that can compromise the boot process.
+	This feature is only available for new templates and cannot be changed after the template is created.
+	This feature is only available for Gen2 VMs.
+	"""
+	trustedLaunch: Boolean
+
+	"""
 	`additionalDataDisks` defines extra data disks attached to the image with a limit of 10.
 
 	"""
@@ -1224,6 +1235,16 @@ input NewTemplateConfig {
 	the template will not be rebuilt automatically and the user will have to trigger the rebuild manually.
 	"""
 	disableCyclicalRebuilds: Boolean
+
+	"""
+	imageRetainCount defines the number of images to retain on the customer's cloud account.
+
+	This feature allows ImageFactory to automatically remove the oldest image from the customer's cloud account when
+	a new image is distributed, if the number of images exceeds the specified `imageRetainCount`. To allow this operation,
+	ImageFactory requires the necessary permissions to remove images from the customer's cloud account.
+	By default, ImageFactory does not remove any images from the customer's cloud account.
+	"""
+	imageRetainCount: Int
 }
 
 input NewTemplate {

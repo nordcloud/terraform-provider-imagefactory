@@ -71,6 +71,10 @@ func resourceTemplateUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	templateID := d.Id()
 	name := graphql.String(d.Get("name").(string))
 
+	if d.HasChange("distribution_id") {
+		return diag.Errorf("Changing distribution is not possible. Create a new template using the new distribution.")
+	}
+
 	tplCfg, err := expandTemplateConfig(d.Get("config").([]interface{}))
 	if err != nil {
 		return diag.FromErr(err)

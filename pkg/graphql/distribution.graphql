@@ -1,4 +1,4 @@
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 query GetDistributions($input: DistributionsInput!) {
   distributions(input: $input) {
@@ -7,6 +7,7 @@ query GetDistributions($input: DistributionsInput!) {
       name
       description
       provider
+      deprecated
     }
   }
 }

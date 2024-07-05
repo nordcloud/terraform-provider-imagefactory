@@ -28,6 +28,10 @@ func distributionRead(ctx context.Context, d *schema.ResourceData, m interface{}
 		return diag.FromErr(err)
 	}
 
+	if distro.Deprecated != nil && *distro.Deprecated {
+		return diag.Errorf("Distribution %s is deprecated. Use another distribution.", distro.Name)
+	}
+
 	d.SetId(string(distro.ID))
 	if err := d.Set("name", distro.Name); err != nil {
 		return diag.FromErr(err)

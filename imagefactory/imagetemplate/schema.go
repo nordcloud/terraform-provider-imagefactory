@@ -158,6 +158,10 @@ var azureTemplateConfigResource = &schema.Resource{
 			Elem:     additionalDataDisksResource,
 			MaxItems: 10,
 		},
+		"trusted_launch": {
+			Type:     schema.TypeBool,
+			Optional: true,
+		},
 	},
 }
 

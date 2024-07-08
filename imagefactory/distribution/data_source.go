@@ -1,4 +1,4 @@
-// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package distribution
 
@@ -26,6 +26,10 @@ func distributionRead(ctx context.Context, d *schema.ResourceData, m interface{}
 	distro, err := c.APIClient.GetDistribution(d.Get("name").(string), d.Get("cloud_provider").(string))
 	if err != nil {
 		return diag.FromErr(err)
+	}
+
+	if distro.Deprecated != nil && *distro.Deprecated {
+		return diag.Errorf("Distribution %s is deprecated. Use another distribution.", distro.Name)
 	}
 
 	d.SetId(string(distro.ID))

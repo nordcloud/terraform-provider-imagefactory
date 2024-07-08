@@ -1417,6 +1417,7 @@ type GetDistributionsResponse struct {
 			Name        string `json:"name"`
 			Description string `json:"description"`
 			Provider    string `json:"provider"`
+			Deprecated  string `json:"deprecated"`
 		} `json:"results"`
 	} `json:"distributions"`
 }
@@ -1439,6 +1440,7 @@ func NewGetDistributionsRequest(url string, vars *GetDistributionsVariables) (*G
       name
       description
       provider
+      deprecated
     }
   }
 }`,
@@ -3678,6 +3680,7 @@ type NewTemplateAZUREConfig struct {
 	EolDateOption       *Boolean                  `json:"eolDateOption,omitempty"`
 	ExcludeFromLatest   *Boolean                  `json:"excludeFromLatest,omitempty"`
 	ReplicaRegions      *[]String                 `json:"replicaRegions,omitempty"`
+	TrustedLaunch       *Boolean                  `json:"trustedLaunch,omitempty"`
 	VmImageDefinition   *NewVMImageDefinition     `json:"vmImageDefinition,omitempty"`
 }
 
@@ -3699,6 +3702,7 @@ type NewTemplateConfig struct {
 	CloudAccountIds         *[]String                  `json:"cloudAccountIds,omitempty"`
 	DisableCyclicalRebuilds *Boolean                   `json:"disableCyclicalRebuilds,omitempty"`
 	Exoscale                *NewTemplateExoscaleConfig `json:"exoscale,omitempty"`
+	ImageRetainCount        *Int                       `json:"imageRetainCount,omitempty"`
 	Notifications           *[]NewNotification         `json:"notifications,omitempty"`
 	Scope                   *Scope                     `json:"scope,omitempty"`
 	Tags                    *[]NewTag                  `json:"tags,omitempty"`
@@ -4262,6 +4266,7 @@ type TemplateAZUREConfig struct {
 	EolDateOption       *Boolean               `json:"eolDateOption,omitempty"`
 	ExcludeFromLatest   *Boolean               `json:"excludeFromLatest,omitempty"`
 	ReplicaRegions      *[]String              `json:"replicaRegions,omitempty"`
+	TrustedLaunch       *Boolean               `json:"trustedLaunch,omitempty"`
 	VmImageDefinition   *VMImageDefinition     `json:"vmImageDefinition,omitempty"`
 }
 
@@ -4284,6 +4289,7 @@ type TemplateConfig struct {
 	CloudAccountIds         *[]String               `json:"cloudAccountIds,omitempty"`
 	DisableCyclicalRebuilds *Boolean                `json:"disableCyclicalRebuilds,omitempty"`
 	Exoscale                *TemplateExoscaleConfig `json:"exoscale,omitempty"`
+	ImageRetainCount        *Int                    `json:"imageRetainCount,omitempty"`
 	Notifications           *[]Notification         `json:"notifications,omitempty"`
 	Scope                   *Scope                  `json:"scope,omitempty"`
 	Tags                    *[]Tag                  `json:"tags,omitempty"`

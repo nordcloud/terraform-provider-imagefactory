@@ -311,6 +311,7 @@ Optional:
 - `eol_date_option` (Boolean) Default value is set to true
 - `exclude_from_latest` (Boolean)
 - `replica_regions` (List of String)
+- `trusted_launch` (Boolean)
 - `vm_image_definition` (Block List) (see [below for nested schema](#nestedblock--config--azure--vm_image_definition))
 
 <a id="nestedblock--config--azure--additional_data_disks"></a>

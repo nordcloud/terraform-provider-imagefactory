@@ -7,7 +7,7 @@ terraform {
   required_providers {
     imagefactory = {
       source  = "nordcloud/imagefactory"
-      version = "1.9.1"
+      version = "1.10.0"
     }
   }
 }

@@ -144,6 +144,30 @@ resource "imagefactory_template" "azure_template" {
   }
 }
 
+# AZURE Template - additional signatures on Gen2 images
+
+resource "imagefactory_variable" "uefi_key" {
+  name  = "UEFI_KEY"
+  value = "MIIDQTCCAimgAwIBAgIQDd70KTXzSXuUqRAfm+RzqzANBgkqhkiG9w0BAQsFADAj...."
+}
+
+resource "imagefactory_template" "azure_template" {
+  name            = "Ubuntu1804"
+  description     = "Ubuntu 18.04 on Azure"
+  cloud_provider  = "AZURE"
+  distribution_id = data.imagefactory_distribution.ubuntu18.id
+  config {
+    azure {
+      trusted_launch = true
+      additional_signatures {
+        variable_name = imagefactory_variable.uefi_key.name
+        # If the variable is not defined in the template, the value can be set directly
+        # variable_value = "UEFI_KEY"
+      }
+    }
+  }
+}
+
 output "azure_template" {
   value = imagefactory_template.azure_template
 }
@@ -308,6 +332,7 @@ Required:
 Optional:
 
 - `additional_data_disks` (Block List, Max: 10) (see [below for nested schema](#nestedblock--config--azure--additional_data_disks))
+- `additional_signatures` (Block List) Additional UEFI keys that are used to validate the boot loader. This feature allows you to bind UEFI keys for driver/kernel modules that are signed by using a private key that's owned by third-party vendors. (see [below for nested schema](#nestedblock--config--azure--additional_signatures))
 - `eol_date_option` (Boolean) Default value is set to true
 - `exclude_from_latest` (Boolean)
 - `replica_regions` (List of String)
@@ -320,6 +345,14 @@ Optional:
 Required:
 
 - `size` (Number) Data disk size between 1 and 10 GB.
+
+
+<a id="nestedblock--config--azure--additional_signatures"></a>
+### Nested Schema for `config.azure.additional_signatures`
+
+Required:
+
+- `variable_name` (String) The name of the Customer Variable that is used to store the UEFI key.
 
 
 <a id="nestedblock--config--azure--vm_image_definition"></a>

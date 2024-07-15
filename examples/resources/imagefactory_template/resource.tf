@@ -129,6 +129,30 @@ resource "imagefactory_template" "azure_template" {
   }
 }
 
+# AZURE Template - additional signatures on Gen2 images
+
+resource "imagefactory_variable" "uefi_key" {
+  name  = "UEFI_KEY"
+  value = "MIIDQTCCAimgAwIBAgIQDd70KTXzSXuUqRAfm+RzqzANBgkqhkiG9w0BAQsFADAj...."
+}
+
+resource "imagefactory_template" "azure_template" {
+  name            = "Ubuntu1804"
+  description     = "Ubuntu 18.04 on Azure"
+  cloud_provider  = "AZURE"
+  distribution_id = data.imagefactory_distribution.ubuntu18.id
+  config {
+    azure {
+      trusted_launch = true
+      additional_signatures {
+        variable_name = imagefactory_variable.uefi_key.name
+        # If the variable is not defined in the template, the value can be set directly
+        # variable_value = "UEFI_KEY"
+      }
+    }
+  }
+}
+
 output "azure_template" {
   value = imagefactory_template.azure_template
 }

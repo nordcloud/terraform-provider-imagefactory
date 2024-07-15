@@ -3083,6 +3083,13 @@ const (
 	DistributionAttributePROVIDER  DistributionAttribute = "PROVIDER"
 )
 
+type HyperVGeneration string
+
+const (
+	HyperVGenerationHYPERVGENERATIONV1 HyperVGeneration = "HYPERV_GENERATION_V1"
+	HyperVGenerationHYPERVGENERATIONV2 HyperVGeneration = "HYPERV_GENERATION_V2"
+)
+
 type ImageAttribute string
 
 const (
@@ -3676,12 +3683,13 @@ type NewTemplateAWSConfig struct {
 }
 
 type NewTemplateAZUREConfig struct {
-	AdditionalDataDisks *[]NewAdditionalDataDisks `json:"additionalDataDisks,omitempty"`
-	EolDateOption       *Boolean                  `json:"eolDateOption,omitempty"`
-	ExcludeFromLatest   *Boolean                  `json:"excludeFromLatest,omitempty"`
-	ReplicaRegions      *[]String                 `json:"replicaRegions,omitempty"`
-	TrustedLaunch       *Boolean                  `json:"trustedLaunch,omitempty"`
-	VmImageDefinition   *NewVMImageDefinition     `json:"vmImageDefinition,omitempty"`
+	AdditionalDataDisks  *[]NewAdditionalDataDisks `json:"additionalDataDisks,omitempty"`
+	AdditionalSignatures *[]NewUefiKey             `json:"additionalSignatures,omitempty"`
+	EolDateOption        *Boolean                  `json:"eolDateOption,omitempty"`
+	ExcludeFromLatest    *Boolean                  `json:"excludeFromLatest,omitempty"`
+	ReplicaRegions       *[]String                 `json:"replicaRegions,omitempty"`
+	TrustedLaunch        *Boolean                  `json:"trustedLaunch,omitempty"`
+	VmImageDefinition    *NewVMImageDefinition     `json:"vmImageDefinition,omitempty"`
 }
 
 type NewTemplateComponent struct {
@@ -3711,6 +3719,10 @@ type NewTemplateConfig struct {
 
 type NewTemplateExoscaleConfig struct {
 	Zone *String `json:"zone,omitempty"`
+}
+
+type NewUefiKey struct {
+	VariableName String `json:"variableName"`
 }
 
 type NewVMImageDefinition struct {
@@ -3799,6 +3811,10 @@ type TemplatesSort struct {
 //
 // Objects
 //
+
+type AZUREConfig struct {
+	HypervGeneration *HyperVGeneration `json:"hypervGeneration,omitempty"`
+}
 
 type Account struct {
 	Alias           *String                 `json:"alias,omitempty"`
@@ -3969,6 +3985,10 @@ type ComponentResults struct {
 	Results *[]Component `json:"results,omitempty"`
 }
 
+type Config struct {
+	Azure *AZUREConfig `json:"azure,omitempty"`
+}
+
 type Contact struct {
 	Email String `json:"email"`
 	Name  String `json:"name"`
@@ -4012,6 +4032,7 @@ type CustomerStats struct {
 
 type Distribution struct {
 	ComplianceScore *ComplianceScore `json:"complianceScore,omitempty"`
+	Config          *Config          `json:"config,omitempty"`
 	CreatedAt       String           `json:"createdAt"`
 	Deprecated      *Boolean         `json:"deprecated,omitempty"`
 	Description     *String          `json:"description,omitempty"`
@@ -4262,12 +4283,13 @@ type TemplateAWSConfig struct {
 }
 
 type TemplateAZUREConfig struct {
-	AdditionalDataDisks *[]AdditionalDataDisks `json:"additionalDataDisks,omitempty"`
-	EolDateOption       *Boolean               `json:"eolDateOption,omitempty"`
-	ExcludeFromLatest   *Boolean               `json:"excludeFromLatest,omitempty"`
-	ReplicaRegions      *[]String              `json:"replicaRegions,omitempty"`
-	TrustedLaunch       *Boolean               `json:"trustedLaunch,omitempty"`
-	VmImageDefinition   *VMImageDefinition     `json:"vmImageDefinition,omitempty"`
+	AdditionalDataDisks  *[]AdditionalDataDisks `json:"additionalDataDisks,omitempty"`
+	AdditionalSignatures *[]UefiKey             `json:"additionalSignatures,omitempty"`
+	EolDateOption        *Boolean               `json:"eolDateOption,omitempty"`
+	ExcludeFromLatest    *Boolean               `json:"excludeFromLatest,omitempty"`
+	ReplicaRegions       *[]String              `json:"replicaRegions,omitempty"`
+	TrustedLaunch        *Boolean               `json:"trustedLaunch,omitempty"`
+	VmImageDefinition    *VMImageDefinition     `json:"vmImageDefinition,omitempty"`
 }
 
 type TemplateComponent struct {
@@ -4311,6 +4333,10 @@ type TemplateState struct {
 	Error            *String     `json:"error,omitempty"`
 	LastBuildTimeSec *Int        `json:"lastBuildTimeSec,omitempty"`
 	Status           BuildStatus `json:"status"`
+}
+
+type UefiKey struct {
+	VariableName String `json:"variableName"`
 }
 
 type VMImageDefinition struct {

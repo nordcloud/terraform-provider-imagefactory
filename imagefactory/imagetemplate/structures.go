@@ -121,6 +121,18 @@ func expandAdditionalDataDisks(in []interface{}) *[]graphql.NewAdditionalDataDis
 	return &out
 }
 
+func expandAdditionalSignatures(in []interface{}) *[]graphql.NewUefiKey {
+	out := []graphql.NewUefiKey{}
+	for i := range in {
+		m := in[i].(map[string]interface{})
+		out = append(out, graphql.NewUefiKey{
+			VariableName: graphql.String(m["variable_name"].(string)),
+		})
+	}
+
+	return &out
+}
+
 func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig {
 	if len(in) == 0 {
 		return nil
@@ -147,6 +159,10 @@ func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig
 
 	if m["additional_data_disks"] != nil {
 		out.AdditionalDataDisks = expandAdditionalDataDisks(m["additional_data_disks"].([]interface{}))
+	}
+
+	if m["additional_signatures"] != nil {
+		out.AdditionalSignatures = expandAdditionalSignatures(m["additional_signatures"].([]interface{}))
 	}
 
 	return out

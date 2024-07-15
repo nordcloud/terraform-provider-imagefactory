@@ -606,7 +606,7 @@ type CustomerStats {
 }
 
 
-# Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 """
 Distribution defines the cloud image that can be created by the ImageFactory.
@@ -631,6 +631,7 @@ type Distribution {
 	osEolDate: String
 	complianceScore: ComplianceScore
 	deprecated: Boolean
+	config: Config
 }
 
 type ComplianceScore {
@@ -642,6 +643,19 @@ type DistributionResults {
 	results: [Distribution!]
 	pages: Int!
 	count: Int!
+}
+
+type Config {
+	azure: AZUREConfig
+}
+
+enum HyperVGeneration {
+	HYPERV_GENERATION_V1
+	HYPERV_GENERATION_V2
+}
+
+type AZUREConfig {
+	hypervGeneration: HyperVGeneration
 }
 
 
@@ -1010,6 +1024,10 @@ type AdditionalDataDisks {
 	size: Int!
 }
 
+type UefiKey {
+	variableName: String!
+}
+
 type TemplateAZUREConfig {
 	replicaRegions: [String]
 	excludeFromLatest: Boolean
@@ -1017,6 +1035,7 @@ type TemplateAZUREConfig {
 	eolDateOption: Boolean
 	additionalDataDisks: [AdditionalDataDisks!]
 	trustedLaunch: Boolean
+	additionalSignatures: [UefiKey!]
 }
 
 type TemplateExoscaleConfig {
@@ -1150,6 +1169,13 @@ input NewVMImageDefinition {
 	sku: String!
 }
 
+input NewUefiKey {
+	"""
+	variableName is the name of the Customer Variable that is used to store the UEFI key.
+	"""
+	variableName: String!
+}
+
 input NewAdditionalDataDisks {
 	"""
 	size is in GB, from 1G to 10G.
@@ -1171,6 +1197,14 @@ input NewTemplateAZUREConfig {
 	This feature is only available for Gen2 VMs.
 	"""
 	trustedLaunch: Boolean
+
+	"""
+	`additionalSignatures` defines additional UEFI keys that are used to validate the boot loader.
+
+	This feature allows you to bind unified extensible firmware interface (UEFI) keys for driver/kernel modules
+	that are signed by using a private key that's owned by third-party vendors.
+	"""
+	additionalSignatures: [NewUefiKey!]
 
 	"""
 	`additionalDataDisks` defines extra data disks attached to the image with a limit of 10.

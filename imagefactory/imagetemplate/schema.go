@@ -128,6 +128,16 @@ var additionalDataDisksResource = &schema.Resource{
 	},
 }
 
+var additionalSignaturesResource = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"variable_name": {
+			Type:        schema.TypeString,
+			Required:    true,
+			Description: "The name of the Customer Variable that is used to store the UEFI key.",
+		},
+	},
+}
+
 var azureTemplateConfigResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"exclude_from_latest": {
@@ -161,6 +171,14 @@ var azureTemplateConfigResource = &schema.Resource{
 		"trusted_launch": {
 			Type:     schema.TypeBool,
 			Optional: true,
+		},
+		"additional_signatures": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem:     additionalSignaturesResource,
+			Description: "Additional UEFI keys that are used to validate the boot loader. " +
+				"This feature allows you to bind UEFI keys for driver/kernel modules that " +
+				"are signed by using a private key that's owned by third-party vendors.",
 		},
 	},
 }

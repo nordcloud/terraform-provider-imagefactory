@@ -147,7 +147,7 @@ resource "imagefactory_template" "azure_template" {
       additional_signatures {
         variable_name = imagefactory_variable.uefi_key.name
         # If the variable is not defined in the template, the value can be set directly
-        # variable_value = "UEFI_KEY"
+        # variable_name = "UEFI_KEY"
       }
     }
   }

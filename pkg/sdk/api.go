@@ -55,7 +55,7 @@ type API interface {
 	// Variables CRUD
 	GetVariable(name string) (Variable, error)
 	CreateVariable(input NewVariable) (Variable, error)
-	UpdateVariable(input NewVariable) (Variable, error)
+	UpdateVariable(input VariableChanges) (Variable, error)
 	DeleteVariable(name string) error
 
 	// Actions

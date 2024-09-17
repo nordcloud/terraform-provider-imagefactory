@@ -668,8 +668,20 @@ func (c APIClient) CreateVariable(input NewVariable) (Variable, error) {
 	return Variable(r.CreateVariable), nil
 }
 
-func (c APIClient) UpdateVariable(input NewVariable) (Variable, error) {
-	return c.CreateVariable(input)
+func (c APIClient) UpdateVariable(input VariableChanges) (Variable, error) {
+	req, err := graphql.NewUpdateVariableRequest(c.apiURL, &graphql.UpdateVariableVariables{
+		Input: graphql.VariableChanges(input),
+	})
+	if err != nil {
+		return Variable{}, fmt.Errorf("getting update variable request %w", err)
+	}
+
+	r := &graphql.Mutation{}
+	if err := c.graphqlAPI.Execute(req.Request, r); err != nil {
+		return Variable{}, fmt.Errorf("updating variable %w", err)
+	}
+
+	return Variable(r.UpdateVariable), nil
 }
 
 func (c APIClient) DeleteVariable(name string) error {

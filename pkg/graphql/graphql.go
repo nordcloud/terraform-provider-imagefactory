@@ -2890,6 +2890,74 @@ func (client *Client) CreateVariable(vars *CreateVariableVariables) (*CreateVari
 }
 
 //
+// mutation UpdateVariable($input: VariableChanges!)
+//
+
+type UpdateVariableVariables struct {
+	Input VariableChanges `json:"input"`
+}
+
+type UpdateVariableResponse struct {
+	UpdateVariable struct {
+		Name string `json:"name"`
+		Hash string `json:"hash"`
+	} `json:"updateVariable"`
+}
+
+type UpdateVariableRequest struct {
+	*http.Request
+}
+
+func NewUpdateVariableRequest(url string, vars *UpdateVariableVariables) (*UpdateVariableRequest, error) {
+	variables, err := json.Marshal(vars)
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(&GraphQLOperation{
+		Variables: variables,
+		Query: `mutation UpdateVariable($input: VariableChanges!) {
+  updateVariable(input: $input) {
+    name
+    hash
+  }
+}`,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return &UpdateVariableRequest{req}, nil
+}
+
+func (req *UpdateVariableRequest) Execute(client *http.Client) (*UpdateVariableResponse, error) {
+	resp, err := execute(client, req.Request)
+	if err != nil {
+		return nil, err
+	}
+	var result UpdateVariableResponse
+	if err := json.Unmarshal(resp.Data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func UpdateVariable(url string, client *http.Client, vars *UpdateVariableVariables) (*UpdateVariableResponse, error) {
+	req, err := NewUpdateVariableRequest(url, vars)
+	if err != nil {
+		return nil, err
+	}
+	return req.Execute(client)
+}
+
+func (client *Client) UpdateVariable(vars *UpdateVariableVariables) (*UpdateVariableResponse, error) {
+	return UpdateVariable(client.Url, client.Client, vars)
+}
+
+//
 // mutation DeleteVariable($input: CustomerVariableNameInput!)
 //
 
@@ -3808,6 +3876,11 @@ type TemplatesSort struct {
 	Order SortOrder         `json:"order"`
 }
 
+type VariableChanges struct {
+	Name  String `json:"name"`
+	Value String `json:"value"`
+}
+
 //
 // Objects
 //
@@ -4137,6 +4210,7 @@ type Mutation struct {
 	UpdateRole             Role        `json:"updateRole"`
 	UpdateRoleBinding      RoleBinding `json:"updateRoleBinding"`
 	UpdateTemplate         Template    `json:"updateTemplate"`
+	UpdateVariable         Variable    `json:"updateVariable"`
 }
 
 type Notification struct {

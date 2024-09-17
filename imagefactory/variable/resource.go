@@ -1,4 +1,4 @@
-// Copyright 2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2022-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package variable
 
@@ -79,7 +79,7 @@ func update(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Dia
 		}
 	}
 
-	input := sdk.NewVariable{
+	input := sdk.VariableChanges{
 		Name:  graphql.String(newVariableName),
 		Value: graphql.String(variableValue),
 	}

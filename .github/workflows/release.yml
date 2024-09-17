@@ -1,4 +1,4 @@
-# Copyright 2021 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 on:
   push:
@@ -49,8 +49,8 @@ jobs:
           - goos: windows
             goarch: amd64
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-go@v2
+    - uses: actions/checkout@v4
+    - uses: actions/setup-go@v5
       with:
         go-version: '^1.20'
     - run: |
@@ -65,7 +65,7 @@ jobs:
         asset_path: ./terraform-provider-imagefactory_${{ needs.release.outputs.version }}_${{ matrix.goos }}_${{ matrix.goarch }}.zip
         asset_name: terraform-provider-imagefactory_${{ needs.release.outputs.version }}_${{ matrix.goos }}_${{ matrix.goarch }}.zip
         asset_content_type: application/binary
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: terraform-provider-imagefactory_${{ matrix.goos }}_${{ matrix.goarch }}
         path: terraform-provider-imagefactory_${{ needs.release.outputs.version }}_${{ matrix.goos }}_${{ matrix.goarch }}.zip
@@ -77,8 +77,8 @@ jobs:
     name: Sign provider and upload metadata files
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v4.1.7
+    - uses: actions/checkout@v4
+    - uses: actions/download-artifact@v4
       with:
         path: artifacts
     - run: |

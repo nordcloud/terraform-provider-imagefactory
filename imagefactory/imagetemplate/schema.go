@@ -192,6 +192,25 @@ var exoscaleTemplateConfigResource = &schema.Resource{
 	},
 }
 
+var customImageNameValidationDescription = "Must be a valid custom image name. " +
+	"The name must start with a lowercase letter, followed by a dash or a lowercase letter or a digit. " +
+	"The name must end with a lowercase letter or a digit. " +
+	"The name must be between 3 and 45 characters long."
+
+var gcpTemplateConfigResource = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"custom_image_name": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "The name of the custom image. " + customImageNameValidationDescription,
+			ValidateFunc: validation.StringMatch(
+				regexp.MustCompile(`^[a-z]([-a-z0-9]*[a-z0-9]){2,44}$`),
+				customImageNameValidationDescription,
+			),
+		},
+	},
+}
+
 var templateComponentResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"id": {
@@ -251,6 +270,11 @@ var templateConfigResource = &schema.Resource{
 			Type:     schema.TypeList,
 			Optional: true,
 			Elem:     exoscaleTemplateConfigResource,
+		},
+		"gcp": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem:     gcpTemplateConfigResource,
 		},
 		"build_components": {
 			Type:     schema.TypeList,

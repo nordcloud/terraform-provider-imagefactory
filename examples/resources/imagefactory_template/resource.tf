@@ -254,3 +254,30 @@ resource "imagefactory_template" "exoscale_template" {
 output "template" {
   value = imagefactory_template.exoscale_template
 }
+
+# GCP Template
+
+data "imagefactory_distribution" "ubuntu22" {
+  name           = "Ubuntu Server 22.04 LTS"
+  cloud_provider = "GCP"
+}
+
+resource "imagefactory_template" "gcp_template" {
+  name            = "Ubuntu2204"
+  description     = "Ubuntu Server 22.04 on GCP"
+  cloud_provider  = "GCP"
+  distribution_id = data.imagefactory_distribution.ubuntu22.id
+  config {
+    gcp {
+      custom_image_name = "ubuntu-22-04-prod-1-3"
+    }
+    notifications {
+      type = "WEB_HOOK"
+      uri  = "https://webhook.call.api.address"
+    }
+  }
+}
+
+output "template" {
+  value = imagefactory_template.gcp_template
+}

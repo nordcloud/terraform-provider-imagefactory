@@ -181,6 +181,23 @@ func expandTemplateExoscaleConfig(in []interface{}) *graphql.NewTemplateExoscale
 	}
 }
 
+func expandTemplateGcpConfig(in []interface{}) *graphql.NewTemplateGCPConfig {
+	if len(in) == 0 {
+		return nil
+	}
+
+	var imageName graphql.String
+
+	m := in[0].(map[string]interface{})
+	if m["custom_image_name"] != nil || m["custom_image_name"].(string) != "" {
+		imageName = graphql.String(m["custom_image_name"].(string))
+	}
+
+	return &graphql.NewTemplateGCPConfig{
+		CustomImageName: &imageName,
+	}
+}
+
 func expandTemplateConfig(in []interface{}) (*graphql.NewTemplateConfig, error) {
 	if len(in) == 0 {
 		return &graphql.NewTemplateConfig{}, nil
@@ -198,6 +215,7 @@ func expandTemplateConfig(in []interface{}) (*graphql.NewTemplateConfig, error) 
 		Aws:             awsCfg,
 		Azure:           expandTemplateAzureConfig(m["azure"].([]interface{})),
 		Exoscale:        expandTemplateExoscaleConfig(m["exoscale"].([]interface{})),
+		Gcp:             expandTemplateGcpConfig(m["gcp"].([]interface{})),
 		BuildComponents: expandTemplateComponents(m["build_components"].([]interface{})),
 		TestComponents:  expandTemplateComponents(m["test_components"].([]interface{})),
 		Notifications:   expandTemplateNotifications(m["notifications"].([]interface{})),

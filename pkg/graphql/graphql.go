@@ -3778,6 +3778,7 @@ type NewTemplateConfig struct {
 	CloudAccountIds         *[]String                  `json:"cloudAccountIds,omitempty"`
 	DisableCyclicalRebuilds *Boolean                   `json:"disableCyclicalRebuilds,omitempty"`
 	Exoscale                *NewTemplateExoscaleConfig `json:"exoscale,omitempty"`
+	Gcp                     *NewTemplateGCPConfig      `json:"gcp,omitempty"`
 	ImageRetainCount        *Int                       `json:"imageRetainCount,omitempty"`
 	Notifications           *[]NewNotification         `json:"notifications,omitempty"`
 	Scope                   *Scope                     `json:"scope,omitempty"`
@@ -3787,6 +3788,10 @@ type NewTemplateConfig struct {
 
 type NewTemplateExoscaleConfig struct {
 	Zone *String `json:"zone,omitempty"`
+}
+
+type NewTemplateGCPConfig struct {
+	CustomImageName *String `json:"customImageName,omitempty"`
 }
 
 type NewUefiKey struct {
@@ -4155,6 +4160,7 @@ type ImageBuildDetails struct {
 	PackageInventory   *String                   `json:"packageInventory,omitempty"`
 	ResultImageId      *String                   `json:"resultImageId,omitempty"`
 	ResultImageUri     *String                   `json:"resultImageUri,omitempty"`
+	Sbom               *String                   `json:"sbom,omitempty"`
 	SourceDistribution *SourceDistribution       `json:"sourceDistribution,omitempty"`
 	SourceImage        *String                   `json:"sourceImage,omitempty"`
 	Tags               *[]Tag                    `json:"tags,omitempty"`
@@ -4385,6 +4391,7 @@ type TemplateConfig struct {
 	CloudAccountIds         *[]String               `json:"cloudAccountIds,omitempty"`
 	DisableCyclicalRebuilds *Boolean                `json:"disableCyclicalRebuilds,omitempty"`
 	Exoscale                *TemplateExoscaleConfig `json:"exoscale,omitempty"`
+	Gcp                     *TemplateGCPConfig      `json:"gcp,omitempty"`
 	ImageRetainCount        *Int                    `json:"imageRetainCount,omitempty"`
 	Notifications           *[]Notification         `json:"notifications,omitempty"`
 	Scope                   *Scope                  `json:"scope,omitempty"`
@@ -4394,6 +4401,10 @@ type TemplateConfig struct {
 
 type TemplateExoscaleConfig struct {
 	Zone *String `json:"zone,omitempty"`
+}
+
+type TemplateGCPConfig struct {
+	CustomImageName *String `json:"customImageName,omitempty"`
 }
 
 type TemplateResults struct {

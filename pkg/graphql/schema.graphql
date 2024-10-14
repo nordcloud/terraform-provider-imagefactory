@@ -731,6 +731,7 @@ type ImageBuildDetails {
 	changeLog: String
 	compliance: Compliance
 	packageInventory: String
+	sbom: String
 	resultImageId: String
 	resultImageUri: String
 	buildTimeSec: Int
@@ -1042,6 +1043,10 @@ type TemplateExoscaleConfig {
 	zone: String
 }
 
+type TemplateGCPConfig {
+	customImageName: String
+}
+
 type TemplateConfig {
 	buildComponents: [TemplateComponent!]
 	testComponents: [TemplateComponent!]
@@ -1053,6 +1058,7 @@ type TemplateConfig {
 	aws: TemplateAWSConfig
 	azure: TemplateAZUREConfig
 	exoscale: TemplateExoscaleConfig
+	gcp: TemplateGCPConfig
 
 	"""
 	cloudAccountIds contains a list of Cloud Account IDs to which we will distribute the image
@@ -1217,6 +1223,19 @@ input NewTemplateExoscaleConfig {
 	zone: String
 }
 
+input NewTemplateGCPConfig {
+	"""
+	`customImageName` specifies the name of the image to be created in Google Cloud Platform.
+
+	The name must be unique within the project and adhere to the following restrictions:
+	* Must be 3-45 characters long.
+	* Must start with a lowercase letter, followed by up to 44 lowercase letters, numbers, or dashes.
+
+	ImageFactory will append a timestamp suffix to the image name in the format `custom-image-name-yyyymmddhhmmssmmm`.
+	"""
+	customImageName: String
+}
+
 """
 NewTemplateConfig defines the image customization.
 
@@ -1255,6 +1274,11 @@ input NewTemplateConfig {
 	exoscale defines additional configuration for the Exoscale provider. This is required for the Exoscale image templates.
 	"""
 	exoscale: NewTemplateExoscaleConfig
+
+	"""
+	gcp defines additional configuration for the Google Cloud provider. This is optional and can be used only for GOOGLE CLOUD template.
+	"""
+	gcp: NewTemplateGCPConfig
 
 	"""
 	cloudAccountIds defines a list of Cloud Account IDs to which we will distribute the image.

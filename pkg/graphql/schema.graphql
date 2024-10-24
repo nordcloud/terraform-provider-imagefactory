@@ -1037,6 +1037,7 @@ type TemplateAZUREConfig {
 	additionalDataDisks: [AdditionalDataDisks!]
 	trustedLaunch: Boolean
 	additionalSignatures: [UefiKey!]
+	createManagedImage: Boolean
 }
 
 type TemplateExoscaleConfig {
@@ -1217,6 +1218,14 @@ input NewTemplateAZUREConfig {
 
 	"""
 	additionalDataDisks: [NewAdditionalDataDisks!]
+
+	"""
+	`createManagedImage` defines whether the image should also be created as a managed image during the imaging process.
+
+	Create a managed image that can be used to deploy virtual machines and virtual machine scale sets.
+	By default, images are created in Azure Compute Gallery. If this option is set to true additional managed image will be created.
+	"""
+	createManagedImage: Boolean
 }
 
 input NewTemplateExoscaleConfig {

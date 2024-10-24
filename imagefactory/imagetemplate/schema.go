@@ -172,6 +172,12 @@ var azureTemplateConfigResource = &schema.Resource{
 			Type:     schema.TypeBool,
 			Optional: true,
 		},
+		"create_managed_image": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Description: "Enable to create an additional legacy managed image, " +
+				"apart from the default image that will be created in Azure Compute Gallery.",
+		},
 		"additional_signatures": {
 			Type:     schema.TypeList,
 			Optional: true,

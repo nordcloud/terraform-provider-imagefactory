@@ -3753,6 +3753,7 @@ type NewTemplateAWSConfig struct {
 type NewTemplateAZUREConfig struct {
 	AdditionalDataDisks  *[]NewAdditionalDataDisks `json:"additionalDataDisks,omitempty"`
 	AdditionalSignatures *[]NewUefiKey             `json:"additionalSignatures,omitempty"`
+	CreateManagedImage   *Boolean                  `json:"createManagedImage,omitempty"`
 	EolDateOption        *Boolean                  `json:"eolDateOption,omitempty"`
 	ExcludeFromLatest    *Boolean                  `json:"excludeFromLatest,omitempty"`
 	ReplicaRegions       *[]String                 `json:"replicaRegions,omitempty"`
@@ -4365,6 +4366,7 @@ type TemplateAWSConfig struct {
 type TemplateAZUREConfig struct {
 	AdditionalDataDisks  *[]AdditionalDataDisks `json:"additionalDataDisks,omitempty"`
 	AdditionalSignatures *[]UefiKey             `json:"additionalSignatures,omitempty"`
+	CreateManagedImage   *Boolean               `json:"createManagedImage,omitempty"`
 	EolDateOption        *Boolean               `json:"eolDateOption,omitempty"`
 	ExcludeFromLatest    *Boolean               `json:"excludeFromLatest,omitempty"`
 	ReplicaRegions       *[]String              `json:"replicaRegions,omitempty"`

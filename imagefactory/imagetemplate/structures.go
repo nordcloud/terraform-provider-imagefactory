@@ -143,6 +143,7 @@ func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig
 	e := graphql.Boolean(m["exclude_from_latest"].(bool))
 	eol := graphql.Boolean(m["eol_date_option"].(bool))
 	tl := graphql.Boolean(m["trusted_launch"].(bool))
+	mi := graphql.Boolean(m["create_managed_image"].(bool))
 
 	rr := []graphql.String{}
 	for _, v := range m["replica_regions"].([]interface{}) {
@@ -150,11 +151,12 @@ func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig
 	}
 
 	out := &graphql.NewTemplateAZUREConfig{
-		ExcludeFromLatest: &e,
-		EolDateOption:     &eol,
-		ReplicaRegions:    &rr,
-		TrustedLaunch:     &tl,
-		VmImageDefinition: expandVMImageDefinitionTemplateAzureConfig(m["vm_image_definition"].([]interface{})),
+		ExcludeFromLatest:  &e,
+		EolDateOption:      &eol,
+		ReplicaRegions:     &rr,
+		TrustedLaunch:      &tl,
+		CreateManagedImage: &mi,
+		VmImageDefinition:  expandVMImageDefinitionTemplateAzureConfig(m["vm_image_definition"].([]interface{})),
 	}
 
 	if m["additional_data_disks"] != nil {

@@ -3,11 +3,8 @@
 package imagetemplate
 
 import (
-	"fmt"
 	"regexp"
 
-	"github.com/hashicorp/go-cty/cty"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
@@ -60,59 +57,22 @@ var awsTemplateConfigResource = &schema.Resource{
 	},
 }
 
-func validateVMImageDefinitionParameter(min, max int) schema.SchemaValidateDiagFunc {
-	return func(val interface{}, path cty.Path) diag.Diagnostics {
-		var diags diag.Diagnostics
-
-		v, ok := val.(string)
-		if !ok {
-			diags = append(diags, diag.Diagnostic{
-				Severity:      diag.Error,
-				Summary:       "Invalid value type",
-				Detail:        "Field value must be of type string",
-				AttributePath: path,
-			})
-		}
-
-		if len(v) < min || len(v) > max {
-			diags = append(diags, diag.Diagnostic{
-				Severity:      diag.Error,
-				Summary:       "Allowed values",
-				Detail:        fmt.Sprintf("Expected length of the value to be in the range (%d - %d), got %s", min, max, v),
-				AttributePath: path,
-			})
-		}
-
-		if ok := regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9_-]*[a-zA-Z0-9]$`).MatchString(v); !ok {
-			diags = append(diags, diag.Diagnostic{
-				Severity: diag.Error,
-				Summary:  "Invalid value",
-				Detail: "The value must contain only English letters, numbers, underscores and hyphens. " +
-					"The value cannot begin or end with underscores or hyphens.",
-				AttributePath: path,
-			})
-		}
-
-		return diags
-	}
-}
-
 var vmImageDefinitionAzureTemplateConfigResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"name": {
-			Type:             schema.TypeString,
-			Required:         true,
-			ValidateDiagFunc: validateVMImageDefinitionParameter(2, 80), // nolint: gomnd
+			Type:         schema.TypeString,
+			Required:     true,
+			ValidateFunc: validation.StringLenBetween(2, 80), // nolint: gomnd
 		},
 		"offer": {
-			Type:             schema.TypeString,
-			Required:         true,
-			ValidateDiagFunc: validateVMImageDefinitionParameter(2, 64), // nolint: gomnd
+			Type:         schema.TypeString,
+			Required:     true,
+			ValidateFunc: validation.StringLenBetween(2, 64), // nolint: gomnd
 		},
 		"sku": {
-			Type:             schema.TypeString,
-			Required:         true,
-			ValidateDiagFunc: validateVMImageDefinitionParameter(2, 64), // nolint: gomnd
+			Type:         schema.TypeString,
+			Required:     true,
+			ValidateFunc: validation.StringLenBetween(2, 64), // nolint: gomnd
 		},
 	},
 }

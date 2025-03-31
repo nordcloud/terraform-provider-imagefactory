@@ -167,6 +167,11 @@ func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig
 		out.AdditionalSignatures = expandAdditionalSignatures(m["additional_signatures"].([]interface{}))
 	}
 
+	if m["disable_vhd_cleanup"] != nil {
+		disableVhdCleanup := graphql.Boolean(m["disable_vhd_cleanup"].(bool))
+		out.DisableVhdCleanup = &disableVhdCleanup
+	}
+
 	return out
 }
 

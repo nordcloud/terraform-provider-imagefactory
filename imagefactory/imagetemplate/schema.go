@@ -146,6 +146,14 @@ var azureTemplateConfigResource = &schema.Resource{
 				"This feature allows you to bind UEFI keys for driver/kernel modules that " +
 				"are signed by using a private key that's owned by third-party vendors.",
 		},
+		"disable_vhd_cleanup": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Default:  false,
+			Description: "VHD cleanup is a process that removes the VHD files that are created during the image build process. " +
+				"If VHD cleanup is disabled, the VHD files will not be removed and will remain in the storage account. " +
+				"Default value is set to false.",
+		},
 	},
 }
 

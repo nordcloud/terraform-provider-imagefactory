@@ -1,6 +1,8 @@
 module github.com/nordcloud/terraform-provider-imagefactory
 
-go 1.18
+go 1.23.0
+
+toolchain go1.23.4
 
 require (
 	github.com/hashicorp/go-cleanhttp v0.5.2

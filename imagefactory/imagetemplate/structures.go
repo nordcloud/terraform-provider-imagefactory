@@ -1,4 +1,4 @@
-// Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2025 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package imagetemplate
 
@@ -165,6 +165,11 @@ func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig
 
 	if m["additional_signatures"] != nil {
 		out.AdditionalSignatures = expandAdditionalSignatures(m["additional_signatures"].([]interface{}))
+	}
+
+	if m["disable_vhd_cleanup"] != nil {
+		disableVhdCleanup := graphql.Boolean(m["disable_vhd_cleanup"].(bool))
+		out.DisableVhdCleanup = &disableVhdCleanup
 	}
 
 	return out

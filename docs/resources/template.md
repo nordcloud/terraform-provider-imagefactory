@@ -362,6 +362,7 @@ Optional:
 - `additional_data_disks` (Block List, Max: 10) (see [below for nested schema](#nestedblock--config--azure--additional_data_disks))
 - `additional_signatures` (Block List) Additional UEFI keys that are used to validate the boot loader. This feature allows you to bind UEFI keys for driver/kernel modules that are signed by using a private key that's owned by third-party vendors. (see [below for nested schema](#nestedblock--config--azure--additional_signatures))
 - `create_managed_image` (Boolean) Enable to create an additional legacy managed image, apart from the default image that will be created in Azure Compute Gallery.
+- `disable_vhd_cleanup` (Boolean) VHD cleanup is a process that removes the VHD files that are created during the image build process. If VHD cleanup is disabled, the VHD files will not be removed and will remain in the storage account. Default value is set to false.
 - `eol_date_option` (Boolean) Default value is set to true
 - `exclude_from_latest` (Boolean)
 - `replica_regions` (List of String)

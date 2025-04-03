@@ -1,4 +1,4 @@
-// Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2025 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package imagetemplate
 
@@ -145,6 +145,14 @@ var azureTemplateConfigResource = &schema.Resource{
 			Description: "Additional UEFI keys that are used to validate the boot loader. " +
 				"This feature allows you to bind UEFI keys for driver/kernel modules that " +
 				"are signed by using a private key that's owned by third-party vendors.",
+		},
+		"disable_vhd_cleanup": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Default:  false,
+			Description: "VHD cleanup is a process that removes the VHD files that are created during the image build process. " +
+				"If VHD cleanup is disabled, the VHD files will not be removed and will remain in the storage account. " +
+				"Default value is set to false.",
 		},
 	},
 }

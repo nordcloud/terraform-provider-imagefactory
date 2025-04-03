@@ -1,4 +1,4 @@
-# Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2025 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum AccountStatus {
 	ACCESS_SUCCESS
@@ -933,7 +933,7 @@ type SettingsResult {
 }
 
 
-# Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2025 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum RebuildReasonType {
 	SECURITY_CHECK
@@ -1038,6 +1038,7 @@ type TemplateAZUREConfig {
 	trustedLaunch: Boolean
 	additionalSignatures: [UefiKey!]
 	createManagedImage: Boolean
+	disableVhdCleanup: Boolean
 }
 
 type TemplateExoscaleConfig {
@@ -1226,6 +1227,14 @@ input NewTemplateAZUREConfig {
 	By default, images are created in Azure Compute Gallery. If this option is set to true additional managed image will be created.
 	"""
 	createManagedImage: Boolean
+
+	"""
+	`disableVhdCleanup` defines whether the VHD cleanup should be disabled.
+
+	By default, the VHD cleanup is enabled. If this option is set to true, the VHD cleanup on customer's cloud account will be disabled.
+	This means that the VHD will not be deleted from the customer's cloud account after the image is created.
+	"""
+	disableVhdCleanup: Boolean
 }
 
 input NewTemplateExoscaleConfig {
@@ -1529,7 +1538,7 @@ extend type Query {
 }
 
 
-# Copyright 2021-2022 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2024 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum ComponentAttribute {
 	NAME
@@ -1593,7 +1602,7 @@ extend type Mutation {
 	"""
 	deleteComponent removes an existing component.
 
-	Please note that you have to delete all component versions first and all image templates that refers to this component.
+	Please note that you have to remove this component from your templates before you can delete it.
 	"""
 	deleteComponent(input: ComponentIdInput!): Boolean
 

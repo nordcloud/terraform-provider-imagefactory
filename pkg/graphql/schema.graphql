@@ -960,6 +960,11 @@ enum NotificationType {
 	WEB_HOOK
 }
 
+enum EBSVolumeType {
+	gp2
+	gp3
+}
+
 type RebuildReason {
 	type: RebuildReasonType!
 	description: String
@@ -1006,11 +1011,13 @@ type Notification {
 type AdditionalEBSVolumes {
 	size: Int!
 	deviceName: String!
+	volumeType: EBSVolumeType
 }
 
 type TemplateAWSConfig {
 	region: String
 	customImageName: String
+	ebsVolumeType: EBSVolumeType
 	additionalEbsVolumes: [AdditionalEBSVolumes!]
 	kmsKeyId: String
 }
@@ -1145,11 +1152,23 @@ input NewAdditionalEBSVolumes {
 	* Windows - https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/device_naming.html
 	"""
 	deviceName: String!
+
+	"""
+	`volumeType` defines the type of EBS volume to be used for the image. By default, it is set to `gp2`.
+	"""
+	volumeType: EBSVolumeType
 }
 
 input NewTemplateAWSConfig {
 	region: String
 	customImageName: String
+
+	"""
+	`ebsVolumeType` defines the type of EBS volume to be used for the image.
+
+	By default, the volume type set for the source image snapshot will be used.
+	"""
+	ebsVolumeType: EBSVolumeType
 
 	"""
 	`additionalEbsVolumes` defines extra EBS volumes attached to the AMI image with a limit of 10.
@@ -1233,6 +1252,8 @@ input NewTemplateAZUREConfig {
 
 	By default, the VHD cleanup is enabled. If this option is set to true, the VHD cleanup on customer's cloud account will be disabled.
 	This means that the VHD will not be deleted from the customer's cloud account after the image is created.
+	This option enables the use of VHD files for Azure Local service. VHD files will be stored in Azure Storage, in the account provided during
+	the Azure account onboarding process. This allows for seamless integration between local development environments and Azure cloud resources.
 	"""
 	disableVhdCleanup: Boolean
 }

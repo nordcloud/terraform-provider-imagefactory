@@ -28,6 +28,13 @@ var additionalEbsVolumesResource = &schema.Resource{
 				"Must be a valid device name. For Linux it should be /dev/sd[b-z], for Windows xvd[b-z]",
 			),
 		},
+		"volume_type": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Description: "The type of the EBS volume. Available types are `gp2`, `gp3`. " +
+				"If not specified, `gp2` is used by default.",
+			ValidateFunc: validation.StringInSlice(validEBSVolumeTypes, false),
+		},
 	},
 }
 
@@ -40,6 +47,13 @@ var awsTemplateConfigResource = &schema.Resource{
 		"custom_image_name": {
 			Type:     schema.TypeString,
 			Optional: true,
+		},
+		"ebs_volume_type": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Description: "The type of the EBS volume of primary block device. Available types are `gp2`, `gp3`. " +
+				"If not specified, volume type is used from the source image.",
+			ValidateFunc: validation.StringInSlice(validEBSVolumeTypes, false),
 		},
 		"additional_ebs_volumes": {
 			Type:     schema.TypeList,

@@ -1,4 +1,4 @@
-// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2025 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package imagetemplate
 
@@ -22,4 +22,9 @@ var validCloudProviders = []string{
 var validScopes = []string{
 	string(graphql.ScopePUBLIC),
 	string(graphql.ScopeCHINA),
+}
+
+var validEBSVolumeTypes = []string{
+	string(graphql.EBSVolumeTypeGp2),
+	string(graphql.EBSVolumeTypeGp3),
 }

@@ -341,6 +341,7 @@ Optional:
 
 - `additional_ebs_volumes` (Block List, Max: 10) (see [below for nested schema](#nestedblock--config--aws--additional_ebs_volumes))
 - `custom_image_name` (String)
+- `ebs_volume_type` (String) The type of the EBS volume. Available types are `gp2`, `gp3`. If not specified, volume type is used from the source image.
 - `kms_key_id` (String) The ID of the AWS KMS key that is used to encrypt the destination snapshot of the copied image. To allow use of this key, onboarded master role `ImageFactoryMasterRole` must have permission to use the key. You can use key ID, key ARN, alias name, or alias ARN.
 - `region` (String)
 
@@ -351,6 +352,10 @@ Required:
 
 - `device_name` (String) Device name for the EBS volume. Available names for Linux are `/dev/sd[b-z]`, for Windows `xvd[b-z]`
 - `size` (Number) EBS volume size between 1 and 10 GB.
+
+Optional:
+
+- `volume_type` (String) The type of the EBS volume. Available types are `gp2`, `gp3`. If not specified, `gp2` is used by default.
 
 
 

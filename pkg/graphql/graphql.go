@@ -3151,6 +3151,13 @@ const (
 	DistributionAttributePROVIDER  DistributionAttribute = "PROVIDER"
 )
 
+type EBSVolumeType string
+
+const (
+	EBSVolumeTypeGp2 EBSVolumeType = "gp2"
+	EBSVolumeTypeGp3 EBSVolumeType = "gp3"
+)
+
 type HyperVGeneration string
 
 const (
@@ -3684,8 +3691,9 @@ type NewAdditionalDataDisks struct {
 }
 
 type NewAdditionalEBSVolumes struct {
-	DeviceName String `json:"deviceName"`
-	Size       Int    `json:"size"`
+	DeviceName String         `json:"deviceName"`
+	Size       Int            `json:"size"`
+	VolumeType *EBSVolumeType `json:"volumeType,omitempty"`
 }
 
 type NewApiKey struct {
@@ -3746,6 +3754,7 @@ type NewTemplate struct {
 type NewTemplateAWSConfig struct {
 	AdditionalEbsVolumes *[]NewAdditionalEBSVolumes `json:"additionalEbsVolumes,omitempty"`
 	CustomImageName      *String                    `json:"customImageName,omitempty"`
+	EbsVolumeType        *EBSVolumeType             `json:"ebsVolumeType,omitempty"`
 	KmsKeyId             *String                    `json:"kmsKeyId,omitempty"`
 	Region               *String                    `json:"region,omitempty"`
 }
@@ -3934,8 +3943,9 @@ type AdditionalDataDisks struct {
 }
 
 type AdditionalEBSVolumes struct {
-	DeviceName String `json:"deviceName"`
-	Size       Int    `json:"size"`
+	DeviceName String         `json:"deviceName"`
+	Size       Int            `json:"size"`
+	VolumeType *EBSVolumeType `json:"volumeType,omitempty"`
 }
 
 type ApiKey struct {
@@ -4360,6 +4370,7 @@ type Template struct {
 type TemplateAWSConfig struct {
 	AdditionalEbsVolumes *[]AdditionalEBSVolumes `json:"additionalEbsVolumes,omitempty"`
 	CustomImageName      *String                 `json:"customImageName,omitempty"`
+	EbsVolumeType        *EBSVolumeType          `json:"ebsVolumeType,omitempty"`
 	KmsKeyId             *String                 `json:"kmsKeyId,omitempty"`
 	Region               *String                 `json:"region,omitempty"`
 }

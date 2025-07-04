@@ -50,10 +50,17 @@ func expandAdditionalEBSVolumes(in []interface{}) *[]graphql.NewAdditionalEBSVol
 	out := []graphql.NewAdditionalEBSVolumes{}
 	for i := range in {
 		m := in[i].(map[string]interface{})
-		out = append(out, graphql.NewAdditionalEBSVolumes{
+		v := graphql.NewAdditionalEBSVolumes{
 			Size:       graphql.Int(m["size"].(int)),
 			DeviceName: graphql.String(m["device_name"].(string)),
-		})
+		}
+		if m["volume_type"] != nil {
+			volumeType := graphql.EBSVolumeType(m["volume_type"].(string))
+			if volumeType != "" {
+				v.VolumeType = &volumeType
+			}
+		}
+		out = append(out, v)
 	}
 
 	return &out

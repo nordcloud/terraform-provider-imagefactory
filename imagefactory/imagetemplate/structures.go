@@ -100,9 +100,9 @@ func expandTemplateAwsConfig(in []interface{}, scope graphql.Scope) (*graphql.Ne
 	}
 
 	if m["ebs_volume_type"] != nil {
-		volumeType := graphql.EBSVolumeType(m["ebs_volume_type"].(string))
-		if volumeType != "" {
-			tplConfig.EbsVolumeType = &volumeType
+		ebsVolumeType := graphql.EBSVolumeType(m["ebs_volume_type"].(string))
+		if ebsVolumeType != "" {
+			tplConfig.EbsVolumeType = &ebsVolumeType
 		}
 	}
 

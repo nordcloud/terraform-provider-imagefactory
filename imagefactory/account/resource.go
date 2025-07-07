@@ -1,4 +1,4 @@
-// Copyright 2021-2023 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2025 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package account
 
@@ -39,7 +39,6 @@ func accountCreate(d *schema.ResourceData, m interface{}, provider graphql.Provi
 		CloudProviderId: graphql.String(d.Get(getCloudProviderKeyName(provider)).(string)),
 		Provider:        provider,
 		Scope:           &scope,
-		Properties:      &graphql.AccountCloudPropertiesInput{},
 	}
 
 	switch provider {
@@ -161,7 +160,7 @@ func setProps(d *schema.ResourceData, a sdk.Account) diag.Diagnostics {
 		return diag.FromErr(err)
 	}
 
-	if a.Provider == graphql.ProviderAWS {
+	if a.Provider == graphql.ProviderAWS && a.Properties != nil {
 		if err := d.Set("properties", []map[string]interface{}{
 			flattenAccountProperties(a.Properties),
 		}); err != nil {

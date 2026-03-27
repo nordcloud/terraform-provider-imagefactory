@@ -1,4 +1,4 @@
-# Copyright 2021-2025 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2026 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum AccountStatus {
 	ACCESS_SUCCESS
@@ -933,7 +933,7 @@ type SettingsResult {
 }
 
 
-# Copyright 2021-2025 Nordcloud Oy or its affiliates. All Rights Reserved.
+# Copyright 2021-2026 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 enum RebuildReasonType {
 	SECURITY_CHECK
@@ -1043,6 +1043,7 @@ type TemplateAZUREConfig {
 	eolDateOption: Boolean
 	additionalDataDisks: [AdditionalDataDisks!]
 	trustedLaunch: Boolean
+	enableNvmeController: Boolean
 	additionalSignatures: [UefiKey!]
 	createManagedImage: Boolean
 	disableVhdCleanup: Boolean
@@ -1224,6 +1225,14 @@ input NewTemplateAZUREConfig {
 	This feature is only available for Gen2 VMs.
 	"""
 	trustedLaunch: Boolean
+
+	"""
+	`enableNvmeController` defines if the NVMe controller is enabled.
+
+	This feature is only available for new templates and cannot be changed after the template is created.
+	This feature is only available for Gen2 VMs.
+	"""
+	enableNvmeController: Boolean
 
 	"""
 	`additionalSignatures` defines additional UEFI keys that are used to validate the boot loader.

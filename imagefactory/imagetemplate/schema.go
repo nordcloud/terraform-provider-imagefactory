@@ -146,6 +146,11 @@ var azureTemplateConfigResource = &schema.Resource{
 			Type:     schema.TypeBool,
 			Optional: true,
 		},
+		"enable_nvme_controller": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Description: "Enable NVMe controller for the image.",
+		},
 		"create_managed_image": {
 			Type:     schema.TypeBool,
 			Optional: true,

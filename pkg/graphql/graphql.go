@@ -3768,6 +3768,7 @@ type NewTemplateAZUREConfig struct {
 	ExcludeFromLatest    *Boolean                  `json:"excludeFromLatest,omitempty"`
 	ReplicaRegions       *[]String                 `json:"replicaRegions,omitempty"`
 	TrustedLaunch        *Boolean                  `json:"trustedLaunch,omitempty"`
+	EnableNvmeController *Boolean                  `json:"enableNvmeController,omitempty"`
 	VmImageDefinition    *NewVMImageDefinition     `json:"vmImageDefinition,omitempty"`
 }
 
@@ -4384,6 +4385,7 @@ type TemplateAZUREConfig struct {
 	ExcludeFromLatest    *Boolean               `json:"excludeFromLatest,omitempty"`
 	ReplicaRegions       *[]String              `json:"replicaRegions,omitempty"`
 	TrustedLaunch        *Boolean               `json:"trustedLaunch,omitempty"`
+	EnableNvmeController *Boolean               `json:"enableNvmeController,omitempty"`
 	VmImageDefinition    *VMImageDefinition     `json:"vmImageDefinition,omitempty"`
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2021-2025 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2026 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package imagetemplate
 
@@ -145,6 +145,11 @@ var azureTemplateConfigResource = &schema.Resource{
 		"trusted_launch": {
 			Type:     schema.TypeBool,
 			Optional: true,
+		},
+		"enable_nvme_controller": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Description: "Enable NVMe controller for the image.",
 		},
 		"create_managed_image": {
 			Type:     schema.TypeBool,

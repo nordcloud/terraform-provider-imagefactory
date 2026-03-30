@@ -1,4 +1,4 @@
-// Copyright 2021-2025 Nordcloud Oy or its affiliates. All Rights Reserved.
+// Copyright 2021-2026 Nordcloud Oy or its affiliates. All Rights Reserved.
 
 package imagetemplate
 
@@ -157,6 +157,7 @@ func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig
 	e := graphql.Boolean(m["exclude_from_latest"].(bool))
 	eol := graphql.Boolean(m["eol_date_option"].(bool))
 	tl := graphql.Boolean(m["trusted_launch"].(bool))
+	enc := graphql.Boolean(m["enable_nvme_controller"].(bool))
 	mi := graphql.Boolean(m["create_managed_image"].(bool))
 
 	rr := []graphql.String{}
@@ -165,12 +166,13 @@ func expandTemplateAzureConfig(in []interface{}) *graphql.NewTemplateAZUREConfig
 	}
 
 	out := &graphql.NewTemplateAZUREConfig{
-		ExcludeFromLatest:  &e,
-		EolDateOption:      &eol,
-		ReplicaRegions:     &rr,
-		TrustedLaunch:      &tl,
-		CreateManagedImage: &mi,
-		VmImageDefinition:  expandVMImageDefinitionTemplateAzureConfig(m["vm_image_definition"].([]interface{})),
+		ExcludeFromLatest:    &e,
+		EolDateOption:        &eol,
+		ReplicaRegions:       &rr,
+		TrustedLaunch:        &tl,
+		EnableNvmeController: &enc,
+		CreateManagedImage:   &mi,
+		VmImageDefinition:    expandVMImageDefinitionTemplateAzureConfig(m["vm_image_definition"].([]interface{})),
 	}
 
 	if m["additional_data_disks"] != nil {

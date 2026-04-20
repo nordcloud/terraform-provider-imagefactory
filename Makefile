@@ -7,7 +7,7 @@ BINARY=terraform-provider-${NAME}
 
 VERSION=v1.0.0
 GOOS=darwin
-GOARCH=amd64
+GOARCH=arm64
 LDFLAGS ?= -s -w -extldflags "-static"
 
 default: install
@@ -23,6 +23,9 @@ build:
 install: build
 	cd bin
 	./install.sh
+
+generate:
+	go run ./tools/gen-graphql pkg/graphql/schema.graphql pkg/graphql/graphql.go
 
 generateDoc:
 	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
